@@ -374,7 +374,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
     except Exception as e:
         st.error(f"🗺️ Map load error: {e}")
 # --- ബോട്ട് സെറ്റപ്പ് ഇവിടെ തുടങ്ങുന്നു ---
-TELEGRAM_BOT_TOKEN = "8269194893:AAE2REuWLq60td8VZMSafcCZT3YVT9Bwq6o"
+TELEGRAM_BOT_TOKEN =st.secrets["TELEGRAM_BOT_TOKEN"]
 @st.cache_resource
 def setup_bot():
     bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
@@ -642,9 +642,10 @@ import requests
 import streamlit as st
 # ഫയർബേസ് ഡാറ്റാബേസ് കണക്ഷൻ സെറ്റ് ചെയ്യുക
 if not firebase_admin._apps:
-    cred = credentials.Certificate('firebase_key.json')# നിങ്ങളുടെ ഫയർബേസ് JSON ഫയലിന്റെ യഥാർത്ഥ പേര് ഇവിടെ നൽകുക
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app/'
+    creds_dict = dict(st.secrets["firebase_service_account"])
+    cred = credentials.Certificate(creds_dict)
+    firebase_admin.initialize_app(cred, {  
+		'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
 
 registration_data = {}
@@ -1311,7 +1312,8 @@ gc_client = None
 gc_client = None
 
 # ടെലിഗ്രാം ബോട്ട് ടോക്കൺ ഇവിടെ സെറ്റ് ചെയ്യുക
-TELEGRAM_BOT_TOKEN = "8269194893:AAE2REuWLq60td8VZMSafcCZT3YVT9Bwq6o"
+TELEGRAM_BOT_TOKEN =st.secrets["TELEGRAM_BOT_TOKEN"]
+
 bot = None
 
 # ലോഗിങ്ങിനായി bg_log ഫങ്ഷൻ ഇവിടെ നൽകുക
