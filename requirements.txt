@@ -1,0 +1,11 @@
+streamlit
+pyTelegramBotAPI
+firebase-admin
+requests
+pandas
+gspread
+oauth2client
+folium
+streamlit-folium
+streamlit-geolocation
+Flask
