@@ -374,7 +374,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
     except Exception as e:
         st.error(f"🗺️ Map load error: {e}")
 # --- ബോട്ട് സെറ്റപ്പ് ഇവിടെ തുടങ്ങുന്നു ---
-TELEGRAM_BOT_TOKEN =st.secrets["TELEGRAM_BOT_TOKEN"]
+TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
 @st.cache_resource
 def setup_bot():
     bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
@@ -618,10 +618,10 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 #GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw_WDIJgYvtCy0r13wQu20BNZE9KqfGmyxQm7_iFsV2kLLq3eQ8O-3e5BfP3JCrYnTorw/exec"
 
 
-ADMIN_TELEGRAM_CHAT_ID = "1081269806"
-TELEGRAM_CHAT_ID = "1081269806"
-API_SECRET_KEY = "EasyTaxi_2026_Secure_Key_#Asu@4368"
-ADMIN_PIN = "9946"
+ADMIN_TELEGRAM_CHAT_ID = st.secrets["ADMIN_TELEGRAM_CHAT_ID"]
+TELEGRAM_CHAT_ID = st.secrets["TELEGRAM_CHAT_ID"]
+API_SECRET_KEY = st.secrets["API_SECRET_KEY"]
+ADMIN_PIN = st.secrets["ADMIN_PIN"]
 ENABLE_COMMISSION = True
 ADMIN_UPI_ID = "YOUR_UPI_ID_HERE"
 WARNING_LIMIT = 25
@@ -642,10 +642,9 @@ import requests
 import streamlit as st
 # ഫയർബേസ് ഡാറ്റാബേസ് കണക്ഷൻ സെറ്റ് ചെയ്യുക
 if not firebase_admin._apps:
-    creds_dict = dict(st.secrets["firebase_service_account"])
-    cred = credentials.Certificate(creds_dict)
-    firebase_admin.initialize_app(cred, {  
-		'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+    cred = credentials.Certificate('firebase_key.json')# നിങ്ങളുടെ ഫയർബേസ് JSON ഫയലിന്റെ യഥാർത്ഥ പേര് ഇവിടെ നൽകുക
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app/'
     })
 
 registration_data = {}
@@ -763,42 +762,16 @@ def initialize_firebase():
             "firebase_key.json.json"
         ]
 
-        key_path = None
+        # Firebase ഇതിനകം ഇനിഷ്യലൈസ് ചെയ്തിട്ടില്ലെങ്കിൽ മാത്രം
+        if not firebase_admin._apps:
+            # Secrets-ൽ നിന്ന് JSON ഉള്ളടക്കം എടുക്കുക
+            creds_dict = dict(st.secrets["firebase_service_account"])
+            cred = credentials.Certificate(creds_dict)
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+            })
 
-        for filename in possible_files:
-            full_path = os.path.join(
-                base_dir,
-                filename
-            )
-
-            if os.path.exists(full_path):
-                key_path = full_path
-                break
-
-        if key_path:
-            cred = credentials.Certificate(
-                key_path
-            )
-
-            firebase_admin.initialize_app(
-                cred,
-                {
-                    "databaseURL":
-                    "https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app"
-                }
-            )
-
-        else:
-            firebase_admin.initialize_app(
-                options={
-                    "databaseURL":
-                    "https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app"
-                }
-            )
-
-        bg_log(
-            "✅ Firebase Connected Successfully"
-        )
+        
 
         return True
 
@@ -1312,8 +1285,7 @@ gc_client = None
 gc_client = None
 
 # ടെലിഗ്രാം ബോട്ട് ടോക്കൺ ഇവിടെ സെറ്റ് ചെയ്യുക
-TELEGRAM_BOT_TOKEN =st.secrets["TELEGRAM_BOT_TOKEN"]
-
+TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
 bot = None
 
 # ലോഗിങ്ങിനായി bg_log ഫങ്ഷൻ ഇവിടെ നൽകുക
