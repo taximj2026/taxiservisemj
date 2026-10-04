@@ -1535,8 +1535,8 @@ def get_real_road_distance(pickup_place, drop_place):
 
     headers = {"User-Agent": "EasyAutoTaxiPro/1.0"}
 
-    GRAPHOPPER_API_KEY = "8dcc1129-f0d7-47da-8f8c-d0550d53854f"
-    GEOAPIFY_API_KEY = "3bbec7b6200b441aa6c000f54fbeb459"
+    GRAPHOPPER_API_KEY = st.secrets["GRAPHOPPER_API_KEY"]
+    GEOAPIFY_API_KEY = st.secrets["GEOAPIFY_API_KEY"]
 
     def clean_place(place):
         place = str(place).strip()
@@ -2606,7 +2606,7 @@ def main():
                 # ============================================
                 payload = {
                     "action": "create_trip",
-                    "secret_key": "EasyTaxi_2026_Secure_Key_#Asu@4368",
+                    "secret_key": st.secrets["API_SECRET_KEY"],
                     "trip_id": unique_trip_id,
                     "customer_name": sanitize_input(c_name) if 'sanitize_input' in globals() else c_name,
                     "customer_phone": sanitize_input(c_phone) if 'sanitize_input' in globals() else c_phone,
