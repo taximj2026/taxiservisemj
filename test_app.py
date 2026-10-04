@@ -2510,12 +2510,31 @@ def main():
     gps_link = st.session_state.gps_link
 
     # ഒരൊറ്റ സ്റ്റാറ്റസ് ബാറും ബട്ടണും മാത്രം ഇവിടെ പ്രവർത്തിക്കും (ഡ്യൂപ്ലിക്കേഷൻ ഒഴിവാക്കി)
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([3.5, 1]) # കോളം അനുപാതം അല്പം മാറ്റി
+    
+    # CSS to reduce gap and make button smaller
+    st.markdown("""
+    <style>
+        /* കോളങ്ങൾ തമ്മിലുള്ള അകലം കുറയ്ക്കാൻ */
+        div[data-testid="stHorizontalBlock"] {
+            gap: 0.5rem !important;
+            align-items: center !important;
+        }
+        /* രണ്ടാമത്തെ കോളത്തിലെ ബട്ടൺ ചെറുതാക്കാൻ */
+        div[data-testid="column"]:nth-of-type(2) button {
+            width: auto !important;
+            padding: 6px 10px !important;
+            font-size: 13px !important;
+            min-height: 38px !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
     with col1:
         if lat and lon:
             st.markdown(
                 """
-                <div style="background-color: #d4edda; color: #155724; padding: 8px; border-radius: 5px; border: 1px solid #c3e6cb;">
+                <div style="background-color: #d4edda; color: #155724; padding: 8px; border-radius: 5px; border: 1px solid #c3e6cb; margin-bottom: 0;">
                     <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
                 </div>
                 """,
@@ -2524,7 +2543,7 @@ def main():
         else:
             st.markdown(
                 """
-                <div style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; border: 1px solid #ffeeba;">
+                <div style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; border: 1px solid #ffeeba; margin-bottom: 0;">
                     <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
                 </div>
                 """,
