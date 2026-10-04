@@ -43,6 +43,30 @@ from oauth2client.service_account import ServiceAccountCredentials
 from streamlit_geolocation import streamlit_geolocation
 from flask import Flask, request, jsonify
 from streamlit.runtime.scriptrunner import add_script_run_ctx
+# --- Mobile Friendly CSS (ഇവിടെ ചേർക്കുക) ---
+st.markdown("""
+<style>
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.5rem !important; }
+    h3 { font-size: 1.2rem !important; }
+    .stButton>button {
+        width: 100% !important;
+        height: 3rem !important;
+        font-size: 1rem !important;
+    }
+    .stTextInput>div>div>input {
+        font-size: 1rem !important;
+        height: 3rem !important;
+    }
+    .stForm { padding: 1rem !important; }
+</style>
+""", unsafe_allow_html=True)
 
 
 
