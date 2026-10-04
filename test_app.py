@@ -642,16 +642,18 @@ import requests
 import streamlit as st
 # ഫയർബേസ് ഡാറ്റാബേസ് കണക്ഷൻ സെറ്റ് ചെയ്യുക
 if not firebase_admin._apps:
-    cred = credentials.Certificate('firebase_key.json')# നിങ്ങളുടെ ഫയർബേസ് JSON ഫയലിന്റെ യഥാർത്ഥ പേര് ഇവിടെ നൽകുക
+    creds_dict = dict(st.secrets["firebase_service_account"])
+    cred = credentials.Certificate(creds_dict)
     firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app/'
+	    'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+    
     })
 
 registration_data = {}
 
 def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, distance=0.0, pickup_link=""):
     """
-    കസ്റ്റമർ ബുക്ക് ചെയ്യുമ്പോൾ വിവരങ്ങളും ദൂരവും ഫയർബേസിലേക്ക് സേവ് ചെയ്യുന്നു
+    കസ്റ്റമർ ബുക്ക് ചെയ്യു മ്പോൾ വിവരങ്ങളും ദൂരവും ഫയർബേസിലേക്ക് സേവ് ചെയ്യുന്നു
     """
     try:
         trip_data = {
