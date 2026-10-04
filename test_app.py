@@ -2486,7 +2486,7 @@ def main():
     if 'is_booking' not in st.session_state:
         st.session_state.is_booking = False
 
-    # ----------------------------------------------------------------
+        # ----------------------------------------------------------------
     # 📍 ULTIMATE RELIABLE GPS LOCATION (Final Clean Version)
     # ----------------------------------------------------------------
     if 'lat' not in st.session_state:
@@ -2496,68 +2496,69 @@ def main():
     if 'gps_link' not in st.session_state:
         st.session_state.gps_link = "Not Available"
 
-    try:
-        location = streamlit_geolocation()
-        if location and location.get("latitude"):
-            st.session_state.lat = location.get("latitude")
-            st.session_state.lon = location.get("longitude")
-            st.session_state.gps_link = f"https://maps.google.com/?q={st.session_state.lat},{st.session_state.lon}"
-    except Exception as e:
-        pass
+    # 🎯 ജിപിഎസ് ഐക്കണും ബട്ടണും ഒരേ വരിയിൽ കൊണ്ടുവരാൻ കോളം ഉപയോഗിക്കുന്നു
+    col_icon, col_btn = st.columns([1, 4])
+
+    with col_icon:
+        try:
+            location = streamlit_geolocation()
+            if location and location.get("latitude"):
+                st.session_state.lat = location.get("latitude")
+                st.session_state.lon = location.get("longitude")
+                st.session_state.gps_link = f"https://maps.google.com/?q={st.session_state.lat},{st.session_state.lon}"
+        except Exception as e:
+            pass
+
+    with col_btn:
+        # ബട്ടൺ ഐക്കണിന് അടുത്തേക്ക് കൊണ്ടുവരാൻ അല്പം സ്പേസ്
+        st.write("") 
+        if st.button("🔄 Get GPS"):
+            st.rerun()
 
     lat = st.session_state.lat
     lon = st.session_state.lon
     gps_link = st.session_state.gps_link
 
-    # ഒരൊറ്റ സ്റ്റാറ്റസ് ബാറും ബട്ടണും മാത്രം ഇവിടെ പ്രവർത്തിക്കും (ഡ്യൂപ്ലിക്കേഷൻ ഒഴിവാക്കി)
-    col1, col2 = st.columns([3.5, 1]) # കോളം അനുപാതം അല്പം മാറ്റി
-    
-    # CSS to reduce gap and make button smaller
+    # 📍 GPS സ്റ്റാറ്റസ് ബോക്സ് (ഇത് ബട്ടണിന് താഴെ വരും)
+    if lat and lon:
+        st.markdown(
+            """
+            <div style="background-color: #d4edda; color: #155724; padding: 6px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 5px; margin-bottom: 10px;">
+                <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            """
+            <div style="background-color: #fff3cd; color: #856404; padding: 6px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 5px; margin-bottom: 10px;">
+                <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    # 📝 "യാത്രാ വിവരങ്ങൾ" എന്ന ഹെഡിംഗ് (ഇത് കൂടുതൽ മുകളിലേക്ക് വരാൻ CSS)
     st.markdown("""
     <style>
-        /* കോളങ്ങൾ തമ്മിലുള്ള അകലം കുറയ്ക്കാൻ */
-        div[data-testid="stHorizontalBlock"] {
-            gap: 0.5rem !important;
-            align-items: center !important;
+        /* സ്പേസ് കുറയ്ക്കാൻ */
+        div[data-testid="stVerticalBlock"] > div {
+            margin-bottom: 0rem !important;
         }
-        /* രണ്ടാമത്തെ കോളത്തിലെ ബട്ടൺ ചെറുതാക്കാൻ */
-        div[data-testid="column"]:nth-of-type(2) button {
-            width: auto !important;
-            padding: 6px 10px !important;
-            font-size: 13px !important;
-            min-height: 38px !important;
+        div[data-testid="stMarkdownContainer"] h3 {
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            padding-bottom: 0px !important;
         }
     </style>
     """, unsafe_allow_html=True)
-    
-    with col1:
-        if lat and lon:
-            st.markdown(
-                """
-                <div style="background-color: #d4edda; color: #155724; padding: 8px; border-radius: 5px; border: 1px solid #c3e6cb; margin-bottom: 0;">
-                    <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        else:
-            st.markdown(
-                """
-                <div style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; border: 1px solid #ffeeba; margin-bottom: 0;">
-                    <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    with col2:
-        if st.button("🔄 Get GPS"):
-            st.rerun()
-
     
     st.markdown("### 📝 യാത്രാ വിവരങ്ങൾ രേഖപ്പെടുത്തുക")
 
     # 🛑 st.form ഉപയോഗിച്ച് ബുക്കിംഗ് ഫോം സുരക്ഷിതമാക്കിയിരിക്കുന്നു
     with st.form("booking_form"):
+        # ... (ബാക്കി കോഡുകൾ അതേപടി ഇരിക്കട്ടെ) ...
         c_name = st.text_input("👤 നിങ്ങളുടെ പേര് (Customer Name):", placeholder="പേര് ടൈപ്പ് ചെയ്യുക")
         c_phone = st.text_input("📞 ഫോൺ നമ്പർ (Phone Number):", placeholder="9876543210")
 
