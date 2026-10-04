@@ -2486,7 +2486,7 @@ def main():
     if 'is_booking' not in st.session_state:
         st.session_state.is_booking = False
 
-        # ----------------------------------------------------------------
+    # ----------------------------------------------------------------
     # 📍 ULTIMATE RELIABLE GPS LOCATION (Final Clean Version)
     # ----------------------------------------------------------------
     if 'lat' not in st.session_state:
@@ -2496,8 +2496,8 @@ def main():
     if 'gps_link' not in st.session_state:
         st.session_state.gps_link = "Not Available"
 
-    # 🎯 ജിപിഎസ് ഐക്കണും ബട്ടണും ഒരേ വരിയിൽ കൊണ്ടുവരാൻ കോളം ഉപയോഗിക്കുന്നു
-    col_icon, col_btn = st.columns([1, 4])
+    # 🎯 ജിപിഎസ് ഐക്കണും സ്റ്റാറ്റസ് മെസ്സേജും ഒരേ വരിയിൽ കൊണ്ടുവരാൻ കോളം ഉപയോഗിക്കുന്നു
+    col_icon, col_status = st.columns([1, 5])
 
     with col_icon:
         try:
@@ -2509,35 +2509,30 @@ def main():
         except Exception as e:
             pass
 
-    with col_btn:
-        # ബട്ടൺ ഐക്കണിന് അടുത്തേക്ക് കൊണ്ടുവരാൻ അല്പം സ്പേസ്
-        st.write("") 
-        if st.button("🔄 Get GPS"):
-            st.rerun()
-
-    lat = st.session_state.lat
-    lon = st.session_state.lon
-    gps_link = st.session_state.gps_link
-
-    # 📍 GPS സ്റ്റാറ്റസ് ബോക്സ് (ഇത് ബട്ടണിന് താഴെ വരും)
-    if lat and lon:
-        st.markdown(
-            """
-            <div style="background-color: #d4edda; color: #155724; padding: 6px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 5px; margin-bottom: 10px;">
-                <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            """
-            <div style="background-color: #fff3cd; color: #856404; padding: 6px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 5px; margin-bottom: 10px;">
-                <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    with col_status:
+        # ഐക്കണിന് അടുത്തേക്ക് സ്റ്റാറ്റസ് കാണിക്കാൻ
+        lat = st.session_state.lat
+        lon = st.session_state.lon
+        
+        # ചെറിയ പാഡിംഗ് ഉപയോഗിച്ച് സ്പേസ് കുറയ്ക്കുന്നു
+        if lat and lon:
+            st.markdown(
+                """
+                <div style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 5px; margin-bottom: 0px;">
+                    <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                """
+                <div style="background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 5px; margin-bottom: 0px;">
+                    <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
     # 📝 "യാത്രാ വിവരങ്ങൾ" എന്ന ഹെഡിംഗ് (ഇത് കൂടുതൽ മുകളിലേക്ക് വരാൻ CSS)
     st.markdown("""
@@ -2545,6 +2540,7 @@ def main():
         /* സ്പേസ് കുറയ്ക്കാൻ */
         div[data-testid="stVerticalBlock"] > div {
             margin-bottom: 0rem !important;
+            gap: 0.5rem !important;
         }
         div[data-testid="stMarkdownContainer"] h3 {
             margin-top: 5px !important;
