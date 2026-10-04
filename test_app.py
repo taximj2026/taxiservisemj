@@ -1239,31 +1239,35 @@ st.markdown("""
     <style>
     .reportview-container { background: #121212 !important; color: #FFFFFF !important; }
     
+    /* ഹെഡർ ബോക്സിന്റെ പാഡിംഗ് കുറച്ചു */
     .header-box { 
         background: linear-gradient(135deg, #1e1e1e, #2d2d2d) !important; 
-        padding: 30px !important; 
-        border-radius: 15px !important; 
+        padding: 15px !important; 
+        border-radius: 12px !important; 
         text-align: center !important; 
-        border-bottom: 5px solid #ffcc00 !important; 
-        box-shadow: 0px 10px 20px rgba(0,0,0,0.3) !important; 
-        margin-bottom: 25px !important; 
+        border-bottom: 4px solid #ffcc00 !important; 
+        box-shadow: 0px 6px 12px rgba(0,0,0,0.3) !important; 
+        margin-bottom: 15px !important; 
     }
-    .header-box h1 { color: #ffcc00 !important; font-weight: 900 !important; letter-spacing: 2px !important; margin: 0 !important; font-size: 2.5rem !important; }
-    .header-box p { color: #b3b3b3 !important; font-size: 14px !important; margin-top: 5px !important; text-transform: uppercase !important; }
+    /* ഹെഡിംഗ് ഫോണ്ട് സൈസ് 2.5rem ൽ നിന്ന് 1.8rem ആക്കി കുറച്ചു */
+    .header-box h1 { color: #ffcc00 !important; font-weight: 900 !important; letter-spacing: 1px !important; margin: 0 !important; font-size: 1.8rem !important; }
+    /* സബ് ഹെഡിംഗ് ഫോണ്ട് സൈസ് 14px ൽ നിന്ന് 11px ആക്കി കുറച്ചു */
+    .header-box p { color: #b3b3b3 !important; font-size: 11px !important; margin-top: 3px !important; text-transform: uppercase !important; }
     
+    /* ഫോമിന്റെ പാഡിംഗ് കുറച്ചു */
     div[data-testid="stForm"] { 
         background-color: #1e1e1e !important; 
         border: 1px solid #333333 !important; 
-        padding: 25px !important; 
-        border-radius: 15px !important; 
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important; 
+        padding: 15px !important; 
+        border-radius: 12px !important; 
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2) !important; 
     }
     
     label[data-testid="stWidgetLabel"] p, 
     div[data-testid="stMarkdownContainer"] p strong,
     div[data-testid="stRadio"] label p {
         color: #ffcc00 !important;
-        font-size: 16px !important;
+        font-size: 14px !important;
         font-weight: bold !important;
         letter-spacing: 0.5px !important;
     }
@@ -1272,22 +1276,22 @@ st.markdown("""
         background: linear-gradient(90deg, #ffcc00, #ffa500) !important; 
         color: #000000 !important; 
         font-weight: bold !important; 
-        font-size: 16px !important; 
+        font-size: 15px !important; 
         border: none !important; 
         border-radius: 8px !important; 
-        padding: 12px 20px !important; 
+        padding: 10px 15px !important; 
         transition: all 0.3s ease !important; 
         width: 100% !important; 
     }
     .stButton>button:hover { transform: translateY(-2px) !important; box-shadow: 0px 6px 20px rgba(255,204,0,0.4) !important; }
     
-    .disclaimer-box { background-color: #2b1d1d !important; border-left: 5px solid #d32f2f !important; padding: 18px !important; border-radius: 8px !important; margin: 20px 0 !important; }
-    .disclaimer-title { color: #ff5252 !important; font-weight: bold !important; font-size: 16px !important; margin-bottom: 6px !important; }
-    .disclaimer-text { color: #e0e0e0 !important; font-size: 13.5px !important; line-height: 1.6 !important; margin: 0 !important; }
+    .disclaimer-box { background-color: #2b1d1d !important; border-left: 4px solid #d32f2f !important; padding: 12px !important; border-radius: 8px !important; margin: 15px 0 !important; }
+    .disclaimer-title { color: #ff5252 !important; font-weight: bold !important; font-size: 14px !important; margin-bottom: 4px !important; }
+    .disclaimer-text { color: #e0e0e0 !important; font-size: 12px !important; line-height: 1.5 !important; margin: 0 !important; }
     
-    .success-card { background-color: #1c2e24 !important; border: 1px solid #2e7d32 !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; }
-    .warning-card { background-color: #2e2719 !important; border: 1px solid #f9a825 !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; }
-    .danger-card { background-color: #2c1c1c !important; border: 1px solid #c62828 !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; }
+    .success-card { background-color: #1c2e24 !important; border: 1px solid #2e7d32 !important; padding: 15px !important; border-radius: 10px !important; text-align: center !important; }
+    .warning-card { background-color: #2e2719 !important; border: 1px solid #f9a825 !important; padding: 15px !important; border-radius: 10px !important; text-align: center !important; }
+    .danger-card { background-color: #2c1c1c !important; border: 1px solid #c62828 !important; padding: 15px !important; border-radius: 10px !important; text-align: center !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -2470,9 +2474,9 @@ def process_radius_expansion_routing(
 # ====================================================================
 def main():
     st.markdown("""
-    <div class="header-box">
-        <h1>🚕 EASY AUTO TAXI</h1>
-        <p>FAST • SECURE • RELIABLE</p>
+    <div class="header-box" style="padding: 15px !important; margin-bottom: 15px !important;">
+        <h1 style="font-size: 1.8rem !important; margin: 0 !important; color: #ffcc00 !important;">🚕 EASY AUTO TAXI</h1>
+        <p style="font-size: 11px !important; margin-top: 3px !important; color: #b3b3b3 !important;">FAST • SECURE • RELIABLE</p>
     </div>
     """, unsafe_allow_html=True)
 
