@@ -3055,44 +3055,52 @@ with col1:
 with col2:
     footer_check_btn = st.button("സ്റ്റാറ്റസ് നോക്കൂ", key="independent_footer_btn", use_container_width=True)
 
-if footer_check_btn:
-    if footer_trip_id:
-        with st.spinner("വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
-            trip_data = get_trip_from_database(footer_trip_id.strip()) if 'get_trip_from_database' in globals() else None
+    if footer_check_btn:
+        if footer_trip_id:
+            with st.spinner("🔍 ട്രിപ്പ് വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
+                try:
             
-            if trip_data:
-                current_status = trip_data.get('status', 'Pending')
-                st.success(f"✅ ട്രിപ്പ് വിജയകരമായി കണ്ടെത്തി!")
-                st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup')} \n\n 🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop')}")
-                st.markdown(f"🟢 **നിലവിലെ അവസ്ഥ (Status):** `{current_status}`")
+                    # 🆕 ഫയർബേസിൽ നിന്ന് നേരിട്ട് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുന്നു
+                    trip_ref = db.reference(f"trips/{footer_trip_id.strip()}")
+                    trip_data = trip_ref.get()
+                    if trip_data:
+                        st.success(f"✅ ട്രിപ്പ് വിവരങ്ങൾ വിജയകരമായി കണ്ടെത്തി!")
+                        st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}")
+                        st.markdown(f"📊 **നിലവിലെ സ്റ്റാറ്റസ്:** {trip_data.get('status', 'Pending')}")
+                    else:
+                        st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
+                except Exception as e:
+                    st.error(f"❌ എറർ: {e}")
+        else:
+            st.warning("⚠️ ദയവായി ഒരു ട്രിപ്പ് ഐഡി നൽകുക.")
+               
+            if current_status == "Arrived":
+                st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")
+# ==========================================================
+# 🔔 REAL-TIME NOTIFICATION LISTENER
+# ==========================================================
+                current_trip_id = footer_trip_id
                 
-                if current_status == "Arrived":
-                    st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")
-                    # ==========================================================
-                    # 🔔 REAL-TIME NOTIFICATION LISTENER (ഇവിടെയാണ് ചേർക്കേണ്ടത്)
-                    # ==========================================================
-                    current_trip_id = footer_trip_id
+                if current_trip_id:
+                    trip_ref = db.reference(f"trips/{current_trip_id}")
+                    notification_placeholder = st.empty()
                     
-                    if current_trip_id:
-                        trip_ref = db.reference(f"trips/{current_trip_id}")
-                        notification_placeholder = st.empty()
-                        
-                        def notification_listener(event):
-                            if event.data and isinstance(event.data, dict):
-                                if event.data.get("notification") == "arrived_sound":
-                                    sound_html = """
-                                    <audio autoplay>
-                                        <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
-                                    </audio>
-                                    """
-                                    components.html(sound_html, height=0)
-                                    
-                                    notification_placeholder.success(
-                                        "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
-                                    )
-                                    trip_ref.update({"notification": "played"})
-                        trip_ref.listen(notification_listener)
-                else:       
+                    def notification_listener(event):
+                        if event.data and isinstance(event.data, dict):
+                            if event.data.get("notification") == "arrived_sound":
+                                sound_html = """
+                                <audio autoplay>
+                                    <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
+                                </audio>
+                                """
+                                components.html(sound_html, height=0)
+                                
+                                notification_placeholder.success(
+                                    "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
+                                )
+                                trip_ref.update({"notification": "played"})
+                    trip_ref.listen(notification_listener)
+                else:
                     st.error("❌ ഈ ട്രിപ്പ് 'Arrived' അവസ്ഥയിൽ അല്ല.")
             else:
                 st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
