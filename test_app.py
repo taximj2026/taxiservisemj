@@ -268,7 +268,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
         # ============================================================
         # ✅ 5. Vehicle Header
         # ============================================================
-        if vehicle_type == "Auto Rickshaw":
+        if "Auto" in vehicle_type or "auto" in vehicle_type.lower() or "ഓട്ടോ" in vehicle_type:
             st.markdown("### 🛺 ഓട്ടോറിക്ഷ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
             vehicle_icon = folium.Icon(color="orange", icon="motorcycle", prefix="fa")
         else:
@@ -669,11 +669,38 @@ if not firebase_admin._apps:
     creds_dict = dict(st.secrets["firebase_service_account"])
     cred = credentials.Certificate(creds_dict)
     firebase_admin.initialize_app(cred, {
-	    'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     
     })
 
 registration_data = {}
+def auto_cancel_trip(trip_id, delay_seconds=1800):
+    """30 മിനിറ്റിന് ശേഷം ട്രിപ്പ് ഓട്ടോമാറ്റിക് ആയി ക്യാൻസൽ ചെയ്യുക"""
+    def cancel_task():
+        time.sleep(delay_seconds)  # 30 മിനിറ്റ് (1800 സെക്കൻഡ്) കാത്തിരിക്കുക
+        try:
+            ref = db.reference(f"trips/{trip_id}")
+            trip_data = ref.get()
+            
+            if trip_data:
+                current_status = trip_data.get("status", "Pending")
+                # ട്രിപ്പ് ഇപ്പോഴും Pending/Available ആണെങ്കിൽ മാത്രം ക്യാൻസൽ ചെയ്യുക
+                if current_status in ["Pending", "Available", "Unassigned"]:
+                    ref.update({
+                        "status": "Cancelled",
+                        "cancel_reason": "No driver accepted within 30 minutes",
+                        "cancelled_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                    print(f"⏰ Trip {trip_id} auto-cancelled after 30 minutes")
+                else:
+                    print(f"✅ Trip {trip_id} already {current_status} - no need to cancel")
+        except Exception as e:
+            print(f"❌ Auto-cancel error for {trip_id}: {e}")
+    
+    # Background thread-ൽ റൺ ചെയ്യുക
+    thread = threading.Thread(target=cancel_task, daemon=True)
+    thread.start()
+
 
 def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, distance=0.0, pickup_link=""):
     """
@@ -700,6 +727,11 @@ def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, dista
         
         trip_ref = db.reference(f"trips/{booking_id}")
         trip_ref.set(trip_data)
+        # 🆕 30 മിനിറ്റിന് ശേഷം auto-cancel scheduler ആരംഭിക്കുക
+        auto_cancel_trip(booking_id, delay_seconds=1800)
+        
+        
+
         print(f"✅ Trip {booking_id} saved with distance {distance} km successfully.")
         return True
     except Exception as e:
@@ -716,7 +748,8 @@ def send_trip_to_driver(
     pickup,
     drop,
     distance="N/A",
-    location_link="Not Available"
+    location_link="Not Available",
+    commission="N/A"  # <--- ഇവിടെ കമ്മീഷൻ പാരാമീറ്റർ ചേർക്കാം
 ):
     raw_phone = str(customer_phone or '')
     if len(raw_phone) >= 6:
@@ -735,6 +768,7 @@ def send_trip_to_driver(
 📍 Pickup: {pickup}
 🏁 Drop: {drop}
 📏 ദൂരം (Distance): {safe_distance} km
+💰 Commission: {commission}
 📍 GPS Live Location:
 {safe_location}
 
@@ -1316,18 +1350,57 @@ gc_client = None
 
 # ടെലിഗ്രാം ബോട്ട് ടോക്കൺ ഇവിടെ സെറ്റ് ചെയ്യുക
 TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
-bot = None
+# 🆕 FIX: bot ഒബ്ജക്റ്റ് ഒരിക്കൽ മാത്രം സൃഷ്ടിക്കാൻ @st.cache_resource ചേർക്കുന്നു
+@st.cache_resource
+def get_telegram_bot():
+    token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
+    if token and "YOUR_BOT_TOKEN" not in token:
+        try:
+            _bot = telebot.TeleBot(token)
+            print("✅ Telegram Bot Connected")
+            return _bot
+        except Exception as e:
+            print(f"❌ Telegram Bot Error: {e}")
+            return None
+    return None
 
-# ലോഗിങ്ങിനായി bg_log ഫങ്ഷൻ ഇവിടെ നൽകുക
-def bg_log(text):
-    print(text)
-
-if TELEGRAM_BOT_TOKEN and "YOUR_BOT_TOKEN" not in TELEGRAM_BOT_TOKEN:
+bot = get_telegram_bot()
+# ============================================================
+# 🤖 MODULE 20: DRIVER TRIP HISTORY (LAST 20 TRIPS)
+# ============================================================
+@bot.message_handler(commands=['history'])
+def handle_driver_history(message):
+    chat_id = str(message.chat.id)
     try:
-        bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
-        print("✅ Telegram Bot Connected")
+        ref = db.reference("trips")
+        all_trips = ref.get()
+
+        if not all_trips:
+            bot.reply_to(message, "നിങ്ങളുടെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+            return
+
+        user_trips = []
+        for booking_id, trip in all_trips.items():
+            if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
+                trip["trip_id"] = booking_id  # 🆕 FIX: ട്രിപ്പ് ഐഡി ഡിക്ഷണറിയിൽ ചേർക്കുന്നു
+                user_trips.append(trip)
+
+        if user_trips:
+            last_20_trips = user_trips[-20:]
+            reply = "🚖 നിങ്ങളുടെ അവസാനത്തെ ട്രിപ്പുകൾ:\n\n"
+            for t in last_20_trips:
+                t_id = t.get("trip_id", "N/A")  # 🆕 ട്രിപ്പ് ഐഡി
+                t_date = t.get("booking_time", "N/A").split(" ")[0]  # 🆕 ശരിയായ തിയതി
+                t_pickup = t.get("pickup", "N/A")  # 🆕 പിക്കപ്പ്
+                t_drop = t.get("drop", "N/A")
+                reply += f"🆔 {t_id}\n📅 {t_date}\n📍 {t_pickup} ➔ {t_drop}\n\n"
+            
+            bot.reply_to(message, reply, parse_mode="Markdown")
+        else:
+            bot.reply_to(message, "ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+
     except Exception as e:
-        print(f"❌ Telegram Bot Error: {e}")
+        bot.reply_to(message, f"❌ എറർ: {str(e)}")
 
 flask_app = Flask(__name__)
 
@@ -1356,6 +1429,19 @@ def handle_driver_start(message):
         reply_markup=markup,
         parse_mode="Markdown"
     )
+    # 🆕 FIX: ഇവിടെ നിന്ന് തുടങ്ങുന്നു (1396-ാം വരി)
+    try:
+        bot.send_message(
+            chat_id,
+            f"✅ *രജിസ്ട്രേഷൻ വിജയകരമായി പൂർത്തിയായി!*\n\n"
+            f"🆔 *നിങ്ങളുടെ ചാറ്റ് ഐഡി:* `{chat_id}`\n\n"
+            f"📌 ഈ ഐഡി സൂക്ഷിച്ചുവെക്കുക. ഭാവിയിൽ ട്രിപ്പ് വിവരങ്ങൾ അറിയാൻ ഇത് ഉപയോഗിക്കാം.",
+            parse_mode="Markdown"
+        )    
+        print(f"✅ Chat ID {chat_id} sent back to driver")
+    except Exception as e:
+        print(f"❌ Error sending chat ID: {e}")
+    
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_registration")
 def ask_contact_number(call):
@@ -1480,7 +1566,8 @@ def save_data_to_firebase_final(call):
             "vehicle_number": data["vehicle_number"],
             "telegram_username": f"@{username}",
             "status": "ONLINE",
-            "area": "Manjeri"
+            "area": "Manjeri",
+            "wallet_balance": 0.0,  # 🆕 ഈ വരി ഇവിടെ ചേർക്കുക
         }
         
         try:
@@ -1499,40 +1586,7 @@ def save_data_to_firebase_final(call):
         except Exception as e:
             bot.send_message(chat_id=chat_id, text=f"❌ രജിസ്ട്രേഷനിൽ തടസ്സം നേരിട്ടു: {e}")
 
-# ============================================================
-# 🤖 MODULE 20: DRIVER TRIP HISTORY (LAST 20 TRIPS)
-# ============================================================
-@bot.message_handler(commands=['history'])
-def handle_driver_history(message):
-    chat_id = str(message.chat.id)
-    try:
-        ref = db.reference("trips")
-        all_trips = ref.get()
-        
-        if not all_trips:
-            bot.reply_to(message, "നിലവിൽ ട്രിപ്പുകൾ ഒന്നുമില്ല.")
-            return
-            
-        user_trips = []
-        for booking_id, trip in all_trips.items():
-            if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
-                user_trips.append(trip)
-        
-        if user_trips:
-            last_20_trips = user_trips[-20:]
-            
-            reply = "🚖 *നിങ്ങളുടെ അവസാനത്തെ ട്രിപ്പുകൾ:*\n\n"
-            for t in last_20_trips:
-                t_date = t.get("timestamp", "N/A")
-                t_drop = t.get("drop", "N/A")
-                reply += f"📅 {t_date} | ഡ്രോപ്പ്: {t_drop}\n"
-            
-            bot.reply_to(message, reply, parse_mode="Markdown")
-        else:
-            bot.reply_to(message, "നിലവിൽ ട്രിപ്പുകൾ ഒന്നുമില്ല.")
-            
-    except Exception as e:
-        bot.reply_to(message, f"❌ പിശക് സംഭവിച്ചു: {str(e)}")
+
 
 
 # ============================================================
@@ -1735,8 +1789,26 @@ def get_real_road_distance(pickup_place, drop_place):
 # 💰 MASTER COMMISSION LOGIC
 # ============================================================
 def calculate_admin_commission(km):
-    if not ENABLE_COMMISSION: return 0.0
-    return round(0.50 + (math.ceil(km - 1.5) * 0.33) if km > 1.5 else 0.50, 2)
+    """ദൂരത്തിന്റെ അടിസ്ഥാനത്തിൽ അഡ്മിൻ കമ്മീഷൻ കണക്കാക്കുക"""
+    if not ENABLE_COMMISSION:
+        return 0.0
+    
+    if km <= 1.5:
+        commission = 0.50  # ആദ്യ 1.5 കി.മീ-ന് ₹0.50
+    else:
+        # 1.5 കി.മീ കഴിഞ്ഞുള്ള അധിക ദൂരം
+        extra_distance = km - 1.5
+        
+        # അതിനെ അടുത്ത പൂർണ്ണ കി.മീയിലേക്ക് റൗണ്ട് ചെയ്യുക (ഉദാ: 0.1 → 1, 1.5 → 2)
+        rounded_extra = math.ceil(extra_distance)
+        
+        # ഓരോ അധിക കി.മീ-നും ₹22.50 വെച്ച് കണക്കാക്കുക
+        extra_fare = rounded_extra * 22.50
+        
+        # അതിന്റെ 1.5% കമ്മീഷൻ കണക്കാക്കുക
+        commission = 0.50 + (extra_fare * 0.015)
+    
+    return round(commission, 2)
 
 # ============================================================
 # 📍 AREA ROUTING MAP
@@ -2056,6 +2128,8 @@ def send_individual_trip_link(
     Format: Clean, privacy-focused, mobile-friendly.
     Includes: Booking Date + Time
     """
+    # 🆕 FIX: commission_amount ഇവിടെ ഡിഫൈൻ ചെയ്യുന്നു
+    commission_amount = trip_details.get("commission_amount", 0)
     try:
         if not bot or not driver.get("chat_id"):
             return
@@ -2178,6 +2252,7 @@ def send_individual_trip_link(
             f"📞 {masked_phone}\n"
             f"📍 പിക്കപ്പ്: {pickup}\n"
             f"🏁 ഡ്രോപ്പ്: {drop}\n"
+            f"💰 കമ്മീഷൻ: ₹{commission_amount}\n"
             f"📏 ദൂരം: {trip_distance} km\n"
             f"{gps_line}\n\n"
             f"{warning_text}"
@@ -2495,6 +2570,8 @@ def main():
         st.session_state.lon = None
     if 'gps_link' not in st.session_state:
         st.session_state.gps_link = "Not Available"
+    if 'gps_enabled' not in st.session_state:      # <--- ഈ വരി ഇവിടെ ചേർക്കുക
+        st.session_state.gps_enabled = False       # <--- ഇതും
 
     # 🎯 ജിപിഎസ് ഐക്കണും സ്റ്റാറ്റസ് മെസ്സേജും ഒരേ വരിയിൽ കൊണ്ടുവരാൻ കോളം ഉപയോഗിക്കുന്നു
     col_icon, col_status = st.columns([1, 5])
@@ -2602,6 +2679,25 @@ def main():
     if submitted:
         st.session_state.is_booking = True
 
+        # 🆕 1. GPS എനേബിൾ ചെയ്തിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക
+        # lat, lon ഉണ്ടെങ്കിൽ gps_enabled = True ആക്കുക (ഇത് പ്രധാനം)
+        if st.session_state.lat and st.session_state.lon:
+            st.session_state.gps_enabled = True
+        if not st.session_state.gps_enabled:
+            st.markdown("""
+            <div style="background-color: #ffebee; border-left: 5px solid #d32f2f; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;">
+                <b style="color: #c62828;">📍 GPS ലൊക്കേഷൻ ലഭ്യമല്ല!</b><br>
+                <span style="color: #333; font-size: 12px;">
+                ബുക്കിംഗ് പൂർത്തിയാക്കാൻ ദയവായി നിങ്ങളുടെ ലൊക്കേഷൻ ഓൺ ചെയ്യുക. 
+                ബ്രൗസർ സെറ്റിംഗ്സിൽ നിന്ന് "Location Permission" നൽകുക.
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+            st.toast("⚠️ GPS ഓൺ ചെയ്യാതെ ബുക്കിംഗ് സാധ്യമല്ല!", icon="❌")
+            st.session_state.is_booking = False
+            st.stop()            
+
+        
         # Validation checks
         if not (c_name and c_phone and pickup_place and drop_place):
             st.warning("⚠️ ദയവായി എല്ലാ വിവരങ്ങളും നൽകുക!")
@@ -2701,6 +2797,7 @@ def main():
         എന്തെങ്കിലും കാരണവശാൽ ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയാൽ, വീണ്ടും ആപ്പ് ഓപ്പൺ ചെയ്യുമ്പോൾ മുകളിൽ നൽകിയിരിക്കുന്ന ട്രിപ്പ് ഐഡി നൽകി ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കാവുന്നതാണ്.
     </p>
 </div>"""
+                    
                     st.markdown(card_html, unsafe_allow_html=True)
 
                     # ----------------------------------------------------
@@ -2778,7 +2875,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-	
+    
 
 
 
@@ -2891,13 +2988,17 @@ if str_lit.session_state.get('show_driver_panel', False):
                 for booking_id, trip in all_trips.items():
                     if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
                         result_data.append({
-                            "booking_time": trip.get("booking_time", "N/A"),
-                            "pickup": trip.get("pickup", "N/A"),
-                            "drop": trip.get("drop", "N/A"),
-                            "total_fare": trip.get("total_fare", "N/A")
+                            "Trip ID": booking_id,  # ഇതാണ് ട്രിപ്പ് ഐഡി
+                            "Date": trip.get("booking_time", "N/A").split(" ")[0],  # തിയതി മാത്രം എടുക്കാൻ
+                            "Pickup": trip.get("pickup", "N/A"),
+                            "Drop": trip.get("drop", "N/A"),
+                            "Distance": f"{trip.get('calculated_distance', 'N/A')} km",
+                            "Fare": trip.get("total_fare", "N/A"),
+                            "Commission": trip.get("commission_amount", "N/A")
                         })
                 return result_data
             except Exception as e:
+                print(f"❌ Error fetching history: {e}")
                 return []
 
         # ഫങ്ഷൻ കോൾ ചെയ്ത് ഡാറ്റ എടുക്കുന്നു
