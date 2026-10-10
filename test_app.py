@@ -2595,25 +2595,8 @@ def driver_trip_panel_page():
     </div>
     """, unsafe_allow_html=True)
     
-    # ============================================================
-    # ✅ 2. നാവിഗേഷൻ ബട്ടൺ & നിർദ്ദേശം (Arrived ആകുന്നത് വരെ മാത്രം)
-    # ============================================================
-    if status != "Arrived":
-        if pickup_lat and pickup_lon:
-            nav_url = f"https://www.google.com/maps/dir/?api=1&destination={pickup_lat},{pickup_lon}"
-            st.link_button("🗺️ കസ്റ്റമറുടെ അടുത്തേക്ക് പോകുക (Navigation)", nav_url, use_container_width=True)
-        
-        # 🆕 നാവിഗേഷൻ നിർദ്ദേശം
-        st.info("""
-        📌 **ശ്രദ്ധിക്കുക:**
-        • നാവിഗേഷൻ ബട്ടൺ അമർത്തിയാൽ, Google Maps തുറക്കും.
-        • കസ്റ്റമറുടെ ലൊക്കേഷനിൽ എത്തിക്കഴിഞ്ഞാൽ, ഫോണിന്റെ **Back Button** അമർത്തി ഈ പേജിലേക്ക് തിരികെ വരിക.
-        • ശേഷം, താഴെയുള്ള **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തുക.
-        • കസ്റ്റമറെ കണ്ടെത്താനായില്ലെങ്കിൽ, **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തിയതിന് ശേഷം, കസ്റ്റമറെ വിളിക്കാനുള്ള ബട്ടൺ ലഭിക്കും.
-        """)
-    
-    # ============================================================
-    # ✅ 3. ലൈവ് ലൊക്കേഷൻ ഷെയർ (Arrived ആകുന്നത് വരെ മാത്രം)
+        # ============================================================
+    # ✅ 2. ലൈവ് ലൊക്കേഷൻ ഷെയർ (Arrived ആകുന്നത് വരെ മാത്രം)
     # ============================================================
     if status != "Arrived":
         st.markdown("### 📍 ലൈവ് ലൊക്കേഷൻ ഷെയർ ചെയ്യുക")
@@ -2639,9 +2622,25 @@ def driver_trip_panel_page():
                 st.error(f"❌ എറർ: {e}")
         
         update_location()
-    
+
     # ============================================================
-    # ✅ 4. "ഞാൻ എത്തി" (Arrived) ബട്ടൺ (അവസാനം)
+    # ✅ 3. നാവിഗേഷൻ ബട്ടൺ & നിർദ്ദേശം (Arrived ആകുന്നത് വരെ മാത്രം)
+    # ============================================================
+    if status != "Arrived":
+        if pickup_lat and pickup_lon:
+            nav_url = f"https://www.google.com/maps/dir/?api=1&destination={pickup_lat},{pickup_lon}"
+            st.link_button("🗺️ കസ്റ്റമറുടെ അടുത്തേക്ക് പോകുക (Navigation)", nav_url, use_container_width=True)
+            
+            # 🆕 നാവിഗേഷൻ നിർദ്ദേശം
+            st.info("""
+            📌 **ശ്രദ്ധിക്കുക:**
+            • നാവിഗേഷൻ ബട്ടൺ അമർത്തിയാൽ, Google Maps തുറക്കും.
+            • കസ്റ്റമറുടെ ലൊക്കേഷനിൽ എത്തിക്കഴിഞ്ഞാൽ, ഫോണിന്റെ **Back Button** അമർത്തി ഈ പേജിലേക്ക് തിരികെ വരിക.
+            • ശേഷം, താഴെയുള്ള **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തുക.
+            """)
+
+    # ============================================================
+    # ✅ 4. "ഞാൻ എത്തി" (Arrived) ബട്ടൺ
     # ============================================================
     if status != "Arrived":
         st.markdown("### 🚖 എത്തിയോ?")
@@ -2653,13 +2652,15 @@ def driver_trip_panel_page():
             st.success("✅ കസ്റ്റമറിനെ അറിയിച്ചിട്ടുണ്ട്!")
             st.balloons()
             st.rerun()
-    
+
     # ============================================================
     # ✅ 5. കസ്റ്റമറുടെ ഫോൺ നമ്പർ (Arrived ആയതിന് ശേഷം മാത്രം)
     # ============================================================
     if status == "Arrived":
         st.success("✅ നിങ്ങൾ കസ്റ്റമറുടെ അടുത്ത് എത്തിയിട്ടുണ്ട്.")
         st.markdown("### 📞 കസ്റ്റമറുമായി ബന്ധപ്പെടുക")
+        
+        customer_phone = trip_data.get("customer_phone", "")
         
         if customer_phone:
             # 🆕 നിയമപരമായ സുരക്ഷാ മുന്നറിയിപ്പ്
@@ -2690,6 +2691,30 @@ def driver_trip_panel_page():
             st.info("🔒 സുരക്ഷയ്ക്കായി കസ്റ്റമറുടെ ഫോൺ നമ്പർ മറച്ചുവെച്ചിരിക്കുന്നു.")
         else:
             st.warning("⚠️ ഫോൺ നമ്പർ ലഭ്യമല്ല.")
+            
+# ==========================================================
+# 🔔 REAL-TIME NOTIFICATION LISTENER
+# ==========================================================
+        current_trip_id = trip_id
+        if current_trip_id:
+            trip_ref = db.reference(f"trips/{current_trip_id}")
+            notification_placeholder = st.empty()
+            
+            def notification_listener(event):
+                if event.data and isinstance(event.data, dict):
+                    if event.data.get("notification") == "arrived_sound":
+                        sound_html = """
+                        <audio autoplay>
+                            <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
+                        </audio>
+                        """
+                        components.html(sound_html, height=0)
+                        
+                        notification_placeholder.success(
+                            "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
+                        )
+                        trip_ref.update({"notification": "played"})
+            trip_ref.listen(notification_listener)            
             
 # ====================================================================
 # 🖥️ STREAMLIT UI - CUSTOMER BOOKING INTERFACE (CLEANED & FIXED)
@@ -2858,6 +2883,7 @@ def main():
 
         if pickup_place == drop_place:
             st.warning("⚠️ Pickup, Drop ഒരേ സ്ഥലം ആകരുത്.")
+            st.warning("⚠️ ദയവായി വ്യത്യസ്തമായ സ്ഥലങ്ങൾ തിരഞ്ഞെടുക്കുക.")
             st.session_state.is_booking = False
             st.stop()
 
@@ -2872,9 +2898,9 @@ def main():
         # Distance & Fare Calculation
         with st.spinner("🔍 ദൂരം കണക്കാക്കുന്നു..."):
             exact_distance = get_real_road_distance(pickup_place, drop_place) if 'get_real_road_distance' in globals() else 5.0
-
+        # സ്ഥലം കണ്ടെത്താനായില്ലെങ്കിൽ
         if exact_distance is None:
-            st.error("❌ Pickup അല്ലെങ്കിൽ Drop location കണ്ടെത്താനായില്ല.")
+            st.toast("📍 നിങ്ങൾ തിരഞ്ഞെടുത്ത ലൊക്കേഷൻ കണ്ടെത്താനായില്ല! ദയവായി സമീപത്തുള്ള മറ്റൊരു സ്ഥലം തിരഞ്ഞെടുക്കുക.", icon="❌")
             st.session_state.is_booking = False
             st.stop()
 
@@ -3012,252 +3038,199 @@ def main():
 
         st.session_state.is_booking = False
         st.write("---")
+    # ========================================================
+    # വെബ്‌സൈറ്റ് ഫൂട്ടറും ഡ്രൈവർ & SOS പാനലുകളും (മുഴുവൻ ഫീച്ചറുകളും ഉള്ളത്)
+    # ========================================================
 
-        # ============================================================
-        # 🚨 SOS & Contact Section
-        # ============================================================
-        col_sos, col_contact = st.columns([1, 1])
-        with col_sos:
-            with st.expander("🚨 SOS"):
-                st.link_button("👮 പോലീസ് (100)", "tel:100")
-                st.link_button("👨‍👩‍👧‍👦 ബന്ധുക്കൾക്ക്", "https://wa.me/?text=⚠️ അടിയന്തര സഹായം ആവശ്യമാണ്! മഞ്ചേരി.")
-        with col_contact:
-            st.link_button("💬 Contact Us", "https://wa.me/919376543210")
+    # ഫൂട്ടറിന് ബോക്സും ബോർഡറും നൽകാനുള്ള CSS സ്റ്റൈൽ    
+    str_lit.markdown("""
+    <style>
+    .footer-box {
+        border: 2px solid #ffcc00;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #1e1e1e;
+        margin-top: 20px;
+    }    
+    </style>
+    """, unsafe_allow_html=True)
+    # ഫൂട്ടർ സെപ്പറേറ്റർ
+    str_lit.markdown("---")
+
+    # മൂന്ന് കോളങ്ങളിലായി മൂന്ന് പ്രധാന ബട്ടണുകൾ
+    footer_col1, footer_col2, footer_col3 = str_lit.columns(3)
+    # 1. Contact Us ബട്ടൺ
+    with footer_col1:
+        if str_lit.button("📞 Contact Us"):
+            str_lit.info("സഹായത്തിന് വിളിക്കുക: +91 XXXXXXXXXX | Email: support@example.com")
+    # 2. SOS / Emergency ബട്ടൺ
+    with footer_col2:
+        if str_lit.button("🚨 SOS / Emergency"):
+            str_lit.session_state['show_sos_panel'] = True
+            str_lit.session_state['show_driver_panel'] = False  # ഡ്രൈവർ പാനൽ ക്ലോസ് ചെയ്യാൻ
+    # 3. Driver Panel ബട്ടൺ
+    with footer_col3:
+        if str_lit.button("🚗 Driver Panel"):
+            str_lit.session_state['show_driver_panel'] = True
+            str_lit.session_state['show_sos_panel'] = False  # SOS പാനൽ ക്ലോസ് ചെയ്യാൻ   
+    # --------------------------------------------------------
+    # SOS പാനൽ (ഡയറക്ട് കോൾ ലിങ്കുകളും വാട്സാപ്പ് ഷെയറും)
+    # --------------------------------------------------------        
+    if str_lit.session_state.get('show_sos_panel', False):
+        str_lit.markdown("---")
+        str_lit.error("🚨 അടിയന്തര സഹായ വിഭാഗം (Emergency Control Rooms)") 
+        # നമ്പറുകളിൽ അമർത്തിയാൽ നേരിട്ട് കോൾ പോകുന്ന ലിങ്കുകൾ (tel: link)
+        str_lit.markdown("""
+        * **👮 പോലീസ് കൺട്രോൾ റൂം (112 / 100):** &nbsp; [📞 112 കോൾ ചെയ്യുക](tel:112)
+        * **🔥 ഫയർഫോഴ്സ് (101):** &nbsp; [📞 101 കോൾ ചെയ്യുക](tel:101)
+        * **🏥 ഹോസ്പിറ്റൽ / ആംബുലൻസ് (108):** &nbsp; [📞 108 കോൾ ചെയ്യുക](tel:108)
+        """, unsafe_allow_html=True)
+    
+        str_lit.markdown("---")
+        str_lit.subheader("📱 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കാൻ")
+    
+        sos_message = "എനിക്ക് അടിയന്തര സഹായം ആവശ്യമാണ്! ദയവായി ഉടൻ ബന്ധപ്പെടുക. (ഡ്രൈവർ/യാത്രക്കാരൻ)"
+        whatsapp_share_url = f"https://api.whatsapp.com/send?text={urllib.parse.quote(sos_message)}"
+    
+        str_lit.markdown(f"""
+        <a href="{whatsapp_share_url}" target="_blank">
+            <button style="background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
+                💬 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കുക
+            </button>
+        </a>
+        """, unsafe_allow_html=True)
+    
+        str_lit.markdown("<br>", unsafe_allow_html=True)
+    
+        if str_lit.button("SOS പാനൽ അടയ്ക്കുക"):
+            str_lit.session_state['show_sos_panel'] = False
+            str_lit.rerun() 
+# ============================================================
+# 📊 ഡ്രൈവർ ഹിസ്റ്ററി ഫയർബേസിൽ നിന്ന് എടുക്കുന്ന ഫംഗ്ഷൻ
+# ============================================================
+    def fetch_driver_history_from_firebase(chat_id):
+        try:
+            ref = db.reference("trips")
+            all_trips = ref.get()
+            
+            if not all_trips:
+                return []
+            
+            result_data = []
+            for booking_id, trip in all_trips.items():
+                if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
+                    result_data.append({
+                        "Trip ID": booking_id,
+                        "Date": trip.get("booking_time", "N/A").split(" ")[0],
+                        "Pickup": trip.get("pickup", "N/A"),
+                        "Drop": trip.get("drop", "N/A"),
+                        "Distance": f"{trip.get('calculated_distance', 'N/A')} km",
+                        "Fare": trip.get("total_fare", "N/A"),
+                        "Commission": trip.get("commission_amount", "N/A")
+                    })
+            return result_data
+        except Exception as e:
+            print(f"❌ Error fetching history: {e}")
+            return []
 
 
+# ============================================================
+# 🚗 ഡ്രൈവർ പാനൽ - ഫയർബേസ് ഡാറ്റ കണക്ഷൻ
+# ============================================================
+    if str_lit.session_state.get('show_driver_panel', False):
+        str_lit.markdown("---")
+        str_lit.subheader("🚗 ഡ്രൈവർ പാനൽ - ചാറ്റ് & ട്രിപ്പ് ഹിസ്റ്ററി")
+        
+        driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ടെലഗ്രാം ചാറ്റ് ഐഡി (Telegram Chat ID) നൽകുക:", key="driver_id_input_main")
+        
+        # മൊബൈൽ ഉപയോക്താക്കൾക്ക് വേണ്ടി സെർച്ച് ബട്ടൺ
+        search_clicked = str_lit.button("🔍 ഹിസ്റ്ററി പരിശോധിക്കുക (Search)")
+        
+        # ചാറ്റ് ഐഡി നൽകി സെർച്ച് അമർത്തുമ്പോൾ മാത്രം ഹിസ്റ്ററി ലോഡ് ആകും
+        if driver_telegram_id and search_clicked:
+            str_lit.info(f"ചാറ്റ് ഐഡി ({driver_telegram_id}) പരിശോധിക്കുന്നു...")
+            
+            # ഫംഗ്ഷൻ കോൾ ചെയ്ത് ഡാറ്റ എടുക്കുന്നു
+            driver_history_data = fetch_driver_history_from_firebase(driver_telegram_id.strip())
+            
+            if driver_history_data:
+                str_lit.success("✅ ഡ്രൈവർ ഹിസ്റ്ററി വിജയകരമായി ലോഡ് ചെയ്തു!")
+                str_lit.markdown("### 📋 നിങ്ങളുടെ മുൻകാല ട്രിപ്പുകൾ:")
+                str_lit.table(driver_history_data)
+            else:
+                str_lit.warning("⚠️ ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+                
+        if str_lit.button("പാനൽ അടയ്ക്കുക"):
+            str_lit.session_state['show_driver_panel'] = False
+            str_lit.rerun()
+    
+    # ==========================================================
+    # Clean Footer Component: Shadow for Malayalam Text & Styled Button
+    # ==========================================================
+    st.markdown("---")
+
+    # മലയാളം ടെക്സ്റ്റിന് മാത്രം ഷാഡോയും പ്രൊഫഷണൽ ലുക്കും നൽകാനുള്ള CSS ഉം ബട്ടൺ കളർ മാറ്റാനുള്ള സ്റ്റൈലും
+    st.markdown("""
+        <style>
+        .malayalam-title-card { 
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 15px;  
+        } 
+        /* സ്റ്റാറ്റസ് നോക്കൂ ബട്ടൺ കൂടുതൽ ആകർഷകമാക്കാൻ */
+        .stButton > button {
+            background-color: #e67e22;
+            color: white;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+        }
+        .stButton > button:hover {
+            background-color: #d35400;
+            color: white;
+        }
+        </style>
+        <div class="malayalam-title-card">
+            <h3 style="margin:0; color: #2c3e50; font-size: 19px;">🔍 നിങ്ങളുടെ നിലവിലെ ബുക്കിംഗ് സ്റ്റാറ്റസ് അറിയാൻ</h3>
+            <p style="margin: 8px 0 0 0; color: #555555; font-size: 14px;">ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയോ? മുൻപത്തെ ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കുന്നതിനായി ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക.</p>
+        </div>
+    """, unsafe_allow_html=True)    
+    col1, col2 = st.columns([3, 1])
+    with col1: 
+        footer_trip_id = st.text_input("ട്രിപ്പ് ഐഡി നൽകുക:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക (ഉദാ: TRIP-XXXXX)") 
+    with col2:
+        footer_check_btn = st.button("സ്റ്റാറ്റസ് നോക്കൂ", key="independent_footer_btn", use_container_width=True)        
+        if footer_check_btn:    
+            if footer_trip_id: 
+                with st.spinner("🔍 ട്രിപ്പ് വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
+                    try:
+                        
+                        # 🆕 ഫയർബേസിൽ നിന്ന് നേരിട്ട് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുന്നു
+                        trip_ref = db.reference(f"trips/{footer_trip_id.strip()}")
+                        trip_data = trip_ref.get()
+                        if trip_data:
+                            st.success(f"✅ ട്രിപ്പ് വിവരങ്ങൾ വിജയകരമായി കണ്ടെത്തി!")
+                            st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}")
+                            st.markdown(f"📊 **നിലവിലെ സ്റ്റാറ്റസ്:** {trip_data.get('status', 'Pending')}")
+                        else:
+                            st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
+                    except Exception as e:
+                        st.error(f"❌ എറർ: {e}")
+            else:
+                st.warning("⚠️ ദയവായി ഒരു ട്രിപ്പ് ഐഡി നൽകുക.")
+                
+                if current_status == "Arrived":
+                    st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")    
+                
+            
+    
 if __name__ == "__main__":
     main()
     
-
-
-
-
-
-
-
-# ========================================================
-# വെബ്‌സൈറ്റ് ഫൂട്ടറും ഡ്രൈവർ & SOS പാനലുകളും (മുഴുവൻ ഫീച്ചറുകളും ഉള്ളത്)
-# ========================================================
-
-# ഫൂട്ടറിന് ബോക്സും ബോർഡറും നൽകാനുള്ള CSS സ്റ്റൈൽ
-str_lit.markdown("""
-<style>
-.footer-box {
-    border: 2px solid #ffcc00;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #1e1e1e;
-    margin-top: 20px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ഫൂട്ടർ സെപ്പറേറ്റർ
-str_lit.markdown("---")
-
-# മൂന്ന് കോളങ്ങളിലായി മൂന്ന് പ്രധാന ബട്ടണുകൾ
-footer_col1, footer_col2, footer_col3 = str_lit.columns(3)
-
-# 1. Contact Us ബട്ടൺ
-with footer_col1:
-    if str_lit.button("📞 Contact Us"):
-        str_lit.info("സഹായത്തിന് വിളിക്കുക: +91 XXXXXXXXXX | Email: support@example.com")
-
-# 2. SOS / Emergency ബട്ടൺ
-with footer_col2:
-    if str_lit.button("🚨 SOS / Emergency"):
-        str_lit.session_state['show_sos_panel'] = True
-        str_lit.session_state['show_driver_panel'] = False  # ഡ്രൈവർ പാനൽ ക്ലോസ് ചെയ്യാൻ
-
-# 3. Driver Panel ബട്ടൺ
-with footer_col3:
-    if str_lit.button("🚗 Driver Panel"):
-        str_lit.session_state['show_driver_panel'] = True
-        str_lit.session_state['show_sos_panel'] = False  # SOS പാനൽ ക്ലോസ് ചെയ്യാൻ
-
-
-# --------------------------------------------------------
-# SOS പാനൽ (ഡയറക്ട് കോൾ ലിങ്കുകളും വാട്സാപ്പ് ഷെയറും)
-# --------------------------------------------------------
-if str_lit.session_state.get('show_sos_panel', False):
-    str_lit.markdown("---")
-    str_lit.error("🚨 അടിയന്തര സഹായ വിഭാഗം (Emergency Control Rooms)")
     
-    # നമ്പറുകളിൽ അമർത്തിയാൽ നേരിട്ട് കോൾ പോകുന്ന ലിങ്കുകൾ (tel: link)
-    str_lit.markdown("""
-    * **👮 പോലീസ് കൺട്രോൾ റൂം (112 / 100):** &nbsp; [📞 112 കോൾ ചെയ്യുക](tel:112)
-    * **🔥 ഫയർഫോഴ്സ് (101):** &nbsp; [📞 101 കോൾ ചെയ്യുക](tel:101)
-    * **🏥 ഹോസ്പിറ്റൽ / ആംബുലൻസ് (108):** &nbsp; [📞 108 കോൾ ചെയ്യുക](tel:108)
-    """, unsafe_allow_html=True)
-    
-    str_lit.markdown("---")
-    str_lit.subheader("📱 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കാൻ")
-    
-    sos_message = "എനിക്ക് അടിയന്തര സഹായം ആവശ്യമാണ്! ദയവായി ഉടൻ ബന്ധപ്പെടുക. (ഡ്രൈവർ/യാത്രക്കാരൻ)"
-    whatsapp_share_url = f"https://api.whatsapp.com/send?text={urllib.parse.quote(sos_message)}"
-    
-    str_lit.markdown(f"""
-    <a href="{whatsapp_share_url}" target="_blank">
-        <button style="background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
-            💬 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കുക
-        </button>
-    </a>
-    """, unsafe_allow_html=True)
-    
-    str_lit.markdown("<br>", unsafe_allow_html=True)
-    
-    if str_lit.button("SOS പാനൽ അടയ്ക്കുക"):
-        str_lit.session_state['show_sos_panel'] = False
-        str_lit.rerun()
-
-
-# --------------------------------------------------------
-# 🚗 ഡ്രൈവർ പാനൽ - ഫയർബേസ് ഡാറ്റാ കണക്ഷൻ
-# --------------------------------------------------------
-if str_lit.session_state.get('show_driver_panel', False):
-    str_lit.markdown("---")
-    str_lit.subheader("🚗 ഡ്രൈവർ പാനൽ - ചാറ്റ് & ട്രിപ്പ് ഹിസ്റ്ററി")
-    
-    driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ടെലഗ്രാം ചാറ്റ് ഐഡി (Telegram Chat ID) നൽകുക:", key="driver_id_input_main")
-    
-    # മൊബൈൽ ഉപയോക്താക്കൾക്ക് വേണ്ടി സെർച്ച് ബട്ടൺ
-    search_clicked = str_lit.button("🔍 ഹിസ്റ്ററി പരിശോധിക്കുക (Search)")
-    
-    # ചാറ്റ് ഐഡി നൽകി സെർച്ച് അമർത്തുമ്പോൾ മാത്രം ഹിസ്റ്ററി ലോഡ് ആകും
-    if driver_telegram_id and search_clicked:
-        str_lit.info(f"ചാറ്റ് ഐഡി ({driver_telegram_id}) പരിശോധിക്കുന്നു...")
-        
-        # ഫയർബേസിൽ നിന്ന് ആ ഡ്രൈവറുടെ ട്രിപ്പുകൾ മാത്രം എടുക്കുന്ന ഫങ്ഷൻ
-        def fetch_driver_history_from_firebase(chat_id):
-            try:
-                ref = db.reference("trips")
-                all_trips = ref.get()
-                
-                if not all_trips:
-                    return []
-                
-                result_data = []
-                for booking_id, trip in all_trips.items():
-                    if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
-                        result_data.append({
-                            "Trip ID": booking_id,  # ഇതാണ് ട്രിപ്പ് ഐഡി
-                            "Date": trip.get("booking_time", "N/A").split(" ")[0],  # തിയതി മാത്രം എടുക്കാൻ
-                            "Pickup": trip.get("pickup", "N/A"),
-                            "Drop": trip.get("drop", "N/A"),
-                            "Distance": f"{trip.get('calculated_distance', 'N/A')} km",
-                            "Fare": trip.get("total_fare", "N/A"),
-                            "Commission": trip.get("commission_amount", "N/A")
-                        })
-                return result_data
-            except Exception as e:
-                print(f"❌ Error fetching history: {e}")
-                return []
-
-        # ഫങ്ഷൻ കോൾ ചെയ്ത് ഡാറ്റ എടുക്കുന്നു
-        driver_history_data = fetch_driver_history_from_firebase(driver_telegram_id.strip())
-        
-        if driver_history_data:
-            str_lit.success("✅ ഡ്രൈവർ ഹിസ്റ്ററി വിജയകരമായി ലോഡ് ചെയ്തു!")
-            str_lit.markdown("### 📋 നിങ്ങളുടെ മുൻകാല ട്രിപ്പുകൾ:")
-            str_lit.table(driver_history_data)
-        else:
-            str_lit.warning("⚠️ ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
-            
-    if str_lit.button("പാനൽ അടയ്ക്കുക"):
-        str_lit.session_state['show_driver_panel'] = False
-        str_lit.rerun()
-# ==========================================================
-# Clean Footer Component: Shadow for Malayalam Text & Styled Button
-# ==========================================================
-st.markdown("---")
-
-# മലയാളം ടെക്സ്റ്റിന് മാത്രം ഷാഡോയും പ്രൊഫഷണൽ ലുക്കും നൽകാനുള്ള CSS ഉം ബട്ടൺ കളർ മാറ്റാനുള്ള സ്റ്റൈലും
-st.markdown("""
-    <style>
-    .malayalam-title-card {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e0e0e0;
-        margin-bottom: 15px;
-    }
-    /* സ്റ്റാറ്റസ് നോക്കൂ ബട്ടൺ കൂടുതൽ ആകർഷകമാക്കാൻ */
-    .stButton > button {
-        background-color: #e67e22;
-        color: white;
-        border-radius: 8px;
-        border: none;
-        font-weight: bold;
-    }
-    .stButton > button:hover {
-        background-color: #d35400;
-        color: white;
-    }
-    </style>
-    <div class="malayalam-title-card">
-        <h3 style="margin:0; color: #2c3e50; font-size: 19px;">🔍 നിങ്ങളുടെ നിലവിലെ ബുക്കിംഗ് സ്റ്റാറ്റസ് അറിയാൻ</h3>
-        <p style="margin: 8px 0 0 0; color: #555555; font-size: 14px;">ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയോ? മുൻപത്തെ ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കുന്നതിനായി ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക.</p>
-    </div>
-""", unsafe_allow_html=True)
-
-col1, col2 = st.columns([3, 1])
-with col1:
-    footer_trip_id = st.text_input("ട്രിപ്പ് ഐഡി നൽകുക:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക (ഉദാ: TRIP-XXXXX)")
-with col2:
-    footer_check_btn = st.button("സ്റ്റാറ്റസ് നോക്കൂ", key="independent_footer_btn", use_container_width=True)
-
-    if footer_check_btn:
-        if footer_trip_id:
-            with st.spinner("🔍 ട്രിപ്പ് വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
-                try:
-            
-                    # 🆕 ഫയർബേസിൽ നിന്ന് നേരിട്ട് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുന്നു
-                    trip_ref = db.reference(f"trips/{footer_trip_id.strip()}")
-                    trip_data = trip_ref.get()
-                    if trip_data:
-                        st.success(f"✅ ട്രിപ്പ് വിവരങ്ങൾ വിജയകരമായി കണ്ടെത്തി!")
-                        st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}")
-                        st.markdown(f"📊 **നിലവിലെ സ്റ്റാറ്റസ്:** {trip_data.get('status', 'Pending')}")
-                    else:
-                        st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
-                except Exception as e:
-                    st.error(f"❌ എറർ: {e}")
-        else:
-            st.warning("⚠️ ദയവായി ഒരു ട്രിപ്പ് ഐഡി നൽകുക.")
-               
-            if current_status == "Arrived":
-                st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")
-# ==========================================================
-# 🔔 REAL-TIME NOTIFICATION LISTENER
-# ==========================================================
-                current_trip_id = footer_trip_id
-                
-                if current_trip_id:
-                    trip_ref = db.reference(f"trips/{current_trip_id}")
-                    notification_placeholder = st.empty()
-                    
-                    def notification_listener(event):
-                        if event.data and isinstance(event.data, dict):
-                            if event.data.get("notification") == "arrived_sound":
-                                sound_html = """
-                                <audio autoplay>
-                                    <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
-                                </audio>
-                                """
-                                components.html(sound_html, height=0)
-                                
-                                notification_placeholder.success(
-                                    "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
-                                )
-                                trip_ref.update({"notification": "played"})
-                    trip_ref.listen(notification_listener)
-                else:
-                    st.error("❌ ഈ ട്രിപ്പ് 'Arrived' അവസ്ഥയിൽ അല്ല.")
-            else:
-                st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
-    else:
-        st.warning("⚠️ ദയവായി നിങ്ങളുടെ ട്രിപ്പ് ഐഡി നൽകുക.")
         
 # ==========================================================
 # Phone Masking Function (Single version)
@@ -3455,3 +3428,27 @@ def start_bot_polling():
     return True
 
 start_bot_polling()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
