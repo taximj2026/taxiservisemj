@@ -2552,6 +2552,7 @@ def driver_trip_panel_page():
     # URL-ൽ നിന്ന് ട്രിപ്പ് ഐഡി എടുക്കുക
     query_params = st.query_params
     trip_id = query_params.get("trip_id", "")
+    driver_chat_id = query_params.get("driver_chat_id", "")
     
     if not trip_id:
         st.error("❌ ട്രിപ്പ് ഐഡി കണ്ടെത്താനായില്ല.")
@@ -2574,25 +2575,46 @@ def driver_trip_panel_page():
     total_fare = trip_data.get("total_fare", 0)
     status = trip_data.get("status", "Accepted")
     
-    # 1. ട്രിപ്പ് വിവരങ്ങൾ
+    # 🆕 Distance & Commission എടുക്കുക
+    distance = trip_data.get("calculated_distance", "N/A")
+    commission = trip_data.get("commission_amount", "N/A")
+    
+    # ============================================================
+    # ✅ 1. ട്രിപ്പ് വിവരങ്ങൾ (Distance & Commission സഹിതം)
+    # ============================================================
     st.markdown(f"""
     <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid #2c3e50;">
         <h3 style="margin: 0; color: #2c3e50;">🆔 ട്രിപ്പ് ഐഡി: {trip_id}</h3>
         <p style="margin: 5px 0; color: #555;">👤 കസ്റ്റമർ: {customer_name}</p>
         <p style="margin: 5px 0; color: #555;">📍 പിക്കപ്പ്: {pickup}</p>
         <p style="margin: 5px 0; color: #555;">🏁 ഡ്രോപ്പ്: {drop}</p>
+        <p style="margin: 5px 0; color: #555;">📏 ദൂരം: {distance} km</p>
         <p style="margin: 5px 0; color: #555;">💰 വാടക: ₹{total_fare}</p>
+        <p style="margin: 5px 0; color: #555;">💵 കമ്മീഷൻ: ₹{commission}</p>
         <p style="margin: 5px 0; color: #555;">📊 സ്റ്റാറ്റസ്: {status}</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # 2. നാവിഗേഷൻ ബട്ടൺ (Arrived ആകുന്നത് വരെ മാത്രം)
+    # ============================================================
+    # ✅ 2. നാവിഗേഷൻ ബട്ടൺ & നിർദ്ദേശം (Arrived ആകുന്നത് വരെ മാത്രം)
+    # ============================================================
     if status != "Arrived":
         if pickup_lat and pickup_lon:
             nav_url = f"https://www.google.com/maps/dir/?api=1&destination={pickup_lat},{pickup_lon}"
             st.link_button("🗺️ കസ്റ്റമറുടെ അടുത്തേക്ക് പോകുക (Navigation)", nav_url, use_container_width=True)
+        
+        # 🆕 നാവിഗേഷൻ നിർദ്ദേശം
+        st.info("""
+        📌 **ശ്രദ്ധിക്കുക:**
+        • നാവിഗേഷൻ ബട്ടൺ അമർത്തിയാൽ, Google Maps തുറക്കും.
+        • കസ്റ്റമറുടെ ലൊക്കേഷനിൽ എത്തിക്കഴിഞ്ഞാൽ, ഫോണിന്റെ **Back Button** അമർത്തി ഈ പേജിലേക്ക് തിരികെ വരിക.
+        • ശേഷം, താഴെയുള്ള **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തുക.
+        • കസ്റ്റമറെ കണ്ടെത്താനായില്ലെങ്കിൽ, **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തിയതിന് ശേഷം, കസ്റ്റമറെ വിളിക്കാനുള്ള ബട്ടൺ ലഭിക്കും.
+        """)
     
-    # 3. ലൈവ് ലൊക്കേഷൻ ഷെയർ (Arrived ആകുന്നത് വരെ മാത്രം)
+    # ============================================================
+    # ✅ 3. ലൈവ് ലൊക്കേഷൻ ഷെയർ (Arrived ആകുന്നത് വരെ മാത്രം)
+    # ============================================================
     if status != "Arrived":
         st.markdown("### 📍 ലൈവ് ലൊക്കേഷൻ ഷെയർ ചെയ്യുക")
         st.info("🔔 ഈ പേജ് ഓപ്പൺ ആയി വെക്കുക. ട്രിപ്പ് അവസാനിക്കുന്നത് വരെ ലൊക്കേഷൻ സ്വയമേവ അപ്ഡേറ്റ് ആകും.")
@@ -2618,7 +2640,9 @@ def driver_trip_panel_page():
         
         update_location()
     
-    # 4. "ഞാൻ എത്തി" (Arrived) ബട്ടൺ (അവസാനം)
+    # ============================================================
+    # ✅ 4. "ഞാൻ എത്തി" (Arrived) ബട്ടൺ (അവസാനം)
+    # ============================================================
     if status != "Arrived":
         st.markdown("### 🚖 എത്തിയോ?")
         if st.button("🚖 ഞാൻ എത്തി (Arrived)", type="primary", use_container_width=True):
@@ -2630,12 +2654,12 @@ def driver_trip_panel_page():
             st.balloons()
             st.rerun()
     
-    # 5. കസ്റ്റമറുടെ ഫോൺ നമ്പർ (Arrived ആയതിന് ശേഷം മാത്രം)
+    # ============================================================
+    # ✅ 5. കസ്റ്റമറുടെ ഫോൺ നമ്പർ (Arrived ആയതിന് ശേഷം മാത്രം)
+    # ============================================================
     if status == "Arrived":
         st.success("✅ നിങ്ങൾ കസ്റ്റമറുടെ അടുത്ത് എത്തിയിട്ടുണ്ട്.")
         st.markdown("### 📞 കസ്റ്റമറുമായി ബന്ധപ്പെടുക")
-        
-        customer_phone = trip_data.get("customer_phone", "")
         
         if customer_phone:
             # 🆕 നിയമപരമായ സുരക്ഷാ മുന്നറിയിപ്പ്
