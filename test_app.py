@@ -2984,11 +2984,18 @@ def main():
                     st.write("---")
                     trip_ref = db.reference(f"trips/{unique_trip_id}")
                     trip_data = trip_ref.get()
-                    status = trip_data.get("status", "Pending") if trip_data else "Pending"
+                    # 🆕 സ്റ്റാറ്റസ് എടുക്കുമ്പോൾ അധിക സ്പേസുകൾ നീക്കം ചെയ്യുക
+                    if trip_data:
+                        status = str(trip_data.get("status", "Pending")).strip()
+                    else:
+                        status = "Pending" 
                     vehicle_type_check = trip_data.get("vehicle_type", "Auto Rickshaw") if trip_data else "Auto Rickshaw"
+                    # 🆕 ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തതിന് ശേഷം ("Pending" അല്ലാത്ത എല്ലാ അവസ്ഥയിലും) ഈ കോഡ് പ്രവർത്തിക്കും
+                    if status != "Pending":
+    
 
-                    # ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു കഴിഞ്ഞാൽ മാത്രം പ്രവർത്തിക്കുന്ന ഭാഗം
-                    if status == "Accepted" or status == "Arrived":
+                    
+                    
                         # 🔔 1. നോട്ടിഫിക്കേഷൻ സൗണ്ട്
                         notification_sound = """
                             <audio autoplay>
