@@ -2988,7 +2988,7 @@ def main():
                     vehicle_type_check = trip_data.get("vehicle_type", "Auto Rickshaw") if trip_data else "Auto Rickshaw"
 
                     # ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു കഴിഞ്ഞാൽ മാത്രം പ്രവർത്തിക്കുന്ന ഭാഗം
-                    if status == "Accepted":
+                    if status == "Accepted" or status == "Arrived":
                         # 🔔 1. നോട്ടിഫിക്കേഷൻ സൗണ്ട്
                         notification_sound = """
                             <audio autoplay>
