@@ -2695,26 +2695,7 @@ def driver_trip_panel_page():
 # ==========================================================
 # 🔔 REAL-TIME NOTIFICATION LISTENER
 # ==========================================================
-        current_trip_id = trip_id
-        if current_trip_id:
-            trip_ref = db.reference(f"trips/{current_trip_id}")
-            notification_placeholder = st.empty()
-            
-            def notification_listener(event):
-                if event.data and isinstance(event.data, dict):
-                    if event.data.get("notification") == "arrived_sound":
-                        sound_html = """
-                        <audio autoplay>
-                            <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
-                        </audio>
-                        """
-                        components.html(sound_html, height=0)
-                        
-                        notification_placeholder.success(
-                            "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
-                        )
-                        trip_ref.update({"notification": "played"})
-            trip_ref.listen(notification_listener)            
+                    
             
 # ====================================================================
 # 🖥️ STREAMLIT UI - CUSTOMER BOOKING INTERFACE (CLEANED & FIXED)
