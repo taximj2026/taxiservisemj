@@ -843,7 +843,7 @@ def initialize_firebase():
 # ==========================================================
 # Atomic Trip Acceptance & Locking Logic
 # ==========================================================
-def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id, vehicle_number):  # 🆕 vehicle_number ചേർത്തു
+def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id):
     ref = db.reference(f"trips/{booking_id}")
     trip_data = ref.get()
     
@@ -858,8 +858,7 @@ def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id, ve
         "status": "Accepted",
         "driver_name": driver_name,
         "driver_phone": driver_phone,
-        "driver_chat_id": str(driver_chat_id),
-        "vehicle_number": vehicle_number # 🆕 ഇത് ചേർക്കുക
+        "driver_chat_id": str(driver_chat_id)
     })
     return "success"
 
@@ -1030,7 +1029,49 @@ def accept_trip_safely(trip_id, driver_chat_id, driver_name, driver_phone):
         return "success"
     else:
         return "already_taken"        
-
+# ==========================================================
+# Telegram Callback Query Handler (Button Clicks)
+# ==========================================================
+def handle_telegram_callback(update, context):
+    query = update.callback_query
+    query.answer()
+    
+    callback_data = query.data
+    chat_id = query.message.chat_id
+    print(f"🔥 DEBUG: Callback വന്നിരിക്കുന്നു -> {callback_data}")
+    
+    if callback_data.startswith("arrived_"):
+        booking_id = callback_data.replace("arrived_", "")
+        ref = db.reference(f"trips/{booking_id}")
+        trip_data = ref.get()
+        
+        if trip_data and str(trip_data.get("driver_chat_id")) == str(chat_id):
+            ref.update({"status": "Arrived"})
+            query.edit_message_text(
+                text=query.message.text + "\n\n🔴 **[Status: Arrived at Location]** - കസ്റ്റമർക്ക് നോട്ടിഫിക്കേഷൻ അയച്ചിട്ടുണ്ട്."
+            )
+        else:
+            query.edit_message_text(text="❌ അസാധുവായ റിക്വസ്റ്റ് അല്ലെങ്കിൽ നിങ്ങൾക്ക് ഈ ട്രിപ്പിൽ അധികാരമില്ല.")
+            
+    else:
+        booking_id = callback_data
+        driver_name = "Driver" 
+        driver_phone = "N/A"
+        
+        result = accept_trip_safely(booking_id, driver_name, driver_phone, chat_id)
+        
+        if result == "success":
+            query.edit_message_text(
+                text=f"✅ **ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്തു!**\nട്രിപ്പ് ഐഡി: {booking_id}\n\nനാവിഗേഷൻ ഉപയോഗിച്ച് പിക്കപ്പ് സ്ഥലത്തേക്ക് പോവുക."
+            )
+        elif result == "already_taken":
+            query.edit_message_text(
+                text="❌ ക്ഷമിക്കുക, ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു!"
+            )
+        else:
+            query.edit_message_text(
+                text="❌ ഈ ട്രിപ്പ് നിലവിലില്ല അല്ലെങ്കിൽ എക്സ്പയർ ആയിരിക്കുന്നു."
+            )                
                 
             
         
@@ -2903,7 +2944,6 @@ def main():
                     "schedule_time": "Now",
                     "booking_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     # Driver-specific fields trip-level അല്ല
-                    "vehicle_number": "",
                     "driver_name": "",
                     "driver_phone": "",
                     "driver_chat_id": "",
@@ -3294,9 +3334,9 @@ def accept_trip(
         print(f"❌ Send error: {e}")
         return False
         
-# ==========================================================
+# ============================================================
 # ✅ ACCEPT TRIP Callback Handler (പുതിയ സംവിധാനം)
-# ==========================================================
+# ============================================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("accept_"))
 def handle_accept_trip(call):
     # 🆕 DEBUG
@@ -3306,6 +3346,7 @@ def handle_accept_trip(call):
     print(f"🔍 DEBUG: chat_id = {call.message.chat.id}")
     print("=" * 50)
     
+
     chat_id = call.message.chat.id
     trip_id = call.data.replace("accept_", "")
     
@@ -3313,53 +3354,11 @@ def handle_accept_trip(call):
         # 1. ഡ്രൈവറുടെ വിവരങ്ങൾ ഫയർബേസിൽ നിന്ന് എടുക്കുക
         driver_ref = db.reference(f"drivers/{chat_id}")
         driver_data = driver_ref.get() or {}
-
-        # ============================================================
-        # 💰 Wallet Check & Alert System (Correct Logic)
-        # ============================================================
-        WARNING_LIMIT = 25
-        BLOCK_LIMIT = 30
-
-        raw_balance = driver_data.get("wallet_balance", 0.0)
-        try:
-            wallet_balance = float(raw_balance) if raw_balance is not None else 0.0
-        except (ValueError, TypeError):
-            wallet_balance = 0.0
-
-        # 1. 25 രൂപ ആകുമ്പോൾ മുന്നറിയിപ്പ് മെസ്സേജ്
-        if WARNING_LIMIT <= wallet_balance < BLOCK_LIMIT:
-            driver_chat_id = driver_data.get("chat_id")
-            if driver_chat_id:
-                try:
-                    bot.send_message(
-                        chat_id=driver_chat_id,
-                        text=f"⚠️ *വാലറ്റ് മുന്നറിയിപ്പ്:*\n\nനിങ്ങളുടെ വാലറ്റ് ബാലൻസ് ₹{wallet_balance:.2f} ആയി കുറഞ്ഞിരിക്കുന്നു.\n\n"
-                             f"₹{BLOCK_LIMIT} ആകുമ്പോൾ പുതിയ ട്രിപ്പുകൾ ലഭിക്കില്ല. ദയവായി ഉടൻ റീചാർജ് ചെയ്യുക.",
-                        parse_mode="Markdown"
-                    )
-                except Exception as e:
-                    print(f"❌ Wallet warning send error: {e}")
-
-        # 2. 30 രൂപ ആകുമ്പോൾ ട്രിപ്പ് തടയൽ + മെസ്സേജ്
-        if wallet_balance >= BLOCK_LIMIT:
-            driver_chat_id = driver_data.get("chat_id")
-            if driver_chat_id:
-                try:
-                    bot.send_message(
-                        chat_id=driver_chat_id,
-                        text=f"🛑 *വാലറ്റ് പരിധി കടന്നിരിക്കുന്നു!*\n\nനിങ്ങളുടെ വാലറ്റ് ബാലൻസ് ₹{wallet_balance:.2f} ആണ്.\n\n"
-                             f"₹{BLOCK_LIMIT} പരിധി കടന്നതിനാൽ പുതിയ ട്രിപ്പുകൾ തടഞ്ഞിരിക്കുന്നു. ദയവായി ഉടൻ റീചാർജ് ചെയ്യുക.",
-                        parse_mode="Markdown"
-                    )
-                except Exception as e:
-                    print(f"❌ Wallet block send error: {e}")
-            return  # 🛑 ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാതെ ഇവിടെ നിർത്തുക
-        # ============================================================
-
+        
         driver_name = driver_data.get("driver_name", "Unknown Driver")
         driver_phone = driver_data.get("phone", "N/A")
         vehicle_number = driver_data.get("vehicle_number", "N/A")
-
+        
         # 2. ട്രിപ്പ് വിവരങ്ങൾ ഫയർബേസിൽ അപ്ഡേറ്റ് ചെയ്യുക
         db.reference(f"trips/{trip_id}").update({
             "status": "Accepted",
@@ -3369,7 +3368,7 @@ def handle_accept_trip(call):
             "vehicle_number": vehicle_number,
             "accepted_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
-
+        
         # 3. ACCEPT ബട്ടൺ നീക്കം ചെയ്യുക
         try:
             bot.edit_message_reply_markup(
@@ -3379,12 +3378,32 @@ def handle_accept_trip(call):
             )
         except:
             pass
-
+        
+        # 4. ഡ്രൈവർക്ക് ട്രിപ്പ് പാനൽ ലിങ്ക് അയക്കുക
+        # 🆕 DEBUG: URL ഉണ്ടാക്കുന്നതിന് മുമ്പ്
+        print("🔍 DEBUG: Driver Panel URL ഉണ്ടാക്കുന്നു...")
+        print(f"🔍 DEBUG: trip_id = {trip_id}, chat_id = {chat_id}")
+        driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={trip_id}&driver_chat_id={chat_id}"
+        print(f"🔍 DEBUG: URL = {driver_panel_url}")
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        panel_button = types.InlineKeyboardButton(
+            "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക", 
+            url=driver_panel_url
+        )
+        markup.add(panel_button)
+        
+        bot.send_message(
+            chat_id=chat_id,
+            text=f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n🆔 ട്രിപ്പ് ഐഡി: `{trip_id}`\n\n📍 നാവിഗേഷൻ, കസ്റ്റമറുടെ വിവരങ്ങൾ, ലൈവ് ലൊക്കേഷൻ ഷെയറിംഗ്, 'ഞാൻ എത്തി' എന്നിവയ്ക്കെല്ലാം താഴെയുള്ള ബട്ടൺ അമർത്തുക.",
+            parse_mode="Markdown",
+            reply_markup=markup
+        )
+        
         bot.answer_callback_query(call.id, "✅ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!")
         
     except Exception as e:
         print(f"❌ handle_accept_trip error: {e}")
-        bot.answer_callback_query(call.id, "❌ എറർ: ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല.")        
+        bot.answer_callback_query(call.id, "❌ എറർ: ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല.")
 
 # ==========================================================
 # 🚀 START POLLING — LAST (after all handlers registered)
