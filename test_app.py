@@ -243,7 +243,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
         # ============================================================
         # ✅ 4. Accept Notification (Driver Accept ചെയ്ത ഉടനെ)
         # ============================================================
-        if trip_status == "Accepted" or trip_notification == "accepted":
+        if trip_status == "Accepted":
             if not st.session_state.get('accept_alert_shown', False):
                 st.success("✅ **ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ട്!**")
                 
