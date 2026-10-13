@@ -43,30 +43,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 from streamlit_geolocation import streamlit_geolocation
 from flask import Flask, request, jsonify
 from streamlit.runtime.scriptrunner import add_script_run_ctx
-# --- Mobile Friendly CSS (ഇവിടെ ചേർക്കുക) ---
-st.markdown("""
-<style>
-    .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-    h1 { font-size: 1.8rem !important; }
-    h2 { font-size: 1.5rem !important; }
-    h3 { font-size: 1.2rem !important; }
-    .stButton>button {
-        width: 100% !important;
-        height: 3rem !important;
-        font-size: 1rem !important;
-    }
-    .stTextInput>div>div>input {
-        font-size: 1rem !important;
-        height: 3rem !important;
-    }
-    .stForm { padding: 1rem !important; }
-</style>
-""", unsafe_allow_html=True)
 
 
 
@@ -243,7 +219,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
         # ============================================================
         # ✅ 4. Accept Notification (Driver Accept ചെയ്ത ഉടനെ)
         # ============================================================
-        if trip_status == "Accepted":
+        if trip_status == "Accepted" or trip_notification == "accepted":
             if not st.session_state.get('accept_alert_shown', False):
                 st.success("✅ **ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ട്!**")
                 
@@ -268,7 +244,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
         # ============================================================
         # ✅ 5. Vehicle Header
         # ============================================================
-        if "Auto" in vehicle_type or "auto" in vehicle_type.lower() or "ഓട്ടോ" in vehicle_type:
+        if vehicle_type == "Auto Rickshaw":
             st.markdown("### 🛺 ഓട്ടോറിക്ഷ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
             vehicle_icon = folium.Icon(color="orange", icon="motorcycle", prefix="fa")
         else:
@@ -398,7 +374,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
     except Exception as e:
         st.error(f"🗺️ Map load error: {e}")
 # --- ബോട്ട് സെറ്റപ്പ് ഇവിടെ തുടങ്ങുന്നു ---
-TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
+TELEGRAM_BOT_TOKEN = "8269194893:AAE2REuWLq60td8VZMSafcCZT3YVT9Bwq6o"
 @st.cache_resource
 def setup_bot():
     bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
@@ -642,10 +618,10 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 #GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw_WDIJgYvtCy0r13wQu20BNZE9KqfGmyxQm7_iFsV2kLLq3eQ8O-3e5BfP3JCrYnTorw/exec"
 
 
-ADMIN_TELEGRAM_CHAT_ID = st.secrets["ADMIN_TELEGRAM_CHAT_ID"]
-TELEGRAM_CHAT_ID = st.secrets["TELEGRAM_CHAT_ID"]
-API_SECRET_KEY = st.secrets["API_SECRET_KEY"]
-ADMIN_PIN = st.secrets["ADMIN_PIN"]
+ADMIN_TELEGRAM_CHAT_ID = "1081269806"
+TELEGRAM_CHAT_ID = "1081269806"
+API_SECRET_KEY = "EasyTaxi_2026_Secure_Key_#Asu@4368"
+ADMIN_PIN = "9946"
 ENABLE_COMMISSION = True
 ADMIN_UPI_ID = "YOUR_UPI_ID_HERE"
 WARNING_LIMIT = 25
@@ -666,45 +642,16 @@ import requests
 import streamlit as st
 # ഫയർബേസ് ഡാറ്റാബേസ് കണക്ഷൻ സെറ്റ് ചെയ്യുക
 if not firebase_admin._apps:
-    creds_dict = dict(st.secrets["firebase_service_account"])
-    cred = credentials.Certificate(creds_dict)
+    cred = credentials.Certificate('firebase_key.json')# നിങ്ങളുടെ ഫയർബേസ് JSON ഫയലിന്റെ യഥാർത്ഥ പേര് ഇവിടെ നൽകുക
     firebase_admin.initialize_app(cred, {
-        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
-    
+        'databaseURL': 'https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app/'
     })
 
 registration_data = {}
-def auto_cancel_trip(trip_id, delay_seconds=1800):
-    """30 മിനിറ്റിന് ശേഷം ട്രിപ്പ് ഓട്ടോമാറ്റിക് ആയി ക്യാൻസൽ ചെയ്യുക"""
-    def cancel_task():
-        time.sleep(delay_seconds)  # 30 മിനിറ്റ് (1800 സെക്കൻഡ്) കാത്തിരിക്കുക
-        try:
-            ref = db.reference(f"trips/{trip_id}")
-            trip_data = ref.get()
-            
-            if trip_data:
-                current_status = trip_data.get("status", "Pending")
-                # ട്രിപ്പ് ഇപ്പോഴും Pending/Available ആണെങ്കിൽ മാത്രം ക്യാൻസൽ ചെയ്യുക
-                if current_status in ["Pending", "Available", "Unassigned"]:
-                    ref.update({
-                        "status": "Cancelled",
-                        "cancel_reason": "No driver accepted within 30 minutes",
-                        "cancelled_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    })
-                    print(f"⏰ Trip {trip_id} auto-cancelled after 30 minutes")
-                else:
-                    print(f"✅ Trip {trip_id} already {current_status} - no need to cancel")
-        except Exception as e:
-            print(f"❌ Auto-cancel error for {trip_id}: {e}")
-    
-    # Background thread-ൽ റൺ ചെയ്യുക
-    thread = threading.Thread(target=cancel_task, daemon=True)
-    thread.start()
-
 
 def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, distance=0.0, pickup_link=""):
     """
-    കസ്റ്റമർ ബുക്ക് ചെയ്യു മ്പോൾ വിവരങ്ങളും ദൂരവും ഫയർബേസിലേക്ക് സേവ് ചെയ്യുന്നു
+    കസ്റ്റമർ ബുക്ക് ചെയ്യുമ്പോൾ വിവരങ്ങളും ദൂരവും ഫയർബേസിലേക്ക് സേവ് ചെയ്യുന്നു
     """
     try:
         trip_data = {
@@ -722,16 +669,11 @@ def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, dista
             "driver_name": "",
             "driver_phone": "",
             "driver_chat_id": "",
-            "booking_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "booking_time": datetime.datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
         trip_ref = db.reference(f"trips/{booking_id}")
         trip_ref.set(trip_data)
-        # 🆕 30 മിനിറ്റിന് ശേഷം auto-cancel scheduler ആരംഭിക്കുക
-        auto_cancel_trip(booking_id, delay_seconds=1800)
-        
-        
-
         print(f"✅ Trip {booking_id} saved with distance {distance} km successfully.")
         return True
     except Exception as e:
@@ -748,8 +690,7 @@ def send_trip_to_driver(
     pickup,
     drop,
     distance="N/A",
-    location_link="Not Available",
-    commission="N/A"  # <--- ഇവിടെ കമ്മീഷൻ പാരാമീറ്റർ ചേർക്കാം
+    location_link="Not Available"
 ):
     raw_phone = str(customer_phone or '')
     if len(raw_phone) >= 6:
@@ -768,7 +709,6 @@ def send_trip_to_driver(
 📍 Pickup: {pickup}
 🏁 Drop: {drop}
 📏 ദൂരം (Distance): {safe_distance} km
-💰 Commission: {commission}
 📍 GPS Live Location:
 {safe_location}
 
@@ -822,16 +762,42 @@ def initialize_firebase():
             "firebase_key.json.json"
         ]
 
-        # Firebase ഇതിനകം ഇനിഷ്യലൈസ് ചെയ്തിട്ടില്ലെങ്കിൽ മാത്രം
-        if not firebase_admin._apps:
-            # Secrets-ൽ നിന്ന് JSON ഉള്ളടക്കം എടുക്കുക
-            creds_dict = dict(st.secrets["firebase_service_account"])
-            cred = credentials.Certificate(creds_dict)
-            firebase_admin.initialize_app(cred, {
-                'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
-            })
+        key_path = None
 
-        
+        for filename in possible_files:
+            full_path = os.path.join(
+                base_dir,
+                filename
+            )
+
+            if os.path.exists(full_path):
+                key_path = full_path
+                break
+
+        if key_path:
+            cred = credentials.Certificate(
+                key_path
+            )
+
+            firebase_admin.initialize_app(
+                cred,
+                {
+                    "databaseURL":
+                    "https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app"
+                }
+            )
+
+        else:
+            firebase_admin.initialize_app(
+                options={
+                    "databaseURL":
+                    "https://easy-taxi-booking-system-default-rtdb.asia-southeast1.firebasedatabase.app"
+                }
+            )
+
+        bg_log(
+            "✅ Firebase Connected Successfully"
+        )
 
         return True
 
@@ -1273,35 +1239,31 @@ st.markdown("""
     <style>
     .reportview-container { background: #121212 !important; color: #FFFFFF !important; }
     
-    /* ഹെഡർ ബോക്സിന്റെ പാഡിംഗ് കുറച്ചു */
     .header-box { 
         background: linear-gradient(135deg, #1e1e1e, #2d2d2d) !important; 
-        padding: 15px !important; 
-        border-radius: 12px !important; 
+        padding: 30px !important; 
+        border-radius: 15px !important; 
         text-align: center !important; 
-        border-bottom: 4px solid #ffcc00 !important; 
-        box-shadow: 0px 6px 12px rgba(0,0,0,0.3) !important; 
-        margin-bottom: 15px !important; 
+        border-bottom: 5px solid #ffcc00 !important; 
+        box-shadow: 0px 10px 20px rgba(0,0,0,0.3) !important; 
+        margin-bottom: 25px !important; 
     }
-    /* ഹെഡിംഗ് ഫോണ്ട് സൈസ് 2.5rem ൽ നിന്ന് 1.8rem ആക്കി കുറച്ചു */
-    .header-box h1 { color: #ffcc00 !important; font-weight: 900 !important; letter-spacing: 1px !important; margin: 0 !important; font-size: 1.8rem !important; }
-    /* സബ് ഹെഡിംഗ് ഫോണ്ട് സൈസ് 14px ൽ നിന്ന് 11px ആക്കി കുറച്ചു */
-    .header-box p { color: #b3b3b3 !important; font-size: 11px !important; margin-top: 3px !important; text-transform: uppercase !important; }
+    .header-box h1 { color: #ffcc00 !important; font-weight: 900 !important; letter-spacing: 2px !important; margin: 0 !important; font-size: 2.5rem !important; }
+    .header-box p { color: #b3b3b3 !important; font-size: 14px !important; margin-top: 5px !important; text-transform: uppercase !important; }
     
-    /* ഫോമിന്റെ പാഡിംഗ് കുറച്ചു */
     div[data-testid="stForm"] { 
         background-color: #1e1e1e !important; 
         border: 1px solid #333333 !important; 
-        padding: 15px !important; 
-        border-radius: 12px !important; 
-        box-shadow: 0 6px 12px rgba(0,0,0,0.2) !important; 
+        padding: 25px !important; 
+        border-radius: 15px !important; 
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important; 
     }
     
     label[data-testid="stWidgetLabel"] p, 
     div[data-testid="stMarkdownContainer"] p strong,
     div[data-testid="stRadio"] label p {
         color: #ffcc00 !important;
-        font-size: 14px !important;
+        font-size: 16px !important;
         font-weight: bold !important;
         letter-spacing: 0.5px !important;
     }
@@ -1310,22 +1272,22 @@ st.markdown("""
         background: linear-gradient(90deg, #ffcc00, #ffa500) !important; 
         color: #000000 !important; 
         font-weight: bold !important; 
-        font-size: 15px !important; 
+        font-size: 16px !important; 
         border: none !important; 
         border-radius: 8px !important; 
-        padding: 10px 15px !important; 
+        padding: 12px 20px !important; 
         transition: all 0.3s ease !important; 
         width: 100% !important; 
     }
     .stButton>button:hover { transform: translateY(-2px) !important; box-shadow: 0px 6px 20px rgba(255,204,0,0.4) !important; }
     
-    .disclaimer-box { background-color: #2b1d1d !important; border-left: 4px solid #d32f2f !important; padding: 12px !important; border-radius: 8px !important; margin: 15px 0 !important; }
-    .disclaimer-title { color: #ff5252 !important; font-weight: bold !important; font-size: 14px !important; margin-bottom: 4px !important; }
-    .disclaimer-text { color: #e0e0e0 !important; font-size: 12px !important; line-height: 1.5 !important; margin: 0 !important; }
+    .disclaimer-box { background-color: #2b1d1d !important; border-left: 5px solid #d32f2f !important; padding: 18px !important; border-radius: 8px !important; margin: 20px 0 !important; }
+    .disclaimer-title { color: #ff5252 !important; font-weight: bold !important; font-size: 16px !important; margin-bottom: 6px !important; }
+    .disclaimer-text { color: #e0e0e0 !important; font-size: 13.5px !important; line-height: 1.6 !important; margin: 0 !important; }
     
-    .success-card { background-color: #1c2e24 !important; border: 1px solid #2e7d32 !important; padding: 15px !important; border-radius: 10px !important; text-align: center !important; }
-    .warning-card { background-color: #2e2719 !important; border: 1px solid #f9a825 !important; padding: 15px !important; border-radius: 10px !important; text-align: center !important; }
-    .danger-card { background-color: #2c1c1c !important; border: 1px solid #c62828 !important; padding: 15px !important; border-radius: 10px !important; text-align: center !important; }
+    .success-card { background-color: #1c2e24 !important; border: 1px solid #2e7d32 !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; }
+    .warning-card { background-color: #2e2719 !important; border: 1px solid #f9a825 !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; }
+    .danger-card { background-color: #2c1c1c !important; border: 1px solid #c62828 !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -1349,58 +1311,19 @@ gc_client = None
 gc_client = None
 
 # ടെലിഗ്രാം ബോട്ട് ടോക്കൺ ഇവിടെ സെറ്റ് ചെയ്യുക
-TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
-# 🆕 FIX: bot ഒബ്ജക്റ്റ് ഒരിക്കൽ മാത്രം സൃഷ്ടിക്കാൻ @st.cache_resource ചേർക്കുന്നു
-@st.cache_resource
-def get_telegram_bot():
-    token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
-    if token and "YOUR_BOT_TOKEN" not in token:
-        try:
-            _bot = telebot.TeleBot(token)
-            print("✅ Telegram Bot Connected")
-            return _bot
-        except Exception as e:
-            print(f"❌ Telegram Bot Error: {e}")
-            return None
-    return None
+TELEGRAM_BOT_TOKEN = "8269194893:AAE2REuWLq60td8VZMSafcCZT3YVT9Bwq6o"
+bot = None
 
-bot = get_telegram_bot()
-# ============================================================
-# 🤖 MODULE 20: DRIVER TRIP HISTORY (LAST 20 TRIPS)
-# ============================================================
-@bot.message_handler(commands=['history'])
-def handle_driver_history(message):
-    chat_id = str(message.chat.id)
+# ലോഗിങ്ങിനായി bg_log ഫങ്ഷൻ ഇവിടെ നൽകുക
+def bg_log(text):
+    print(text)
+
+if TELEGRAM_BOT_TOKEN and "YOUR_BOT_TOKEN" not in TELEGRAM_BOT_TOKEN:
     try:
-        ref = db.reference("trips")
-        all_trips = ref.get()
-
-        if not all_trips:
-            bot.reply_to(message, "നിങ്ങളുടെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
-            return
-
-        user_trips = []
-        for booking_id, trip in all_trips.items():
-            if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
-                trip["trip_id"] = booking_id  # 🆕 FIX: ട്രിപ്പ് ഐഡി ഡിക്ഷണറിയിൽ ചേർക്കുന്നു
-                user_trips.append(trip)
-
-        if user_trips:
-            last_20_trips = user_trips[-20:]
-            reply = "🚖 നിങ്ങളുടെ അവസാനത്തെ ട്രിപ്പുകൾ:\n\n"
-            for t in last_20_trips:
-                t_id = t.get("trip_id", "N/A")  # 🆕 ട്രിപ്പ് ഐഡി
-                t_date = t.get("booking_time", "N/A").split(" ")[0]  # 🆕 ശരിയായ തിയതി
-                t_pickup = t.get("pickup", "N/A")  # 🆕 പിക്കപ്പ്
-                t_drop = t.get("drop", "N/A")
-                reply += f"🆔 {t_id}\n📅 {t_date}\n📍 {t_pickup} ➔ {t_drop}\n\n"
-            
-            bot.reply_to(message, reply, parse_mode="Markdown")
-        else:
-            bot.reply_to(message, "ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
-
+        bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+        print("✅ Telegram Bot Connected")
     except Exception as e:
-        bot.reply_to(message, f"❌ എറർ: {str(e)}")
+        print(f"❌ Telegram Bot Error: {e}")
 
 flask_app = Flask(__name__)
 
@@ -1429,19 +1352,6 @@ def handle_driver_start(message):
         reply_markup=markup,
         parse_mode="Markdown"
     )
-    # 🆕 FIX: ഇവിടെ നിന്ന് തുടങ്ങുന്നു (1396-ാം വരി)
-    try:
-        bot.send_message(
-            chat_id,
-            f"✅ *രജിസ്ട്രേഷൻ വിജയകരമായി പൂർത്തിയായി!*\n\n"
-            f"🆔 *നിങ്ങളുടെ ചാറ്റ് ഐഡി:* `{chat_id}`\n\n"
-            f"📌 ഈ ഐഡി സൂക്ഷിച്ചുവെക്കുക. ഭാവിയിൽ ട്രിപ്പ് വിവരങ്ങൾ അറിയാൻ ഇത് ഉപയോഗിക്കാം.",
-            parse_mode="Markdown"
-        )    
-        print(f"✅ Chat ID {chat_id} sent back to driver")
-    except Exception as e:
-        print(f"❌ Error sending chat ID: {e}")
-    
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_registration")
 def ask_contact_number(call):
@@ -1566,8 +1476,7 @@ def save_data_to_firebase_final(call):
             "vehicle_number": data["vehicle_number"],
             "telegram_username": f"@{username}",
             "status": "ONLINE",
-            "area": "Manjeri",
-            "wallet_balance": 0.0,  # 🆕 ഈ വരി ഇവിടെ ചേർക്കുക
+            "area": "Manjeri"
         }
         
         try:
@@ -1586,7 +1495,40 @@ def save_data_to_firebase_final(call):
         except Exception as e:
             bot.send_message(chat_id=chat_id, text=f"❌ രജിസ്ട്രേഷനിൽ തടസ്സം നേരിട്ടു: {e}")
 
-
+# ============================================================
+# 🤖 MODULE 20: DRIVER TRIP HISTORY (LAST 20 TRIPS)
+# ============================================================
+@bot.message_handler(commands=['history'])
+def handle_driver_history(message):
+    chat_id = str(message.chat.id)
+    try:
+        ref = db.reference("trips")
+        all_trips = ref.get()
+        
+        if not all_trips:
+            bot.reply_to(message, "നിലവിൽ ട്രിപ്പുകൾ ഒന്നുമില്ല.")
+            return
+            
+        user_trips = []
+        for booking_id, trip in all_trips.items():
+            if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
+                user_trips.append(trip)
+        
+        if user_trips:
+            last_20_trips = user_trips[-20:]
+            
+            reply = "🚖 *നിങ്ങളുടെ അവസാനത്തെ ട്രിപ്പുകൾ:*\n\n"
+            for t in last_20_trips:
+                t_date = t.get("timestamp", "N/A")
+                t_drop = t.get("drop", "N/A")
+                reply += f"📅 {t_date} | ഡ്രോപ്പ്: {t_drop}\n"
+            
+            bot.reply_to(message, reply, parse_mode="Markdown")
+        else:
+            bot.reply_to(message, "നിലവിൽ ട്രിപ്പുകൾ ഒന്നുമില്ല.")
+            
+    except Exception as e:
+        bot.reply_to(message, f"❌ പിശക് സംഭവിച്ചു: {str(e)}")
 
 
 # ============================================================
@@ -1619,8 +1561,8 @@ def get_real_road_distance(pickup_place, drop_place):
 
     headers = {"User-Agent": "EasyAutoTaxiPro/1.0"}
 
-    GRAPHOPPER_API_KEY = st.secrets["GRAPHOPPER_API_KEY"]
-    GEOAPIFY_API_KEY = st.secrets["GEOAPIFY_API_KEY"]
+    GRAPHOPPER_API_KEY = "8dcc1129-f0d7-47da-8f8c-d0550d53854f"
+    GEOAPIFY_API_KEY = "3bbec7b6200b441aa6c000f54fbeb459"
 
     def clean_place(place):
         place = str(place).strip()
@@ -1667,7 +1609,7 @@ def get_real_road_distance(pickup_place, drop_place):
                                     'lat': lat,
                                     'lng': lon,
                                     'source': f'nominatim_q{idx+1}',
-                                    'cached_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                    'cached_at': datetime.datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                 })
                                 print(f"✅ Cached: {place}")
                             except Exception as e:
@@ -1789,26 +1731,8 @@ def get_real_road_distance(pickup_place, drop_place):
 # 💰 MASTER COMMISSION LOGIC
 # ============================================================
 def calculate_admin_commission(km):
-    """ദൂരത്തിന്റെ അടിസ്ഥാനത്തിൽ അഡ്മിൻ കമ്മീഷൻ കണക്കാക്കുക"""
-    if not ENABLE_COMMISSION:
-        return 0.0
-    
-    if km <= 1.5:
-        commission = 0.50  # ആദ്യ 1.5 കി.മീ-ന് ₹0.50
-    else:
-        # 1.5 കി.മീ കഴിഞ്ഞുള്ള അധിക ദൂരം
-        extra_distance = km - 1.5
-        
-        # അതിനെ അടുത്ത പൂർണ്ണ കി.മീയിലേക്ക് റൗണ്ട് ചെയ്യുക (ഉദാ: 0.1 → 1, 1.5 → 2)
-        rounded_extra = math.ceil(extra_distance)
-        
-        # ഓരോ അധിക കി.മീ-നും ₹22.50 വെച്ച് കണക്കാക്കുക
-        extra_fare = rounded_extra * 22.50
-        
-        # അതിന്റെ 1.5% കമ്മീഷൻ കണക്കാക്കുക
-        commission = 0.50 + (extra_fare * 0.015)
-    
-    return round(commission, 2)
+    if not ENABLE_COMMISSION: return 0.0
+    return round(0.50 + (math.ceil(km - 1.5) * 0.33) if km > 1.5 else 0.50, 2)
 
 # ============================================================
 # 📍 AREA ROUTING MAP
@@ -1846,7 +1770,7 @@ def check_spam_and_rate_limit(user_identifier):
 # 🚨 MODULE 20: CENTRALIZED ERROR TRACKING & MONITORING ENGINE
 # ============================================================
 def log_and_report_error(error_message, function_name):
-    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_time = datetime.datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     error_details = str(error_message)
     print(f"🛑 [SYSTEM ERROR] in {function_name} at {current_time}: {error_details}")
     
@@ -2128,8 +2052,6 @@ def send_individual_trip_link(
     Format: Clean, privacy-focused, mobile-friendly.
     Includes: Booking Date + Time
     """
-    # 🆕 FIX: commission_amount ഇവിടെ ഡിഫൈൻ ചെയ്യുന്നു
-    commission_amount = trip_details.get("commission_amount", 0)
     try:
         if not bot or not driver.get("chat_id"):
             return
@@ -2171,7 +2093,7 @@ def send_individual_trip_link(
         booking_time_raw = (
             trip_details.get('booking_time')
             or trip_details.get('Booking Time')
-            or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            or datetime.datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
         try:
@@ -2198,11 +2120,11 @@ def send_individual_trip_link(
                 except:
                     time_display = time_only
             else:
-                date_display = datetime.datetime.now().strftime("%d-%m-%Y")
-                time_display = datetime.datetime.now().strftime("%I:%M %p")
+                date_display = datetime.datetime.datetime.now().strftime("%d-%m-%Y")
+                time_display = datetime.datetime.datetime.now().strftime("%I:%M %p")
         except Exception:
-            date_display = datetime.datetime.now().strftime("%d-%m-%Y")
-            time_display = datetime.datetime.now().strftime("%I:%M %p")
+            date_display = datetime.datetime.datetime.now().strftime("%d-%m-%Y")
+            time_display = datetime.datetime.datetime.now().strftime("%I:%M %p")
 
         # ============================================================
         # Masked Phone
@@ -2252,7 +2174,6 @@ def send_individual_trip_link(
             f"📞 {masked_phone}\n"
             f"📍 പിക്കപ്പ്: {pickup}\n"
             f"🏁 ഡ്രോപ്പ്: {drop}\n"
-            f"💰 കമ്മീഷൻ: ₹{commission_amount}\n"
             f"📏 ദൂരം: {trip_distance} km\n"
             f"{gps_line}\n\n"
             f"{warning_text}"
@@ -2543,192 +2464,15 @@ def process_radius_expansion_routing(
         except Exception:
             pass
 
-# ============================================================
-# 🚖 ഡ്രൈവർ ട്രിപ്പ് പാനൽ (Full Featured Web Page)
-# ============================================================
-def driver_trip_panel_page():
-    st.title("🚖 ഡ്രൈവർ ട്രിപ്പ് പാനൽ")
-    
-    # URL-ൽ നിന്ന് ട്രിപ്പ് ഐഡി എടുക്കുക
-    query_params = st.query_params
-    trip_id = query_params.get("trip_id", "")
-    driver_chat_id = query_params.get("driver_chat_id", "")
-    
-    if not trip_id:
-        st.error("❌ ട്രിപ്പ് ഐഡി കണ്ടെത്താനായില്ല.")
-        return
-    
-    # ഫയർബേസിൽ നിന്ന് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
-    trip_data = db.reference(f"trips/{trip_id}").get()
-    
-    if not trip_data:
-        st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ലഭ്യമല്ല.")
-        return
-    
-    # ട്രിപ്പ് വിവരങ്ങൾ
-    customer_name = trip_data.get("customer_name", "N/A")
-    customer_phone = trip_data.get("customer_phone", "")
-    pickup = trip_data.get("pickup", "N/A")
-    drop = trip_data.get("drop", "N/A")
-    pickup_lat = trip_data.get("pickup_lat", 0)
-    pickup_lon = trip_data.get("pickup_lon", 0)
-    total_fare = trip_data.get("total_fare", 0)
-    status = trip_data.get("status", "Accepted")
-    
-    # 🆕 Distance & Commission എടുക്കുക
-    distance = trip_data.get("calculated_distance", "N/A")
-    commission = trip_data.get("commission_amount", "N/A")
-    
-    # ============================================================
-    # ✅ 1. ട്രിപ്പ് വിവരങ്ങൾ (Distance & Commission സഹിതം)
-    # ============================================================
-    st.markdown(f"""
-    <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid #2c3e50;">
-        <h3 style="margin: 0; color: #2c3e50;">🆔 ട്രിപ്പ് ഐഡി: {trip_id}</h3>
-        <p style="margin: 5px 0; color: #555;">👤 കസ്റ്റമർ: {customer_name}</p>
-        <p style="margin: 5px 0; color: #555;">📍 പിക്കപ്പ്: {pickup}</p>
-        <p style="margin: 5px 0; color: #555;">🏁 ഡ്രോപ്പ്: {drop}</p>
-        <p style="margin: 5px 0; color: #555;">📏 ദൂരം: {distance} km</p>
-        <p style="margin: 5px 0; color: #555;">💰 വാടക: ₹{total_fare}</p>
-        <p style="margin: 5px 0; color: #555;">💵 കമ്മീഷൻ: ₹{commission}</p>
-        <p style="margin: 5px 0; color: #555;">📊 സ്റ്റാറ്റസ്: {status}</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-        # ============================================================
-    # ✅ 2. ലൈവ് ലൊക്കേഷൻ ഷെയർ (Arrived ആകുന്നത് വരെ മാത്രം)
-    # ============================================================
-    if status != "Arrived":
-        st.markdown("### 📍 ലൈവ് ലൊക്കേഷൻ ഷെയർ ചെയ്യുക")
-        st.info("🔔 ഈ പേജ് ഓപ്പൺ ആയി വെക്കുക. ട്രിപ്പ് അവസാനിക്കുന്നത് വരെ ലൊക്കേഷൻ സ്വയമേവ അപ്ഡേറ്റ് ആകും.")
-        
-        @st.fragment(run_every=10)
-        def update_location():
-            try:
-                location = streamlit_geolocation()
-                if location and location.get("latitude") and location.get("longitude"):
-                    lat = location.get("latitude")
-                    lon = location.get("longitude")
-                    
-                    db.reference(f"trips/{trip_id}/driver_location").set({
-                        "lat": lat,
-                        "lon": lon,
-                        "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    })
-                    st.success(f"✅ ലൊക്കേഷൻ അപ്ഡേറ്റ് ആയി: {lat:.4f}, {lon:.4f}")
-                else:
-                    st.warning("⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല. ദയവായി GPS ഓൺ ചെയ്യുക.")
-            except Exception as e:
-                st.error(f"❌ എറർ: {e}")
-        
-        update_location()
-
-    # ============================================================
-    # ✅ 3. നാവിഗേഷൻ ബട്ടൺ & നിർദ്ദേശം (Arrived ആകുന്നത് വരെ മാത്രം)
-    # ============================================================
-    if status != "Arrived":
-        if pickup_lat and pickup_lon:
-            nav_url = f"https://www.google.com/maps/dir/?api=1&destination={pickup_lat},{pickup_lon}"
-            st.link_button("🗺️ കസ്റ്റമറുടെ അടുത്തേക്ക് പോകുക (Navigation)", nav_url, use_container_width=True)
-            
-            # 🆕 നാവിഗേഷൻ നിർദ്ദേശം
-            st.info("""
-            📌 **ശ്രദ്ധിക്കുക:**
-            • നാവിഗേഷൻ ബട്ടൺ അമർത്തിയാൽ, Google Maps തുറക്കും.
-            • കസ്റ്റമറുടെ ലൊക്കേഷനിൽ എത്തിക്കഴിഞ്ഞാൽ, ഫോണിന്റെ **Back Button** അമർത്തി ഈ പേജിലേക്ക് തിരികെ വരിക.
-            • ശേഷം, താഴെയുള്ള **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തുക.
-            """)
-
-    # ============================================================
-    # ✅ 4. "ഞാൻ എത്തി" (Arrived) ബട്ടൺ
-    # ============================================================
-    if status != "Arrived":
-        st.markdown("### 🚖 എത്തിയോ?")
-        if st.button("🚖 ഞാൻ എത്തി (Arrived)", type="primary", use_container_width=True):
-            db.reference(f"trips/{trip_id}").update({
-                "status": "Arrived",
-                "notification": "arrived_sound"
-            })
-            st.success("✅ കസ്റ്റമറിനെ അറിയിച്ചിട്ടുണ്ട്!")
-            st.balloons()
-            st.rerun()
-
-    # ============================================================
-    # ✅ 5. കസ്റ്റമറുടെ ഫോൺ നമ്പർ (Arrived ആയതിന് ശേഷം മാത്രം)
-    # ============================================================
-    if status == "Arrived":
-        st.success("✅ നിങ്ങൾ കസ്റ്റമറുടെ അടുത്ത് എത്തിയിട്ടുണ്ട്.")
-        st.markdown("### 📞 കസ്റ്റമറുമായി ബന്ധപ്പെടുക")
-        
-        customer_phone = trip_data.get("customer_phone", "")
-        
-        if customer_phone:
-            # 🆕 നിയമപരമായ സുരക്ഷാ മുന്നറിയിപ്പ്
-            st.warning("""
-            ⚠️ **ശ്രദ്ധിക്കുക:**
-            • കസ്റ്റമറുടെ ഫോൺ നമ്പർ അത്യാവശ്യ ഘട്ടങ്ങളിൽ മാത്രം ഉപയോഗിക്കുക.
-            • അറൈവൽ ലൊക്കേഷനിൽ കസ്റ്റമറെ കണ്ടെത്താനായില്ലെങ്കിൽ മാത്രം വിളിക്കുക.
-            • ദുരുപയോഗം ചെയ്താൽ നിയമനടപടികൾ നേരിടേണ്ടി വരും.
-            """)
-            
-            # 🆕 കോൾ ബട്ടൺ (നമ്പർ കാണാതെ)
-            st.markdown(f"""
-            <a href="tel:{customer_phone}" style="
-                display: inline-block;
-                padding: 12px 24px;
-                background-color: #28a745;
-                color: white;
-                text-decoration: none;
-                border-radius: 8px;
-                font-weight: bold;
-                font-size: 16px;
-                text-align: center;
-                width: 100%;
-                box-sizing: border-box;
-            ">📞 കസ്റ്റമറെ വിളിക്കുക</a>
-            """, unsafe_allow_html=True)
-            
-            st.info("🔒 സുരക്ഷയ്ക്കായി കസ്റ്റമറുടെ ഫോൺ നമ്പർ മറച്ചുവെച്ചിരിക്കുന്നു.")
-        else:
-            st.warning("⚠️ ഫോൺ നമ്പർ ലഭ്യമല്ല.")
-            
-# ==========================================================
-# 🔔 REAL-TIME NOTIFICATION LISTENER
-# ==========================================================
-        current_trip_id = trip_id
-        if current_trip_id:
-            trip_ref = db.reference(f"trips/{current_trip_id}")
-            notification_placeholder = st.empty()
-            
-            def notification_listener(event):
-                if event.data and isinstance(event.data, dict):
-                    if event.data.get("notification") == "arrived_sound":
-                        sound_html = """
-                        <audio autoplay>
-                            <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
-                        </audio>
-                        """
-                        components.html(sound_html, height=0)
-                        
-                        notification_placeholder.success(
-                            "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
-                        )
-                        trip_ref.update({"notification": "played"})
-            trip_ref.listen(notification_listener)            
             
 # ====================================================================
 # 🖥️ STREAMLIT UI - CUSTOMER BOOKING INTERFACE (CLEANED & FIXED)
 # ====================================================================
 def main():
-    # 🆕 URL-ൽ driver_trip_panel ഉണ്ടെങ്കിൽ, ആ പേജ് മാത്രം കാണിക്കുക
-    query_params = st.query_params
-    if query_params.get("page") == "driver_trip_panel":
-        driver_trip_panel_page()
-        return  # ബാക്കി കോഡ് റൺ ചെയ്യരുത്
     st.markdown("""
-    <div class="header-box" style="padding: 15px !important; margin-bottom: 15px !important;">
-        <h1 style="font-size: 1.8rem !important; margin: 0 !important; color: #ffcc00 !important;">🚕 EASY AUTO TAXI</h1>
-        <p style="font-size: 11px !important; margin-top: 3px !important; color: #b3b3b3 !important;">FAST • SECURE • RELIABLE</p>
+    <div class="header-box">
+        <h1>🚕 EASY AUTO TAXI</h1>
+        <p>FAST • SECURE • RELIABLE</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -2747,32 +2491,27 @@ def main():
         st.session_state.lon = None
     if 'gps_link' not in st.session_state:
         st.session_state.gps_link = "Not Available"
-    if 'gps_enabled' not in st.session_state:      # <--- ഈ വരി ഇവിടെ ചേർക്കുക
-        st.session_state.gps_enabled = False       # <--- ഇതും
 
-    # 🎯 ജിപിഎസ് ഐക്കണും സ്റ്റാറ്റസ് മെസ്സേജും ഒരേ വരിയിൽ കൊണ്ടുവരാൻ കോളം ഉപയോഗിക്കുന്നു
-    col_icon, col_status = st.columns([1, 5])
+    try:
+        location = streamlit_geolocation()
+        if location and location.get("latitude"):
+            st.session_state.lat = location.get("latitude")
+            st.session_state.lon = location.get("longitude")
+            st.session_state.gps_link = f"https://maps.google.com/?q={st.session_state.lat},{st.session_state.lon}"
+    except Exception as e:
+        pass
 
-    with col_icon:
-        try:
-            location = streamlit_geolocation()
-            if location and location.get("latitude"):
-                st.session_state.lat = location.get("latitude")
-                st.session_state.lon = location.get("longitude")
-                st.session_state.gps_link = f"https://maps.google.com/?q={st.session_state.lat},{st.session_state.lon}"
-        except Exception as e:
-            pass
+    lat = st.session_state.lat
+    lon = st.session_state.lon
+    gps_link = st.session_state.gps_link
 
-    with col_status:
-        # ഐക്കണിന് അടുത്തേക്ക് സ്റ്റാറ്റസ് കാണിക്കാൻ
-        lat = st.session_state.lat
-        lon = st.session_state.lon
-        
-        # ചെറിയ പാഡിംഗ് ഉപയോഗിച്ച് സ്പേസ് കുറയ്ക്കുന്നു
+    # ഒരൊറ്റ സ്റ്റാറ്റസ് ബാറും ബട്ടണും മാത്രം ഇവിടെ പ്രവർത്തിക്കും (ഡ്യൂപ്ലിക്കേഷൻ ഒഴിവാക്കി)
+    col1, col2 = st.columns([3, 1])
+    with col1:
         if lat and lon:
             st.markdown(
                 """
-                <div style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 5px; margin-bottom: 0px;">
+                <div style="background-color: #d4edda; color: #155724; padding: 8px; border-radius: 5px; border: 1px solid #c3e6cb;">
                     <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
                 </div>
                 """,
@@ -2781,34 +2520,21 @@ def main():
         else:
             st.markdown(
                 """
-                <div style="background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 5px; margin-bottom: 0px;">
+                <div style="background-color: #fff3cd; color: #856404; padding: 8px; border-radius: 5px; border: 1px solid #ffeeba;">
                     <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
+    with col2:
+        if st.button("🔄 Get GPS"):
+            st.rerun()
 
-    # 📝 "യാത്രാ വിവരങ്ങൾ" എന്ന ഹെഡിംഗ് (ഇത് കൂടുതൽ മുകളിലേക്ക് വരാൻ CSS)
-    st.markdown("""
-    <style>
-        /* സ്പേസ് കുറയ്ക്കാൻ */
-        div[data-testid="stVerticalBlock"] > div {
-            margin-bottom: 0rem !important;
-            gap: 0.5rem !important;
-        }
-        div[data-testid="stMarkdownContainer"] h3 {
-            margin-top: 5px !important;
-            margin-bottom: 5px !important;
-            padding-bottom: 0px !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
+    st.write("---")
     st.markdown("### 📝 യാത്രാ വിവരങ്ങൾ രേഖപ്പെടുത്തുക")
 
     # 🛑 st.form ഉപയോഗിച്ച് ബുക്കിംഗ് ഫോം സുരക്ഷിതമാക്കിയിരിക്കുന്നു
     with st.form("booking_form"):
-        # ... (ബാക്കി കോഡുകൾ അതേപടി ഇരിക്കട്ടെ) ...
         c_name = st.text_input("👤 നിങ്ങളുടെ പേര് (Customer Name):", placeholder="പേര് ടൈപ്പ് ചെയ്യുക")
         c_phone = st.text_input("📞 ഫോൺ നമ്പർ (Phone Number):", placeholder="9876543210")
 
@@ -2856,25 +2582,6 @@ def main():
     if submitted:
         st.session_state.is_booking = True
 
-        # 🆕 1. GPS എനേബിൾ ചെയ്തിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക
-        # lat, lon ഉണ്ടെങ്കിൽ gps_enabled = True ആക്കുക (ഇത് പ്രധാനം)
-        if st.session_state.lat and st.session_state.lon:
-            st.session_state.gps_enabled = True
-        if not st.session_state.gps_enabled:
-            st.markdown("""
-            <div style="background-color: #ffebee; border-left: 5px solid #d32f2f; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;">
-                <b style="color: #c62828;">📍 GPS ലൊക്കേഷൻ ലഭ്യമല്ല!</b><br>
-                <span style="color: #333; font-size: 12px;">
-                ബുക്കിംഗ് പൂർത്തിയാക്കാൻ ദയവായി നിങ്ങളുടെ ലൊക്കേഷൻ ഓൺ ചെയ്യുക. 
-                ബ്രൗസർ സെറ്റിംഗ്സിൽ നിന്ന് "Location Permission" നൽകുക.
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
-            st.toast("⚠️ GPS ഓൺ ചെയ്യാതെ ബുക്കിംഗ് സാധ്യമല്ല!", icon="❌")
-            st.session_state.is_booking = False
-            st.stop()            
-
-        
         # Validation checks
         if not (c_name and c_phone and pickup_place and drop_place):
             st.warning("⚠️ ദയവായി എല്ലാ വിവരങ്ങളും നൽകുക!")
@@ -2883,7 +2590,6 @@ def main():
 
         if pickup_place == drop_place:
             st.warning("⚠️ Pickup, Drop ഒരേ സ്ഥലം ആകരുത്.")
-            st.warning("⚠️ ദയവായി വ്യത്യസ്തമായ സ്ഥലങ്ങൾ തിരഞ്ഞെടുക്കുക.")
             st.session_state.is_booking = False
             st.stop()
 
@@ -2898,9 +2604,9 @@ def main():
         # Distance & Fare Calculation
         with st.spinner("🔍 ദൂരം കണക്കാക്കുന്നു..."):
             exact_distance = get_real_road_distance(pickup_place, drop_place) if 'get_real_road_distance' in globals() else 5.0
-        # സ്ഥലം കണ്ടെത്താനായില്ലെങ്കിൽ
+
         if exact_distance is None:
-            st.toast("📍 നിങ്ങൾ തിരഞ്ഞെടുത്ത ലൊക്കേഷൻ കണ്ടെത്താനായില്ല! ദയവായി സമീപത്തുള്ള മറ്റൊരു സ്ഥലം തിരഞ്ഞെടുക്കുക.", icon="❌")
+            st.error("❌ Pickup അല്ലെങ്കിൽ Drop location കണ്ടെത്താനായില്ല.")
             st.session_state.is_booking = False
             st.stop()
 
@@ -2926,7 +2632,7 @@ def main():
                 # ============================================
                 payload = {
                     "action": "create_trip",
-                    "secret_key": st.secrets["API_SECRET_KEY"],
+                    "secret_key": "EasyTaxi_2026_Secure_Key_#Asu@4368",
                     "trip_id": unique_trip_id,
                     "customer_name": sanitize_input(c_name) if 'sanitize_input' in globals() else c_name,
                     "customer_phone": sanitize_input(c_phone) if 'sanitize_input' in globals() else c_phone,
@@ -2942,7 +2648,7 @@ def main():
                     "total_fare": total_fare,
                     "commission_amount": commission_amount,
                     "schedule_time": "Now",
-                    "booking_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "booking_time": datetime.datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     # Driver-specific fields trip-level അല്ല
                     "driver_name": "",
                     "driver_phone": "",
@@ -2975,7 +2681,6 @@ def main():
         എന്തെങ്കിലും കാരണവശാൽ ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയാൽ, വീണ്ടും ആപ്പ് ഓപ്പൺ ചെയ്യുമ്പോൾ മുകളിൽ നൽകിയിരിക്കുന്ന ട്രിപ്പ് ഐഡി നൽകി ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കാവുന്നതാണ്.
     </p>
 </div>"""
-                    
                     st.markdown(card_html, unsafe_allow_html=True)
 
                     # ----------------------------------------------------
@@ -2984,18 +2689,11 @@ def main():
                     st.write("---")
                     trip_ref = db.reference(f"trips/{unique_trip_id}")
                     trip_data = trip_ref.get()
-                    # 🆕 സ്റ്റാറ്റസ് എടുക്കുമ്പോൾ അധിക സ്പേസുകൾ നീക്കം ചെയ്യുക
-                    if trip_data:
-                        status = str(trip_data.get("status", "Pending")).strip()
-                    else:
-                        status = "Pending" 
+                    status = trip_data.get("status", "Pending") if trip_data else "Pending"
                     vehicle_type_check = trip_data.get("vehicle_type", "Auto Rickshaw") if trip_data else "Auto Rickshaw"
-                    # 🆕 ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തതിന് ശേഷം ("Pending" അല്ലാത്ത എല്ലാ അവസ്ഥയിലും) ഈ കോഡ് പ്രവർത്തിക്കും
-                    if status != "Pending":
-    
 
-                    
-                    
+                    # ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു കഴിഞ്ഞാൽ മാത്രം പ്രവർത്തിക്കുന്ന ഭാഗം
+                    if status == "Accepted":
                         # 🔔 1. നോട്ടിഫിക്കേഷൻ സൗണ്ട്
                         notification_sound = """
                             <audio autoplay>
@@ -3045,199 +2743,240 @@ def main():
 
         st.session_state.is_booking = False
         st.write("---")
-    # ========================================================
-    # വെബ്‌സൈറ്റ് ഫൂട്ടറും ഡ്രൈവർ & SOS പാനലുകളും (മുഴുവൻ ഫീച്ചറുകളും ഉള്ളത്)
-    # ========================================================
 
-    # ഫൂട്ടറിന് ബോക്സും ബോർഡറും നൽകാനുള്ള CSS സ്റ്റൈൽ    
-    str_lit.markdown("""
-    <style>
-    .footer-box {
-        border: 2px solid #ffcc00;
-        border-radius: 10px;
-        padding: 20px;
-        background-color: #1e1e1e;
-        margin-top: 20px;
-    }    
-    </style>
-    """, unsafe_allow_html=True)
-    # ഫൂട്ടർ സെപ്പറേറ്റർ
-    str_lit.markdown("---")
-
-    # മൂന്ന് കോളങ്ങളിലായി മൂന്ന് പ്രധാന ബട്ടണുകൾ
-    footer_col1, footer_col2, footer_col3 = str_lit.columns(3)
-    # 1. Contact Us ബട്ടൺ
-    with footer_col1:
-        if str_lit.button("📞 Contact Us"):
-            str_lit.info("സഹായത്തിന് വിളിക്കുക: +91 XXXXXXXXXX | Email: support@example.com")
-    # 2. SOS / Emergency ബട്ടൺ
-    with footer_col2:
-        if str_lit.button("🚨 SOS / Emergency"):
-            str_lit.session_state['show_sos_panel'] = True
-            str_lit.session_state['show_driver_panel'] = False  # ഡ്രൈവർ പാനൽ ക്ലോസ് ചെയ്യാൻ
-    # 3. Driver Panel ബട്ടൺ
-    with footer_col3:
-        if str_lit.button("🚗 Driver Panel"):
-            str_lit.session_state['show_driver_panel'] = True
-            str_lit.session_state['show_sos_panel'] = False  # SOS പാനൽ ക്ലോസ് ചെയ്യാൻ   
-    # --------------------------------------------------------
-    # SOS പാനൽ (ഡയറക്ട് കോൾ ലിങ്കുകളും വാട്സാപ്പ് ഷെയറും)
-    # --------------------------------------------------------        
-    if str_lit.session_state.get('show_sos_panel', False):
-        str_lit.markdown("---")
-        str_lit.error("🚨 അടിയന്തര സഹായ വിഭാഗം (Emergency Control Rooms)") 
-        # നമ്പറുകളിൽ അമർത്തിയാൽ നേരിട്ട് കോൾ പോകുന്ന ലിങ്കുകൾ (tel: link)
-        str_lit.markdown("""
-        * **👮 പോലീസ് കൺട്രോൾ റൂം (112 / 100):** &nbsp; [📞 112 കോൾ ചെയ്യുക](tel:112)
-        * **🔥 ഫയർഫോഴ്സ് (101):** &nbsp; [📞 101 കോൾ ചെയ്യുക](tel:101)
-        * **🏥 ഹോസ്പിറ്റൽ / ആംബുലൻസ് (108):** &nbsp; [📞 108 കോൾ ചെയ്യുക](tel:108)
-        """, unsafe_allow_html=True)
-    
-        str_lit.markdown("---")
-        str_lit.subheader("📱 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കാൻ")
-    
-        sos_message = "എനിക്ക് അടിയന്തര സഹായം ആവശ്യമാണ്! ദയവായി ഉടൻ ബന്ധപ്പെടുക. (ഡ്രൈവർ/യാത്രക്കാരൻ)"
-        whatsapp_share_url = f"https://api.whatsapp.com/send?text={urllib.parse.quote(sos_message)}"
-    
-        str_lit.markdown(f"""
-        <a href="{whatsapp_share_url}" target="_blank">
-            <button style="background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
-                💬 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കുക
-            </button>
-        </a>
-        """, unsafe_allow_html=True)
-    
-        str_lit.markdown("<br>", unsafe_allow_html=True)
-    
-        if str_lit.button("SOS പാനൽ അടയ്ക്കുക"):
-            str_lit.session_state['show_sos_panel'] = False
-            str_lit.rerun() 
-# ============================================================
-# 📊 ഡ്രൈവർ ഹിസ്റ്ററി ഫയർബേസിൽ നിന്ന് എടുക്കുന്ന ഫംഗ്ഷൻ
-# ============================================================
-    def fetch_driver_history_from_firebase(chat_id):
-        try:
-            ref = db.reference("trips")
-            all_trips = ref.get()
-            
-            if not all_trips:
-                return []
-            
-            result_data = []
-            for booking_id, trip in all_trips.items():
-                if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
-                    result_data.append({
-                        "Trip ID": booking_id,
-                        "Date": trip.get("booking_time", "N/A").split(" ")[0],
-                        "Pickup": trip.get("pickup", "N/A"),
-                        "Drop": trip.get("drop", "N/A"),
-                        "Distance": f"{trip.get('calculated_distance', 'N/A')} km",
-                        "Fare": trip.get("total_fare", "N/A"),
-                        "Commission": trip.get("commission_amount", "N/A")
-                    })
-            return result_data
-        except Exception as e:
-            print(f"❌ Error fetching history: {e}")
-            return []
+        # ============================================================
+        # 🚨 SOS & Contact Section
+        # ============================================================
+        col_sos, col_contact = st.columns([1, 1])
+        with col_sos:
+            with st.expander("🚨 SOS"):
+                st.link_button("👮 പോലീസ് (100)", "tel:100")
+                st.link_button("👨‍👩‍👧‍👦 ബന്ധുക്കൾക്ക്", "https://wa.me/?text=⚠️ അടിയന്തര സഹായം ആവശ്യമാണ്! മഞ്ചേരി.")
+        with col_contact:
+            st.link_button("💬 Contact Us", "https://wa.me/919376543210")
 
 
-# ============================================================
-# 🚗 ഡ്രൈവർ പാനൽ - ഫയർബേസ് ഡാറ്റ കണക്ഷൻ
-# ============================================================
-    if str_lit.session_state.get('show_driver_panel', False):
-        str_lit.markdown("---")
-        str_lit.subheader("🚗 ഡ്രൈവർ പാനൽ - ചാറ്റ് & ട്രിപ്പ് ഹിസ്റ്ററി")
-        
-        driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ടെലഗ്രാം ചാറ്റ് ഐഡി (Telegram Chat ID) നൽകുക:", key="driver_id_input_main")
-        
-        # മൊബൈൽ ഉപയോക്താക്കൾക്ക് വേണ്ടി സെർച്ച് ബട്ടൺ
-        search_clicked = str_lit.button("🔍 ഹിസ്റ്ററി പരിശോധിക്കുക (Search)")
-        
-        # ചാറ്റ് ഐഡി നൽകി സെർച്ച് അമർത്തുമ്പോൾ മാത്രം ഹിസ്റ്ററി ലോഡ് ആകും
-        if driver_telegram_id and search_clicked:
-            str_lit.info(f"ചാറ്റ് ഐഡി ({driver_telegram_id}) പരിശോധിക്കുന്നു...")
-            
-            # ഫംഗ്ഷൻ കോൾ ചെയ്ത് ഡാറ്റ എടുക്കുന്നു
-            driver_history_data = fetch_driver_history_from_firebase(driver_telegram_id.strip())
-            
-            if driver_history_data:
-                str_lit.success("✅ ഡ്രൈവർ ഹിസ്റ്ററി വിജയകരമായി ലോഡ് ചെയ്തു!")
-                str_lit.markdown("### 📋 നിങ്ങളുടെ മുൻകാല ട്രിപ്പുകൾ:")
-                str_lit.table(driver_history_data)
-            else:
-                str_lit.warning("⚠️ ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
-                
-        if str_lit.button("പാനൽ അടയ്ക്കുക"):
-            str_lit.session_state['show_driver_panel'] = False
-            str_lit.rerun()
-    
-    # ==========================================================
-    # Clean Footer Component: Shadow for Malayalam Text & Styled Button
-    # ==========================================================
-    st.markdown("---")
-
-    # മലയാളം ടെക്സ്റ്റിന് മാത്രം ഷാഡോയും പ്രൊഫഷണൽ ലുക്കും നൽകാനുള്ള CSS ഉം ബട്ടൺ കളർ മാറ്റാനുള്ള സ്റ്റൈലും
-    st.markdown("""
-        <style>
-        .malayalam-title-card { 
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
-            margin-bottom: 15px;  
-        } 
-        /* സ്റ്റാറ്റസ് നോക്കൂ ബട്ടൺ കൂടുതൽ ആകർഷകമാക്കാൻ */
-        .stButton > button {
-            background-color: #e67e22;
-            color: white;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-        }
-        .stButton > button:hover {
-            background-color: #d35400;
-            color: white;
-        }
-        </style>
-        <div class="malayalam-title-card">
-            <h3 style="margin:0; color: #2c3e50; font-size: 19px;">🔍 നിങ്ങളുടെ നിലവിലെ ബുക്കിംഗ് സ്റ്റാറ്റസ് അറിയാൻ</h3>
-            <p style="margin: 8px 0 0 0; color: #555555; font-size: 14px;">ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയോ? മുൻപത്തെ ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കുന്നതിനായി ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക.</p>
-        </div>
-    """, unsafe_allow_html=True)    
-    col1, col2 = st.columns([3, 1])
-    with col1: 
-        footer_trip_id = st.text_input("ട്രിപ്പ് ഐഡി നൽകുക:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക (ഉദാ: TRIP-XXXXX)") 
-    with col2:
-        footer_check_btn = st.button("സ്റ്റാറ്റസ് നോക്കൂ", key="independent_footer_btn", use_container_width=True)        
-        if footer_check_btn:    
-            if footer_trip_id: 
-                with st.spinner("🔍 ട്രിപ്പ് വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
-                    try:
-                        
-                        # 🆕 ഫയർബേസിൽ നിന്ന് നേരിട്ട് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുന്നു
-                        trip_ref = db.reference(f"trips/{footer_trip_id.strip()}")
-                        trip_data = trip_ref.get()
-                        if trip_data:
-                            st.success(f"✅ ട്രിപ്പ് വിവരങ്ങൾ വിജയകരമായി കണ്ടെത്തി!")
-                            st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}")
-                            st.markdown(f"📊 **നിലവിലെ സ്റ്റാറ്റസ്:** {trip_data.get('status', 'Pending')}")
-                        else:
-                            st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
-                    except Exception as e:
-                        st.error(f"❌ എറർ: {e}")
-            else:
-                st.warning("⚠️ ദയവായി ഒരു ട്രിപ്പ് ഐഡി നൽകുക.")
-                
-                if current_status == "Arrived":
-                    st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")    
-                
-            
-    
 if __name__ == "__main__":
     main()
+	
+
+
+
+
+
+
+
+# ========================================================
+# വെബ്‌സൈറ്റ് ഫൂട്ടറും ഡ്രൈവർ & SOS പാനലുകളും (മുഴുവൻ ഫീച്ചറുകളും ഉള്ളത്)
+# ========================================================
+
+# ഫൂട്ടറിന് ബോക്സും ബോർഡറും നൽകാനുള്ള CSS സ്റ്റൈൽ
+str_lit.markdown("""
+<style>
+.footer-box {
+    border: 2px solid #ffcc00;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #1e1e1e;
+    margin-top: 20px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ഫൂട്ടർ സെപ്പറേറ്റർ
+str_lit.markdown("---")
+
+# മൂന്ന് കോളങ്ങളിലായി മൂന്ന് പ്രധാന ബട്ടണുകൾ
+footer_col1, footer_col2, footer_col3 = str_lit.columns(3)
+
+# 1. Contact Us ബട്ടൺ
+with footer_col1:
+    if str_lit.button("📞 Contact Us"):
+        str_lit.info("സഹായത്തിന് വിളിക്കുക: +91 XXXXXXXXXX | Email: support@example.com")
+
+# 2. SOS / Emergency ബട്ടൺ
+with footer_col2:
+    if str_lit.button("🚨 SOS / Emergency"):
+        str_lit.session_state['show_sos_panel'] = True
+        str_lit.session_state['show_driver_panel'] = False  # ഡ്രൈവർ പാനൽ ക്ലോസ് ചെയ്യാൻ
+
+# 3. Driver Panel ബട്ടൺ
+with footer_col3:
+    if str_lit.button("🚗 Driver Panel"):
+        str_lit.session_state['show_driver_panel'] = True
+        str_lit.session_state['show_sos_panel'] = False  # SOS പാനൽ ക്ലോസ് ചെയ്യാൻ
+
+
+# --------------------------------------------------------
+# SOS പാനൽ (ഡയറക്ട് കോൾ ലിങ്കുകളും വാട്സാപ്പ് ഷെയറും)
+# --------------------------------------------------------
+if str_lit.session_state.get('show_sos_panel', False):
+    str_lit.markdown("---")
+    str_lit.error("🚨 അടിയന്തര സഹായ വിഭാഗം (Emergency Control Rooms)")
     
+    # നമ്പറുകളിൽ അമർത്തിയാൽ നേരിട്ട് കോൾ പോകുന്ന ലിങ്കുകൾ (tel: link)
+    str_lit.markdown("""
+    * **👮 പോലീസ് കൺട്രോൾ റൂം (112 / 100):** &nbsp; [📞 112 കോൾ ചെയ്യുക](tel:112)
+    * **🔥 ഫയർഫോഴ്സ് (101):** &nbsp; [📞 101 കോൾ ചെയ്യുക](tel:101)
+    * **🏥 ഹോസ്പിറ്റൽ / ആംബുലൻസ് (108):** &nbsp; [📞 108 കോൾ ചെയ്യുക](tel:108)
+    """, unsafe_allow_html=True)
     
+    str_lit.markdown("---")
+    str_lit.subheader("📱 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കാൻ")
+    
+    sos_message = "എനിക്ക് അടിയന്തര സഹായം ആവശ്യമാണ്! ദയവായി ഉടൻ ബന്ധപ്പെടുക. (ഡ്രൈവർ/യാത്രക്കാരൻ)"
+    whatsapp_share_url = f"https://api.whatsapp.com/send?text={urllib.parse.quote(sos_message)}"
+    
+    str_lit.markdown(f"""
+    <a href="{whatsapp_share_url}" target="_blank">
+        <button style="background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
+            💬 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കുക
+        </button>
+    </a>
+    """, unsafe_allow_html=True)
+    
+    str_lit.markdown("<br>", unsafe_allow_html=True)
+    
+    if str_lit.button("SOS പാനൽ അടയ്ക്കുക"):
+        str_lit.session_state['show_sos_panel'] = False
+        str_lit.rerun()
+
+
+# --------------------------------------------------------
+# 🚗 ഡ്രൈവർ പാനൽ - ഫയർബേസ് ഡാറ്റാ കണക്ഷൻ
+# --------------------------------------------------------
+if str_lit.session_state.get('show_driver_panel', False):
+    str_lit.markdown("---")
+    str_lit.subheader("🚗 ഡ്രൈവർ പാനൽ - ചാറ്റ് & ട്രിപ്പ് ഹിസ്റ്ററി")
+    
+    driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ടെലഗ്രാം ചാറ്റ് ഐഡി (Telegram Chat ID) നൽകുക:", key="driver_id_input_main")
+    
+    # മൊബൈൽ ഉപയോക്താക്കൾക്ക് വേണ്ടി സെർച്ച് ബട്ടൺ
+    search_clicked = str_lit.button("🔍 ഹിസ്റ്ററി പരിശോധിക്കുക (Search)")
+    
+    # ചാറ്റ് ഐഡി നൽകി സെർച്ച് അമർത്തുമ്പോൾ മാത്രം ഹിസ്റ്ററി ലോഡ് ആകും
+    if driver_telegram_id and search_clicked:
+        str_lit.info(f"ചാറ്റ് ഐഡി ({driver_telegram_id}) പരിശോധിക്കുന്നു...")
+        
+        # ഫയർബേസിൽ നിന്ന് ആ ഡ്രൈവറുടെ ട്രിപ്പുകൾ മാത്രം എടുക്കുന്ന ഫങ്ഷൻ
+        def fetch_driver_history_from_firebase(chat_id):
+            try:
+                ref = db.reference("trips")
+                all_trips = ref.get()
+                
+                if not all_trips:
+                    return []
+                
+                result_data = []
+                for booking_id, trip in all_trips.items():
+                    if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
+                        result_data.append({
+                            "booking_time": trip.get("booking_time", "N/A"),
+                            "pickup": trip.get("pickup", "N/A"),
+                            "drop": trip.get("drop", "N/A"),
+                            "total_fare": trip.get("total_fare", "N/A")
+                        })
+                return result_data
+            except Exception as e:
+                return []
+
+        # ഫങ്ഷൻ കോൾ ചെയ്ത് ഡാറ്റ എടുക്കുന്നു
+        driver_history_data = fetch_driver_history_from_firebase(driver_telegram_id.strip())
+        
+        if driver_history_data:
+            str_lit.success("✅ ഡ്രൈവർ ഹിസ്റ്ററി വിജയകരമായി ലോഡ് ചെയ്തു!")
+            str_lit.markdown("### 📋 നിങ്ങളുടെ മുൻകാല ട്രിപ്പുകൾ:")
+            str_lit.table(driver_history_data)
+        else:
+            str_lit.warning("⚠️ ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+            
+    if str_lit.button("പാനൽ അടയ്ക്കുക"):
+        str_lit.session_state['show_driver_panel'] = False
+        str_lit.rerun()
+# ==========================================================
+# Clean Footer Component: Shadow for Malayalam Text & Styled Button
+# ==========================================================
+st.markdown("---")
+
+# മലയാളം ടെക്സ്റ്റിന് മാത്രം ഷാഡോയും പ്രൊഫഷണൽ ലുക്കും നൽകാനുള്ള CSS ഉം ബട്ടൺ കളർ മാറ്റാനുള്ള സ്റ്റൈലും
+st.markdown("""
+    <style>
+    .malayalam-title-card {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+    }
+    /* സ്റ്റാറ്റസ് നോക്കൂ ബട്ടൺ കൂടുതൽ ആകർഷകമാക്കാൻ */
+    .stButton > button {
+        background-color: #e67e22;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        font-weight: bold;
+    }
+    .stButton > button:hover {
+        background-color: #d35400;
+        color: white;
+    }
+    </style>
+    <div class="malayalam-title-card">
+        <h3 style="margin:0; color: #2c3e50; font-size: 19px;">🔍 നിങ്ങളുടെ നിലവിലെ ബുക്കിംഗ് സ്റ്റാറ്റസ് അറിയാൻ</h3>
+        <p style="margin: 8px 0 0 0; color: #555555; font-size: 14px;">ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയോ? മുൻപത്തെ ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കുന്നതിനായി ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക.</p>
+    </div>
+""", unsafe_allow_html=True)
+
+col1, col2 = st.columns([3, 1])
+with col1:
+    footer_trip_id = st.text_input("ട്രിപ്പ് ഐഡി നൽകുക:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക (ഉദാ: TRIP-XXXXX)")
+with col2:
+    footer_check_btn = st.button("സ്റ്റാറ്റസ് നോക്കൂ", key="independent_footer_btn", use_container_width=True)
+
+if footer_check_btn:
+    if footer_trip_id:
+        with st.spinner("വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
+            trip_data = get_trip_from_database(footer_trip_id.strip()) if 'get_trip_from_database' in globals() else None
+            
+            if trip_data:
+                current_status = trip_data.get('status', 'Pending')
+                st.success(f"✅ ട്രിപ്പ് വിജയകരമായി കണ്ടെത്തി!")
+                st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup')} \n\n 🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop')}")
+                st.markdown(f"🟢 **നിലവിലെ അവസ്ഥ (Status):** `{current_status}`")
+                
+                if current_status == "Arrived":
+                    st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")
+                    # ==========================================================
+                    # 🔔 REAL-TIME NOTIFICATION LISTENER (ഇവിടെയാണ് ചേർക്കേണ്ടത്)
+                    # ==========================================================
+                    current_trip_id = footer_trip_id
+                    
+                    if current_trip_id:
+                        trip_ref = db.reference(f"trips/{current_trip_id}")
+                        notification_placeholder = st.empty()
+                        
+                        def notification_listener(event):
+                            if event.data and isinstance(event.data, dict):
+                                if event.data.get("notification") == "arrived_sound":
+                                    sound_html = """
+                                    <audio autoplay>
+                                        <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
+                                    </audio>
+                                    """
+                                    components.html(sound_html, height=0)
+                                    
+                                    notification_placeholder.success(
+                                        "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
+                                    )
+                                    trip_ref.update({"notification": "played"})
+                        trip_ref.listen(notification_listener)
+                else:       
+                    st.error("❌ ഈ ട്രിപ്പ് 'Arrived' അവസ്ഥയിൽ അല്ല.")
+            else:
+                st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
+    else:
+        st.warning("⚠️ ദയവായി നിങ്ങളുടെ ട്രിപ്പ് ഐഡി നൽകുക.")
         
 # ==========================================================
 # Phone Masking Function (Single version)
@@ -3285,7 +3024,7 @@ def accept_trip(
             "driver_name": driver_name,
             "driver_phone": driver_phone,
             "driver_chat_id": str(driver_chat_id),
-            "accepted_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "accepted_at": datetime.datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
     except Exception as e:
         print(f"❌ Firebase update error: {e}")
@@ -3297,16 +3036,42 @@ def accept_trip(
     masked_customer_phone = mask_phone_number(customer_phone)
 
     # ============================================================
-    # 🆕 ട്രിപ്പ് പാനൽ ബട്ടൺ (പുതിയ സംവിധാനം)
+    # 3. Navigation URL — Directions mode
     # ============================================================
-    driver_panel_url = f"https://your-app.streamlit.app/?page=driver_trip_panel&trip_id={booking_id}"
-        
-    markup = types.InlineKeyboardMarkup(row_width=1)
-    panel_button = types.InlineKeyboardButton(
-        "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക", 
-        url=driver_panel_url
+    navigation_url = (
+        f"https://www.google.com/maps/dir/?api=1"
+        f"&destination={pickup_lat},{pickup_lon}"
+        f"&travelmode=driving"
     )
-    markup.add(panel_button)
+
+    # ============================================================
+    # 4. Inline Buttons — Order: Navigation, Arrived, Call (bottom)
+    # ============================================================
+    markup = types.InlineKeyboardMarkup(row_width=1)
+
+    nav_button = types.InlineKeyboardButton(
+        "🗺️ നാവിഗേഷൻ (Google Maps)",
+        url=navigation_url
+    )
+
+    arrived_button = types.InlineKeyboardButton(
+        "✅ ഞാൻ എത്തി (Arrived)",
+        callback_data=f"arrived_{booking_id}"
+    )
+
+    # 🎯 — Phone normalize
+    raw_phone = str(customer_phone).strip().replace(" ", "").replace("-", "").replace("+", "")
+
+    if raw_phone.startswith("91") and len(raw_phone) == 12:
+        tel_url = f"tel:+{raw_phone}"  
+    elif len(raw_phone) == 10:
+        tel_url = f"tel:+91{raw_phone}"
+    else:
+        tel_url = f"tel:+91{raw_phone}"
+    
+
+    # Order: Navigation → Arrived → Call (bottom)
+    markup.add(nav_button, arrived_button)
 
     # ============================================================
     # 5. Driver Message
@@ -3333,78 +3098,474 @@ def accept_trip(
     except Exception as e:
         print(f"❌ Send error: {e}")
         return False
-        
-# ============================================================
-# ✅ ACCEPT TRIP Callback Handler (പുതിയ സംവിധാനം)
-# ============================================================
+# ==========================================================
+# ✅ ACCEPT TRIP Callback Handler (telebot)
+# ==========================================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("accept_"))
 def handle_accept_trip(call):
-    # 🆕 DEBUG
-    print("=" * 50)
-    print("🔍 DEBUG: handle_accept_trip CALLED!")
-    print(f"🔍 DEBUG: call.data = {call.data}")
-    print(f"🔍 DEBUG: chat_id = {call.message.chat.id}")
-    print("=" * 50)
-    
-
+    """
+    Driver ACCEPT button tap ചെയ്യുമ്പോൾ:
+    1. Firebase-ൽ trip status = Accepted (transaction)
+    2. Driver-ന് confirmation alert
+    3. accept_trip() — Navigation + Arrived + Call buttons
+    """
+    print("=" * 60)
+    print(f"🔔 CALLBACK RECEIVED!")
+    print(f"   Data: {call.data}")
+    print(f"   Chat ID: {call.message.chat.id}")
+    print("=" * 60)
     chat_id = call.message.chat.id
     trip_id = call.data.replace("accept_", "")
-    
+
     try:
-        # 1. ഡ്രൈവറുടെ വിവരങ്ങൾ ഫയർബേസിൽ നിന്ന് എടുക്കുക
-        driver_ref = db.reference(f"drivers/{chat_id}")
-        driver_data = driver_ref.get() or {}
-        
-        driver_name = driver_data.get("driver_name", "Unknown Driver")
+        # 1. Atomic Trip Acceptance
+        driver_data = db.reference(f"drivers/{chat_id}").get() or {}
+        driver_name = driver_data.get("driver_name", "Unknown Driver")   
         driver_phone = driver_data.get("phone", "N/A")
-        vehicle_number = driver_data.get("vehicle_number", "N/A")
-        
-        # 2. ട്രിപ്പ് വിവരങ്ങൾ ഫയർബേസിൽ അപ്ഡേറ്റ് ചെയ്യുക
-        db.reference(f"trips/{trip_id}").update({
-            "status": "Accepted",
-            "driver_chat_id": str(chat_id),
-            "driver_name": driver_name,
-            "driver_phone": driver_phone,
-            "vehicle_number": vehicle_number,
-            "accepted_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        })
-        
-        # 3. ACCEPT ബട്ടൺ നീക്കം ചെയ്യുക
+        # 🆕 ഡീബഗ് ചെയ്യാൻ ഇത് ചേർക്കുക
+        print(f"DEBUG: Fetched Driver -> Name: {driver_name}, Phone: {driver_phone}")
+        # 2. Atomic Trip Acceptance (യഥാർത്ഥ പേരും ഫോണും നൽകുക)   
+        result = accept_trip_safely(
+            trip_id,
+            chat_id,
+            driver_name,   # 🆕 ഡ്രൈവറുടെ യഥാർത്ഥ പേര്
+            driver_phone   # 🆕 ഡ്രൈവറുടെ യഥാർത്ഥ ഫോൺ 
+        )
+
+        # 2. Response
+        if result == "success":
+            # Remove ACCEPT button
+            try:
+                bot.edit_message_reply_markup(
+                    chat_id=chat_id,
+                    message_id=call.message.message_id,
+                    reply_markup=None
+                )
+            except:
+                pass
+
+            # Alert
+            bot.answer_callback_query(
+                call.id,
+                "✅ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!",
+                show_alert=False
+            )
+
+            # 3. Fetch trip data
+            trip_data = db.reference(f"trips/{trip_id}").get() or {}
+
+            customer_name = trip_data.get("customer_name", "N/A")
+            customer_phone = trip_data.get("customer_phone", "")
+            pickup_lat = trip_data.get("pickup_lat", 0)
+            pickup_lon = trip_data.get("pickup_lon", 0)
+
+            # Fallback — parse from location link
+            if not pickup_lat or not pickup_lon:
+                pickup_link = (
+                    trip_data.get("location")
+                    or trip_data.get("pickup_link")
+                    or ""
+                )
+                if pickup_link and "q=" in pickup_link:
+                    try:
+                        coords = pickup_link.split("q=")[-1].split("&")[0]
+                        pickup_lat, pickup_lon = coords.split(",")
+                        pickup_lat = float(pickup_lat)
+                        pickup_lon = float(pickup_lon)
+                    except:
+                        pass
+            
+            # 4. Follow-up — accept_trip()
+            # 🆕 ഡ്രൈവറുടെ വിവരങ്ങൾ ഫയർബേസിൽ നിന്ന് എടുക്കുക
+            driver_data = db.reference(f"drivers/{chat_id}").get() or {}
+            driver_name = driver_data.get("driver_name", "Unknown Driver")
+            driver_phone = driver_data.get("phone", "N/A")
+            vehicle_number = driver_data.get("vehicle_number", "N/A")
+            
+            
+            accept_trip(
+                booking_id=trip_id,
+                customer_name=customer_name,
+                customer_phone=customer_phone,
+                driver_name=driver_name,
+                driver_phone=driver_phone,
+                vehicle_number=vehicle_number,  # 🆕 വാഹന നമ്പർ
+                driver_chat_id=chat_id,
+                pickup_lat=pickup_lat,
+                pickup_lon=pickup_lon
+            )
+
+            print(f"✅ Trip {trip_id} accepted by driver {chat_id}")
+
+        elif result == "already_taken":
+            bot.answer_callback_query(
+                call.id,
+                "❌ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ എടുത്തു!",
+                show_alert=True
+            )
+        else:
+            bot.answer_callback_query(
+                call.id,
+                "❌ ട്രിപ്പ് കണ്ടെത്തിയില്ല!",
+                show_alert=True
+            )
+
+    except Exception as e:
+        print(f"❌ handle_accept_trip error: {e}")
         try:
-            bot.edit_message_reply_markup(
-                chat_id=chat_id,
-                message_id=call.message.message_id,
-                reply_markup=None
+            bot.answer_callback_query(
+                call.id,
+                "❌ Error സംഭവിച്ചു",
+                show_alert=True
             )
         except:
-            pass
+            pass 
+   
+# ==========================================================
+# ✅ ARRIVED Callback Handler (telebot)
+# ==========================================================
+@bot.callback_query_handler(func=lambda call: call.data.startswith("arrived_")) 
+def handle_arrived_trip(call):
+    """
+    Driver ARRIVED button tap ചെയ്യുമ്പോൾ:
+    1. Firebase-ൽ trip status = Arrived
+    2. Driver-ന് കൺഫർമേഷൻ അയക്കുന്നു
+    """
+    print("=" * 60)
+    print(f"🔔 ARRIVED CALLBACK RECEIVED!")
+    print(f"   Data: {call.data}")
+    print(f"   Chat ID: {call.message.chat.id}")
+    print("=" * 60)
+    
+    chat_id = call.message.chat.id
+    trip_id = call.data.replace("arrived_", "")
+    
+    try:
+        # 1. Firebase-ൽ സ്റ്റാറ്റസ് അപ്ഡേറ്റ് ചെയ്യുക
+        ref = db.reference(f"trips/{trip_id}")
+        trip_data = ref.get()
         
-        # 4. ഡ്രൈവർക്ക് ട്രിപ്പ് പാനൽ ലിങ്ക് അയക്കുക
-        # 🆕 DEBUG: URL ഉണ്ടാക്കുന്നതിന് മുമ്പ്
-        print("🔍 DEBUG: Driver Panel URL ഉണ്ടാക്കുന്നു...")
-        print(f"🔍 DEBUG: trip_id = {trip_id}, chat_id = {chat_id}")
-        driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={trip_id}&driver_chat_id={chat_id}"
-        print(f"🔍 DEBUG: URL = {driver_panel_url}")
-        markup = types.InlineKeyboardMarkup(row_width=1)
-        panel_button = types.InlineKeyboardButton(
-            "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക", 
-            url=driver_panel_url
+        if trip_data and str(trip_data.get("driver_chat_id")) == str(chat_id):
+            ref.update({"status": "Arrived"})
+            
+            # Alert (Pop-up message)
+            bot.answer_callback_query(
+                call.id,
+                "✅ നിങ്ങൾ എത്തിയതായി രേഖപ്പെടുത്തി!",
+                show_alert=False
+            )
+            
+            # മെസ്സേജ് എഡിറ്റ് ചെയ്യുക (Notify Customer ബട്ടണും കൂടി ചേർക്കുക)
+            try:
+                # 1. Notify Customer ബട്ടൺ ഉണ്ടാക്കുക
+                notify_button = types.InlineKeyboardButton(
+                    "🔔 കസ്റ്റമറെ അറിയിക്കുക",
+                    callback_data=f"notify_{trip_id}"
+                )
+                
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                markup.add(notify_button)
+                
+                # 2. മെസ്സേജ് എഡിറ്റ് ചെയ്യുക
+                bot.edit_message_text(
+                    chat_id=chat_id,
+                    message_id=call.message.message_id,
+                    text=call.message.text + "\n\n🔴 **[Status: Arrived at Location]** - കസ്റ്റമറെ അറിയിക്കാൻ താഴെയുള്ള ബട്ടൺ അമർത്തുക.",
+                    reply_markup=markup
+                )
+            except Exception as edit_err:
+                print(f"⚠️ Edit message error: {edit_err}")
+                
+        else:
+            # അനധികൃത ഡ്രൈവർ
+            bot.answer_callback_query(
+                call.id,
+                "❌ അസാധുവായ റിക്വസ്റ്റ് അല്ലെങ്കിൽ നിങ്ങൾക്ക് ഈ ട്രിപ്പിൽ അധികാരമില്ല.",
+                show_alert=True
+            )
+            
+    except Exception as e:
+        print(f"❌ handle_arrived_trip error: {e}")
+        bot.answer_callback_query(
+            call.id,
+            "❌ Error സംഭവിച്ചു",
+            show_alert=True
         )
-        markup.add(panel_button)
+# ==========================================================
+# ✅ CALL CUSTOMER Callback Handler (telebot) - v4
+# ==========================================================
+@bot.callback_query_handler(func=lambda call: call.data.startswith("call_"))
+def handle_call_customer(call):
+    """
+    Driver CALL button tap ചെയ്യുമ്പോൾ:
+    മാസ്ക് ചെയ്ത ഫോൺ നമ്പർ അയക്കുന്നു. യഥാർത്ഥ നമ്പർ കാണാൻ ഒരു ബട്ടണും നൽകുന്നു.
+    """
+    print("=" * 60)
+    print(f"🔔 CALL CUSTOMER CALLBACK RECEIVED!")
+    print(f"   Data: {call.data}")
+    print("=" * 60)
+    
+    chat_id = call.message.chat.id
+    booking_id = call.data.replace("call_", "")
+    
+    try:
+        # 1. Firebase-ൽ നിന്ന് വിവരങ്ങൾ എടുക്കുക
+        trip_data = db.reference(f"trips/{booking_id}").get() or {}
+        customer_phone = trip_data.get("customer_phone", "")
+        customer_name = trip_data.get("customer_name", "Customer")
+        
+        if not customer_phone:
+            bot.answer_callback_query(
+                call.id, 
+                "❌ കസ്റ്റമറുടെ ഫോൺ നമ്പർ ലഭ്യമല്ല", 
+                show_alert=True
+            )
+            return
+
+        # 2. ഫോൺ നമ്പർ ഫോർമാറ്റ് ചെയ്യുക (+91 ഉൾപ്പെടെ)
+        raw_phone = str(customer_phone).strip().replace(" ", "").replace("-", "").replace("+", "")
+        
+        if raw_phone.startswith("91") and len(raw_phone) == 12:
+            formatted_phone = f"+{raw_phone}"
+        elif len(raw_phone) == 10:
+            formatted_phone = f"+91{raw_phone}"
+        else:
+            formatted_phone = f"+91{raw_phone}"
+
+        # 3. മാസ്ക് ചെയ്ത നമ്പർ ഉണ്ടാക്കുക (Privacy-ക്ക് വേണ്ടി)
+        if len(raw_phone) >= 10:
+            masked_phone = f"{raw_phone[:4]}XXXXX{raw_phone[-2:]}"
+        else:
+            masked_phone = "XXXXX"
+
+        # 4. "യഥാർത്ഥ നമ്പർ കാണുക" എന്ന ബട്ടൺ ഉണ്ടാക്കുക
+        show_phone_button = types.InlineKeyboardButton(
+            "📞 യഥാർത്ഥ നമ്പർ കാണുക",
+            callback_data=f"showphone_{booking_id}"
+        )
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(show_phone_button)
+
+        # 5. മാസ്ക് ചെയ്ത നമ്പർ അയക്കുക
+        message_text = (
+            f"📞 *കസ്റ്റമറുടെ വിവരങ്ങൾ*\n\n"
+            f"👤 പേര്: {customer_name}\n"
+            f"📱 നമ്പർ: `{masked_phone}`\n\n"
+            f"⚠️ *അത്യാവശ്യ ഘട്ടങ്ങളിൽ മാത്രം വിളിക്കുക.*\n"
+            f"ℹ️ യഥാർത്ഥ നമ്പർ കാണാൻ താഴെയുള്ള ബട്ടൺ അമർത്തുക."
+        )
         
         bot.send_message(
             chat_id=chat_id,
-            text=f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n🆔 ട്രിപ്പ് ഐഡി: `{trip_id}`\n\n📍 നാവിഗേഷൻ, കസ്റ്റമറുടെ വിവരങ്ങൾ, ലൈവ് ലൊക്കേഷൻ ഷെയറിംഗ്, 'ഞാൻ എത്തി' എന്നിവയ്ക്കെല്ലാം താഴെയുള്ള ബട്ടൺ അമർത്തുക.",
+            text=message_text,
             parse_mode="Markdown",
             reply_markup=markup
         )
         
-        bot.answer_callback_query(call.id, "✅ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!")
+        bot.answer_callback_query(
+            call.id,
+            "📞 കോൺടാക്റ്റ് വിവരങ്ങൾ അയച്ചിട്ടുണ്ട്.",
+            show_alert=False
+        )
+        
+        print(f"✅ Contact info sent for {booking_id} to {chat_id}")
         
     except Exception as e:
-        print(f"❌ handle_accept_trip error: {e}")
-        bot.answer_callback_query(call.id, "❌ എറർ: ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല.")
+        print(f"❌ handle_call_customer error: {e}")
+        bot.answer_callback_query(
+            call.id,
+            "❌ Error സംഭവിച്ചു",
+            show_alert=True
+        )
+# ==========================================================
+# ✅ SHOW PHONE Callback Handler (telebot) - v4 (One-Time View)
+# ==========================================================
+@bot.callback_query_handler(func=lambda call: call.data.startswith("showphone_"))
+def handle_show_phone(call):
+    """
+    Driver-ന് യഥാർത്ഥ ഫോൺ നമ്പർ അയക്കുന്നു (ഒരിക്കൽ മാത്രം).
+    """
+    print("=" * 60)
+    print(f"🔔 SHOW PHONE CALLBACK RECEIVED!")
+    print(f"   Data: {call.data}")
+    print("=" * 60)
+    
+    chat_id = call.message.chat.id
+    booking_id = call.data.replace("showphone_", "")
+    
+    try:
+        # 1. Firebase-ൽ നിന്ന് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
+        ref = db.reference(f"trips/{booking_id}")
+        trip_data = ref.get() or {}
+        customer_phone = trip_data.get("customer_phone", "")
+        customer_name = trip_data.get("customer_name", "Customer")
+        accepted_at = trip_data.get("accepted_at", "")
+        phone_viewed = trip_data.get("phone_viewed", False)  # 🆕 പുതിയ ഫ്ലാഗ്
+        
+        if not customer_phone:
+            bot.answer_callback_query(
+                call.id, 
+                "❌ കസ്റ്റമറുടെ ഫോൺ നമ്പർ ലഭ്യമല്ല", 
+                show_alert=True
+            )
+            return
 
+        # 🆕 2. ഒരിക്കൽ കണ്ടു കഴിഞ്ഞോ എന്ന് പരിശോധിക്കുക
+        if phone_viewed:
+            bot.answer_callback_query(
+                call.id,
+                "❌ നിങ്ങൾക്ക് ഈ നമ്പർ ഒരിക്കൽ മാത്രമേ കാണാൻ കഴിയൂ. വീണ്ടും കാണാൻ സാധിക്കില്ല.",
+                show_alert=True
+            )
+            return
+
+        # 3. ⏰ സമയപരിധി പരിശോധിക്കുക (5 മിനിറ്റ്)
+        if accepted_at:
+            from datetime import datetime, timedelta
+            try:
+                accept_time = datetime.strptime(accepted_at, "%Y-%m-%d %H:%M:%S")
+                time_diff = datetime.datetime.now() - accept_time
+                
+                if time_diff > timedelta(minutes=5):
+                    bot.answer_callback_query(
+                        call.id,
+                        "❌ ഈ ട്രിപ്പിന്റെ സമയപരിധി (5 മിനിറ്റ്) കഴിഞ്ഞു. ഇനി നമ്പർ കാണാൻ സാധിക്കില്ല.",
+                        show_alert=True
+                    )
+                    return
+            except Exception as time_err:
+                print(f"⚠️ Time check error: {time_err}")
+
+        # 4. ഫോൺ നമ്പർ ഫോർമാറ്റ് ചെയ്യുക
+        raw_phone = str(customer_phone).strip().replace(" ", "").replace("-", "").replace("+", "")
+        
+        if raw_phone.startswith("91") and len(raw_phone) == 12:
+            formatted_phone = f"+{raw_phone}"
+        elif len(raw_phone) == 10:
+            formatted_phone = f"+91{raw_phone}"
+        else:
+            formatted_phone = f"+91{raw_phone}"
+
+        # 5. മാസ്ക് ചെയ്ത നമ്പർ ഉണ്ടാക്കുക
+        if len(raw_phone) >= 10:
+            masked_phone = f"{raw_phone[:4]}XXXXX{raw_phone[-2:]}"
+        else:
+            masked_phone = "XXXXX"
+
+        # 🆕 6. ഫയർബേസിൽ phone_viewed = True എന്ന് അപ്ഡേറ്റ് ചെയ്യുക
+        ref.update({"phone_viewed": True})
+
+        # 7. യഥാർത്ഥ നമ്പർ അയക്കുക
+        message_text = (
+            f"📞 *യഥാർത്ഥ ഫോൺ നമ്പർ*\n\n"
+            f"👤 പേര്: {customer_name}\n"
+            f"📱 നമ്പർ: `{formatted_phone}`\n\n"
+            f"⚠️ *അത്യാവശ്യ ഘട്ടങ്ങളിൽ മാത്രം വിളിക്കുക.*\n"
+            f"ℹ️ ഈ നമ്പർ കോപ്പി ചെയ്ത് വിളിക്കുക.\n\n"
+            f"🚨 *മുന്നറിയിപ്പ്:* കസ്റ്റമറുടെ ഫോൺ നമ്പർ ദുരുപയോഗം ചെയ്യരുത്. അത് ചെയ്താൽ നിയമനടപടികൾ നേരിടേണ്ടി വരും.\n\n"
+            f"🔒 *ഈ നമ്പർ ഒരിക്കൽ മാത്രമേ കാണാൻ കഴിയൂ.*\n"
+            f"⏳ *1 മിനിറ്റിനുള്ളിൽ വീണ്ടും മാസ്ക് ചെയ്യപ്പെടും.*"
+        )
+        
+        sent_msg = bot.send_message(
+            chat_id=chat_id,
+            text=message_text,
+            parse_mode="Markdown"
+        )
+        
+        # 8. 1 മിനിറ്റിന് ശേഷം മെസ്സേജ് വീണ്ടും മാസ്ക് ചെയ്യുക
+        def mask_later():
+            import time
+            time.sleep(60)  # 60 സെക്കൻഡ് = 1 മിനിറ്റ്
+            try:
+                masked_message = (
+                    f"📞 *കസ്റ്റമറുടെ വിവരങ്ങൾ*\n\n"
+                    f"👤 പേര്: {customer_name}\n"
+                    f"📱 നമ്പർ: `{masked_phone}`\n\n"
+                    f"🔒 *സുരക്ഷയ്ക്കായി നമ്പർ വീണ്ടും മാസ്ക് ചെയ്തിരിക്കുന്നു.*\n"
+                    f"❌ *ഈ നമ്പർ വീണ്ടും കാണാൻ സാധിക്കില്ല.*"
+                )
+                bot.edit_message_text(
+                    chat_id=chat_id,
+                    message_id=sent_msg.message_id,
+                    text=masked_message,
+                    parse_mode="Markdown"
+                )
+                print(f"✅ Message re-masked for {booking_id}")
+            except Exception as mask_err:
+                print(f"⚠️ Re-mask error: {mask_err}")
+        
+        import threading
+        threading.Thread(target=mask_later, daemon=True).start()
+        
+        bot.answer_callback_query(
+            call.id,
+            "📞 യഥാർത്ഥ നമ്പർ അയച്ചിട്ടുണ്ട്. ഇത് ഒരിക്കൽ മാത്രമേ കാണാൻ കഴിയൂ.",
+            show_alert=False
+        )
+        
+        print(f"✅ Real phone number sent for {booking_id} to {chat_id}")
+        
+    except Exception as e:
+        print(f"❌ handle_show_phone error: {e}")
+        bot.answer_callback_query(
+            call.id,
+            "❌ Error സംഭവിച്ചു",
+            show_alert=True
+        )
+# ==========================================================
+# ✅ NOTIFY CUSTOMER Callback Handler (telebot)
+# ==========================================================
+@bot.callback_query_handler(func=lambda call: call.data.startswith("notify_"))
+def handle_notify_customer(call):
+    """
+    Driver NOTIFY button tap ചെയ്യുമ്പോൾ:
+    1. കസ്റ്റമറുടെ ആപ്പിലേക്ക് ശബ്ദ നോട്ടിഫിക്കേഷൻ അയക്കുന്നു.
+    2. ഡ്രൈവർക്ക് "Call" ബട്ടൺ അയച്ചുകൊടുക്കുന്നു.
+    """
+    print("=" * 60)
+    print(f"🔔 NOTIFY CUSTOMER CALLBACK RECEIVED!")
+    print(f"   Data: {call.data}")
+    print("=" * 60)
+    
+    chat_id = call.message.chat.id
+    booking_id = call.data.replace("notify_", "")
+    
+    try:
+        # 1. ഫയർബേസിൽ നോട്ടിഫിക്കേഷൻ സിഗ്നൽ അപ്ഡേറ്റ് ചെയ്യുക (കസ്റ്റമറുടെ ആപ്പിൽ ശബ്ദം വരാൻ)
+        ref = db.reference(f"trips/{booking_id}")
+        ref.update({"notification": "arrived_sound"})
+        
+        # 2. ഡ്രൈവർക്ക് കൺഫർമേഷൻ അലേർട്ട്
+        bot.answer_callback_query(
+            call.id,
+            "🔔 കസ്റ്റമറെ അറിയിച്ചിട്ടുണ്ട്!",
+            show_alert=False
+        )
+        
+        # 3. "Call" ബട്ടൺ ഉണ്ടാക്കി ഡ്രൈവർക്ക് അയക്കുക
+        call_button = types.InlineKeyboardButton(
+            "📞 കസ്റ്റമറെ വിളിക്കുക",
+            callback_data=f"call_{booking_id}"
+        )
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(call_button)
+        
+        bot.send_message(
+            chat_id=chat_id,
+            text="✅ കസ്റ്റമറുടെ ആപ്പിലേക്ക് നോട്ടിഫിക്കേഷൻ അയച്ചിട്ടുണ്ട്.\n\nകസ്റ്റമർ കിട്ടിയില്ലെങ്കിൽ താഴെയുള്ള ബട്ടൺ അമർത്തി വിളിക്കാം.",
+            reply_markup=markup
+        )
+        
+        print(f"✅ Notification sent for {booking_id}")
+        
+    except Exception as e:
+        print(f"❌ handle_notify_customer error: {e}")
+        bot.answer_callback_query(
+            call.id,
+            "❌ Error സംഭവിച്ചു",
+            show_alert=True
+        )        
 # ==========================================================
 # 🚀 START POLLING — LAST (after all handlers registered)
 # ==========================================================
@@ -3435,27 +3596,3 @@ def start_bot_polling():
     return True
 
 start_bot_polling()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
-
-
