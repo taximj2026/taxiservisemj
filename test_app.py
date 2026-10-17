@@ -36,8 +36,7 @@ import telebot
 import streamlit as st
 import streamlit.components.v1 as components
 import streamlit as str_lit
-import io
-from fpdf import FPDF
+
 import gspread
 import folium
 from telebot import types
@@ -490,112 +489,7 @@ def setup_bot():
     
     return bot
 bot = setup_bot()    
- 
-# PDF ഉണ്ടാക്കാനുള്ള ഫംഗ്ഷൻ
-def generate_pdf_from_google_sheet(driver_identifier, sheet_url):
-    try:
-        import gspread
-        # ഇവിടെ നിങ്ങളുടെ ക്രെഡൻഷ്യൽസ് ഫയൽ പാത്ത് കൃത്യമായി നൽകുക
-        gc = gspread.service_account(filename='service_account.json') 
-        sheet = gc.open_by_url(sheet_url).sheet1
-        all_records = sheet.get_all_records()
-
-        driver_trips = []
-        for row in all_records:
-            # നിങ്ങളുടെ ഷീറ്റിലെ കോളം പേരുകൾ (Driver Phone, Driver Name) 
-            sheet_phone = str(row.get('Driver Phone', '')).strip()
-            sheet_name = str(row.get('Driver Name', '')).strip().lower()
-            
-            if str(driver_identifier).strip() == sheet_phone or str(driver_identifier).strip().lower() == sheet_name:
-                driver_trips.append(row)
-
-        if not driver_trips:
-            return None, "ഈ ഡ്രൈവർക്ക് ഗൂഗിൾ ഷീറ്റിൽ ഹിസ്റ്ററി ലഭ്യമല്ല."
-
-        driver_trips.sort(key=lambda x: str(x.get('Accepted At', '')), reverse=True)
-
-        # PDF ജനറേഷൻ കോഡ് (ഇവിടെ മുഴുവൻ കോഡും നൽകുക)
-        from fpdf import FPDF
-        import io, datetime
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(200, 10, txt="Driver Trip History", ln=True, align='C')
-        pdf.set_font("Arial", size=10)
-        pdf.cell(200, 10, txt=f"Driver: {driver_identifier}", ln=True, align='C')
-        pdf.ln(10)
-
-        pdf.set_font("Arial", 'B', 9)
-        pdf.cell(35, 10, "Date & Time", border=1)
-        pdf.cell(35, 10, "Trip ID", border=1)
-        pdf.cell(45, 10, "Pickup", border=1)
-        pdf.cell(45, 10, "Drop", border=1)
-        pdf.cell(20, 10, "Fare", border=1)
-        pdf.ln()
-
-        pdf.set_font("Arial", size=8)
-        for trip in driver_trips:
-            date_val = str(trip.get('Accepted At', 'N/A'))[:16] 
-            trip_id = trip.get('Trip ID', 'N/A')
-            pickup = str(trip.get('Pickup', 'N/A'))[:25] 
-            drop = str(trip.get('Drop', 'N/A'))[:25]
-            fare = trip.get('Total Fare', '0')
-
-            pdf.cell(35, 10, date_val, border=1)
-            pdf.cell(35, 10, str(trip_id), border=1)
-            pdf.cell(45, 10, pickup, border=1)
-            pdf.cell(45, 10, drop, border=1)
-            pdf.cell(20, 10, str(fare), border=1)
-            pdf.ln()
-
-        pdf_output = io.BytesIO()
-        pdf.output(pdf_output)
-        pdf_output.seek(0)
-        return pdf_output, None
-
-    except Exception as e:
-        return None, str(e) 
- 
-@bot.message_handler(commands=['send_pdf_history'])
-def admin_send_pdf_history(message):
-    print("✅ Command Received:", message.text) # ഈ വരി ചേർക്കുക
-    ADMIN_ID = 1081269806  # നിങ്ങളുടെ അഡ്മിൻ ടെലിഗ്രാം ഐഡി ഇവിടെ നൽകുക
     
-    # നിങ്ങളുടെ ഗൂഗിൾ ഷീറ്റിന്റെ ലിങ്ക് ഇവിടെ നൽകുക
-    SHEET_URL = "https://docs.google.com/spreadsheets/d/1JjGbPJ29ZHOfDzFJNqT0NNkxu3-P8EkbQcxLa5SpTck/edit"
-    
-    if message.chat.id != ADMIN_ID:
-        bot.reply_to(message, "അനുമതിയില്ല.")
-        return
-
-    try:
-        args = message.text.split()
-        if len(args) < 3:
-            bot.reply_to(message, "ഉപയോഗം: `/send_pdf_history <Driver_Phone_or_Name> <Telegram_Chat_ID>`", parse_mode='Markdown')
-            return
-            
-        driver_identifier = args[1] 
-        target_chat_id = args[2]    
-        
-        bot.reply_to(message, f"⏳ {driver_identifier}-ന്റെ PDF തയ്യാറാക്കുന്നു...")
-        
-        pdf_file, error = generate_pdf_from_google_sheet(driver_identifier, SHEET_URL)
-        
-        if error:
-            bot.reply_to(message, f"❌ എറർ: {error}")
-            return
-
-        bot.send_document(
-            chat_id=int(target_chat_id), 
-            document=pdf_file, 
-            filename=f"trip_history_{driver_identifier}.pdf",
-            caption="📄 നിങ്ങളുടെ ട്രിപ്പ് ഹിസ്റ്ററി ഇതാ!"
-        )
-        
-        bot.reply_to(message, f"✅ ഡ്രൈവർക്ക് ({target_chat_id}) PDF അയച്ചു കൊടുത്തു.")
-
-    except Exception as e:
-        bot.reply_to(message, "എറർ സംഭവിച്ചു.") 
     
 
 
@@ -3424,8 +3318,6 @@ def main():
             return []
 
 
-
-
 # ============================================================
 # 🚗 ഡ്രൈവർ പാനൽ - ഫയർബേസ് ഡാറ്റ കണക്ഷൻ
 # ============================================================
@@ -3449,8 +3341,6 @@ def main():
                 str_lit.success("✅ ഡ്രൈവർ ഹിസ്റ്ററി വിജയകരമായി ലോഡ് ചെയ്തു!")
                 str_lit.markdown("### 📋 നിങ്ങളുടെ മുൻകാല ട്രിപ്പുകൾ:")
                 str_lit.table(driver_history_data)
-
-                
             else:
                 str_lit.warning("⚠️ ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
                 
