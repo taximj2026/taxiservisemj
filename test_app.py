@@ -3647,7 +3647,7 @@ def handle_accept_trip(call):
 
         # 4. ഡ്രൈവർ ട്രിപ്പ് പാനൽ ലിങ്ക്
         driver_panel_url = (
-            "https://taxiservicemj-x9meaffucvbt6tjijxrd6d.streamlit.app/"
+            "https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/"
             f"?page=driver_trip_panel&trip_id={trip_id}"
             f"&driver_chat_id={chat_id}"
         )
