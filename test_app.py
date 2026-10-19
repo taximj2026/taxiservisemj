@@ -1,24 +1,24 @@
 """
-🚖 Easy Auto Taxi Pro - Complete Merged System
+ðŸš– Easy Auto Taxi Pro - Complete Merged System
 Version: 7.0 INTEGRATED FINAL
 Author: Auto Taxi Pro Team
 Last Updated: 2026
 
-📌 COMPLETE MERGE SUMMARY & CHANGES:
+ðŸ“Œ COMPLETE MERGE SUMMARY & CHANGES:
 ====================================
-✅ MODULES MERGED: All 22 modules integrated perfectly
-✅ PREMIUM UI ADDED: Dark Gold Modern Premium Theme included via CSS
-✅ SMART MAPPING INTEGRATED: OSRM -> GraphHopper -> Geoapify Fallback system
-✅ DYNAMIC COMMISSION: Automated calculate_admin_commission included
-✅ ANTI-SPAM & SECURITY: Math CAPTCHA, Rate Limiter, and DDoS protections active
-✅ DUPLICATES REMOVED: All duplicate functions and imports consolidated
+âœ… MODULES MERGED: All 22 modules integrated perfectly
+âœ… PREMIUM UI ADDED: Dark Gold Modern Premium Theme included via CSS
+âœ… SMART MAPPING INTEGRATED: OSRM -> GraphHopper -> Geoapify Fallback system
+âœ… DYNAMIC COMMISSION: Automated calculate_admin_commission included
+âœ… ANTI-SPAM & SECURITY: Math CAPTCHA, Rate Limiter, and DDoS protections active
+âœ… DUPLICATES REMOVED: All duplicate functions and imports consolidated
 """
 
 # ============================================================
-# 📦 IMPORTS - All libraries in one place
+# ðŸ“¦ IMPORTS - All libraries in one place
 # ============================================================
 # ============================================================
-# 📦 IMPORTS - All libraries in one place
+# ðŸ“¦ IMPORTS - All libraries in one place
 # ============================================================
 import datetime
 import time
@@ -46,7 +46,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from streamlit_geolocation import streamlit_geolocation
 from flask import Flask, request, jsonify
 from streamlit.runtime.scriptrunner import add_script_run_ctx
-# --- Mobile Friendly CSS (ഇവിടെ ചേർക്കുക) ---
+# --- Mobile Friendly CSS (à´‡à´µà´¿à´Ÿàµ† à´šàµ‡àµ¼à´•àµà´•àµà´•) ---
 st.markdown("""
 <style>
     .block-container {
@@ -75,7 +75,7 @@ st.markdown("""
 
 
 # ==========================================================
-# 📌 1. ഈ ഫംഗ്ഷൻ കോഡിന്റെ ഏറ്റവും മുകളിൽ (Global Scope-ൽ) നൽകുക
+# ðŸ“Œ 1. à´ˆ à´«à´‚à´—àµà´·àµ» à´•àµ‹à´¡à´¿à´¨àµà´±àµ† à´à´±àµà´±à´µàµà´‚ à´®àµà´•à´³à´¿àµ½ (Global Scope-àµ½) à´¨àµ½à´•àµà´•
 # ==========================================================
 def get_trip_from_database(trip_id):
     try:
@@ -84,7 +84,7 @@ def get_trip_from_database(trip_id):
     except Exception as e:
         return None
 def get_lat_lon_from_address(address):
-    """ജിയോ കോഡിങ് വഴി വിലാസത്തിൽ നിന്ന് Lat, Lon കണ്ടെത്തുന്ന ഫങ്ഷൻ"""
+    """à´œà´¿à´¯àµ‹ à´•àµ‹à´¡à´¿à´™àµ à´µà´´à´¿ à´µà´¿à´²à´¾à´¸à´¤àµà´¤à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ Lat, Lon à´•à´£àµà´Ÿàµ†à´¤àµà´¤àµà´¨àµà´¨ à´«à´™àµà´·àµ»"""
     try:
         url = f"https://nominatim.openstreetmap.org/search?q={address}&format=json&limit=1"
         headers = {'User-Agent': 'TaxiBookingApp/1.0'}
@@ -96,18 +96,18 @@ def get_lat_lon_from_address(address):
     except Exception:
         pass
     return None, None
-# വാഹനത്തിന്റെ സ്വഭാവം അനുസരിച്ച് മാപ്പിലെ ഐക്കോൺ കാണിക്കുന്ന ഫങ്ഷൻ
-# 1. ഫയർബേസിൽ നിന്ന് ഡ്രൈവറുടെ തത്സമയ ലൊക്കേഷൻ എടുക്കുന്ന ഫങ്ഷൻ
+# à´µà´¾à´¹à´¨à´¤àµà´¤à´¿à´¨àµà´±àµ† à´¸àµà´µà´­à´¾à´µà´‚ à´…à´¨àµà´¸à´°à´¿à´šàµà´šàµ à´®à´¾à´ªàµà´ªà´¿à´²àµ† à´à´•àµà´•àµ‹àµº à´•à´¾à´£à´¿à´•àµà´•àµà´¨àµà´¨ à´«à´™àµà´·àµ»
+# 1. à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´¡àµà´°àµˆà´µà´±àµà´Ÿàµ† à´¤à´¤àµà´¸à´®à´¯ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨ à´«à´™àµà´·àµ»
 def get_live_tracking_from_firebase(trip_id):
     try:
-        # ഫയർബേസിലെ ട്രിപ്പ് ലൊക്കേഷൻ പാത്ത് (നിങ്ങളുടെ ഡാറ്റാബേസ് സ്ട്രക്ചർ അനുസരിച്ച് ഇത് മാറ്റാം)
+        # à´«à´¯àµ¼à´¬àµ‡à´¸à´¿à´²àµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´ªà´¾à´¤àµà´¤àµ (à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´¡à´¾à´±àµà´±à´¾à´¬àµ‡à´¸àµ à´¸àµà´Ÿàµà´°à´•àµà´šàµ¼ à´…à´¨àµà´¸à´°à´¿à´šàµà´šàµ à´‡à´¤àµ à´®à´¾à´±àµà´±à´¾à´‚)
         ref = db.reference(f'trips/{trip_id}/driver_location')
         data = ref.get()
-        return data  # ഇത് {'lat': x, 'lon': y} എന്ന ഫോർമാറ്റിൽ ആയിരിക്കും
+        return data  # à´‡à´¤àµ {'lat': x, 'lon': y} à´Žà´¨àµà´¨ à´«àµ‹àµ¼à´®à´¾à´±àµà´±à´¿àµ½ à´†à´¯à´¿à´°à´¿à´•àµà´•àµà´‚
     except Exception as e:
         return None
 
-# 2. ദൂരം കണക്കാക്കാൻ സഹായിക്കുന്ന മാത്സ് ഫങ്ഷൻ (മീറ്ററിൽ)
+# 2. à´¦àµ‚à´°à´‚ à´•à´£à´•àµà´•à´¾à´•àµà´•à´¾àµ» à´¸à´¹à´¾à´¯à´¿à´•àµà´•àµà´¨àµà´¨ à´®à´¾à´¤àµà´¸àµ à´«à´™àµà´·àµ» (à´®àµ€à´±àµà´±à´±à´¿àµ½)
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371000  # Earth radius in meters
     phi1 = math.radians(lat1)
@@ -119,7 +119,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 def send_admin_trip_notification(trip_data):
     print("=" * 50)
-    print("🔔 SEND_ADMIN CALLED")
+    print("ðŸ”” SEND_ADMIN CALLED")
     print(f"   ADMIN_ID = '{ADMIN_TELEGRAM_CHAT_ID}'")
     print(f"   bot = {bot}")
     print(f"   Trip = {trip_data.get('trip_id', 'N/A')}")
@@ -127,7 +127,7 @@ def send_admin_trip_notification(trip_data):
     
     try:
         if not bot or not ADMIN_TELEGRAM_CHAT_ID:
-            print("⚠️ SKIPPED: bot or chat_id missing")
+            print("âš ï¸ SKIPPED: bot or chat_id missing")
             return False
 
         # ============================================================
@@ -150,9 +150,9 @@ def send_admin_trip_notification(trip_data):
         )
         try:
             commission = float(commission)
-            commission_display = f"₹{commission:.2f}"
+            commission_display = f"â‚¹{commission:.2f}"
         except:
-            commission_display = f"₹{commission}"
+            commission_display = f"â‚¹{commission}"
 
         # Masked phone
         raw_phone = str(trip_data.get("customer_phone", ""))
@@ -169,23 +169,23 @@ def send_admin_trip_notification(trip_data):
             or ""
         )
         if gps_url and gps_url.startswith("http"):
-            gps_line = f"🔗 GPS: [📍 Location]({gps_url})"
+            gps_line = f"ðŸ”— GPS: [ðŸ“ Location]({gps_url})"
         else:
-            gps_line = "🔗 GPS: ലഭ്യമല്ല"
+            gps_line = "ðŸ”— GPS: à´²à´­àµà´¯à´®à´²àµà´²"
 
         # Admin message
         admin_msg = (
-            f"🔔 *പുതിയ ട്രിപ്പ് (Admin)*\n\n"
-            f"🆔 *Trip ID:* {trip_id}\n"
-            f"🕐 *Time:* {booking_time}\n"
-            f"👤 *കസ്റ്റമർ:* {customer_name}\n"
-            f"📞 *ഫോൺ:* {masked_phone}\n"
-            f"📍 *പിക്കപ്പ്:* {pickup}\n"
-            f"🏁 *ഡ്രോപ്പ്:* {drop}\n"
-            f"📍 *ഏരിയ:* {area}\n"
-            f"🚗 *വാഹനം:* {vehicle}\n"
-            f"📏 *ദൂരം:* {distance} km\n"
-            f"💰 *Commission:* {commission_display}\n"
+            f"ðŸ”” *à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµ (Admin)*\n\n"
+            f"ðŸ†” *Trip ID:* {trip_id}\n"
+            f"ðŸ• *Time:* {booking_time}\n"
+            f"ðŸ‘¤ *à´•à´¸àµà´±àµà´±à´®àµ¼:* {customer_name}\n"
+            f"ðŸ“ž *à´«àµ‹àµº:* {masked_phone}\n"
+            f"ðŸ“ *à´ªà´¿à´•àµà´•à´ªàµà´ªàµ:* {pickup}\n"
+            f"ðŸ *à´¡àµà´°àµ‹à´ªàµà´ªàµ:* {drop}\n"
+            f"ðŸ“ *à´à´°à´¿à´¯:* {area}\n"
+            f"ðŸš— *à´µà´¾à´¹à´¨à´‚:* {vehicle}\n"
+            f"ðŸ“ *à´¦àµ‚à´°à´‚:* {distance} km\n"
+            f"ðŸ’° *Commission:* {commission_display}\n"
             f"{gps_line}"
         )
 
@@ -196,65 +196,65 @@ def send_admin_trip_notification(trip_data):
             disable_web_page_preview=True
         )
 
-        print(f"✅ Admin notified: {trip_id}")
+        print(f"âœ… Admin notified: {trip_id}")
         return True
 
     except Exception as e:
-        print(f"❌ Admin notification error: {e}")
+        print(f"âŒ Admin notification error: {e}")
         return False
 
 # ==========================================================
-# 🗺️ LIVE TRACKING MAP (Updated with Notifications)
+# ðŸ—ºï¸ LIVE TRACKING MAP (Updated with Notifications)
 # ==========================================================
-@st.fragment(run_every=15)   # 5s → 15s (Firebase quota save)
+@st.fragment(run_every=15)   # 5s â†’ 15s (Firebase quota save)
 def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
     # ============================================================
-    # 🔔 സൗണ്ട് & നോട്ടിഫിക്കേഷൻ ഒറ്റ ബട്ടണിൽ ഓൺ ചെയ്യുക
+    # ðŸ”” à´¸àµ—à´£àµà´Ÿàµ & à´¨àµ‹à´Ÿàµà´Ÿà´¿à´«à´¿à´•àµà´•àµ‡à´·àµ» à´’à´±àµà´± à´¬à´Ÿàµà´Ÿà´£à´¿àµ½ à´“àµº à´šàµ†à´¯àµà´¯àµà´•
     # ============================================================
     components.html("""
         <div id="alert-btn-container" style="margin-bottom: 10px;"></div>
         <script>
-            // localStorage-ൽ audio_enabled ഉണ്ടോ എന്ന് ചെക്ക് ചെയ്യുക
+            // localStorage-àµ½ audio_enabled à´‰à´£àµà´Ÿàµ‹ à´Žà´¨àµà´¨àµ à´šàµ†à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´•
             if (!localStorage.getItem('audio_enabled')) {
                 var container = document.getElementById('alert-btn-container');
                 var btn = document.createElement('button');
-                btn.innerHTML = '🔔 അലേർട്ടുകൾ ഓൺ ചെയ്യുക (Enable Alerts)';
+                btn.innerHTML = 'ðŸ”” à´…à´²àµ‡àµ¼à´Ÿàµà´Ÿàµà´•àµ¾ à´“àµº à´šàµ†à´¯àµà´¯àµà´• (Enable Alerts)';
                 btn.style.cssText = 'padding:12px 20px; background-color:#ff4b4b; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; width:100%; font-weight:bold;';
                 
                 btn.onclick = function() {
-                    // 1. സൗണ്ട് ഓൺ ചെയ്യുക (localStorage-ൽ സേവ് ചെയ്യുക)
+                    // 1. à´¸àµ—à´£àµà´Ÿàµ à´“àµº à´šàµ†à´¯àµà´¯àµà´• (localStorage-àµ½ à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¯àµà´•)
                     localStorage.setItem('audio_enabled', 'true');
                     
-                    // 2. ഒരു ചെറിയ സൈലന്റ് സൗണ്ട് പ്ലേ ചെയ്യുക
+                    // 2. à´’à´°àµ à´šàµ†à´±à´¿à´¯ à´¸àµˆà´²à´¨àµà´±àµ à´¸àµ—à´£àµà´Ÿàµ à´ªàµà´²àµ‡ à´šàµ†à´¯àµà´¯àµà´•
                     var audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
                     audio.play().catch(e => console.log('Silent audio blocked'));
                     
-                    // 3. 🔔 നോട്ടിഫിക്കേഷൻ അനുവാദം ചോദിക്കുക
+                    // 3. ðŸ”” à´¨àµ‹à´Ÿàµà´Ÿà´¿à´«à´¿à´•àµà´•àµ‡à´·àµ» à´…à´¨àµà´µà´¾à´¦à´‚ à´šàµ‹à´¦à´¿à´•àµà´•àµà´•
                     if ('Notification' in window) {
                         Notification.requestPermission().then(function(permission) {
                             if (permission === 'granted') {
-                                console.log('✅ Notification permission granted');
+                                console.log('âœ… Notification permission granted');
                                 new Notification('Easy Auto Taxi', {
-                                    body: 'അലേർട്ടുകൾ ഓൺ ആണ്! ഡ്രൈവർ വരുമ്പോൾ നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും.',
+                                    body: 'à´…à´²àµ‡àµ¼à´Ÿàµà´Ÿàµà´•àµ¾ à´“àµº à´†à´£àµ! à´¡àµà´°àµˆà´µàµ¼ à´µà´°àµà´®àµà´ªàµ‹àµ¾ à´¨à´¿à´™àµà´™àµ¾à´•àµà´•àµ à´…à´±à´¿à´¯à´¿à´ªàµà´ªàµ à´²à´­à´¿à´•àµà´•àµà´‚.',
                                     icon: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png'
                                 });
                             } else {
-                                console.log('❌ Notification permission denied');
+                                console.log('âŒ Notification permission denied');
                             }
                         });
                     }
                     
-                    // ബട്ടൺ ടെക്സ്റ്റ് മാറ്റുക
-                    btn.innerHTML = '✅ അലേർട്ടുകൾ ഓൺ ആണ്';
+                    // à´¬à´Ÿàµà´Ÿàµº à´Ÿàµ†à´•àµà´¸àµà´±àµà´±àµ à´®à´¾à´±àµà´±àµà´•
+                    btn.innerHTML = 'âœ… à´…à´²àµ‡àµ¼à´Ÿàµà´Ÿàµà´•àµ¾ à´“àµº à´†à´£àµ';
                     btn.style.backgroundColor = '#28a745';
                     btn.disabled = true;
                 };
                 container.appendChild(btn);
             } else {
-                // ഇതിനകം ഓൺ ആണെങ്കിൽ, ഒരു സന്ദേശം കാണിക്കുക
+                // à´‡à´¤à´¿à´¨à´•à´‚ à´“àµº à´†à´£àµ†à´™àµà´•à´¿àµ½, à´’à´°àµ à´¸à´¨àµà´¦àµ‡à´¶à´‚ à´•à´¾à´£à´¿à´•àµà´•àµà´•
                 var container = document.getElementById('alert-btn-container');
                 var msg = document.createElement('div');
-                msg.innerHTML = '✅ അലേർട്ടുകളും നോട്ടിഫിക്കേഷനും ഓൺ ആണ്';
+                msg.innerHTML = 'âœ… à´…à´²àµ‡àµ¼à´Ÿàµà´Ÿàµà´•à´³àµà´‚ à´¨àµ‹à´Ÿàµà´Ÿà´¿à´«à´¿à´•àµà´•àµ‡à´·à´¨àµà´‚ à´“àµº à´†à´£àµ';
                 msg.style.cssText = 'padding:12px; background-color:#d4edda; color:#155724; border-radius:8px; font-size:14px; text-align:center; font-weight:bold;';
                 container.appendChild(msg);
             }
@@ -262,11 +262,11 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
     """, height=60)
     try:
         # ============================================================
-        # ✅ 1. Firebase-ൽ നിന്ന് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
+        # âœ… 1. Firebase-àµ½ à´¨à´¿à´¨àµà´¨àµ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´Žà´Ÿàµà´•àµà´•àµà´•
         # ============================================================
         trip_data = db.reference(f"trips/{trip_id}").get() or {}
-        # Line 266 (ഇവിടെ ചേർക്കുക)
-        print("🔥 Firebase Trip Data:", trip_data)
+        # Line 266 (à´‡à´µà´¿à´Ÿàµ† à´šàµ‡àµ¼à´•àµà´•àµà´•)
+        print("ðŸ”¥ Firebase Trip Data:", trip_data)
         
         driver_name = trip_data.get("driver_name", "Driver")
         vehicle_number = trip_data.get("vehicle_number", "N/A")
@@ -275,36 +275,36 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
         trip_notification = trip_data.get("notification", "")
 
         # ============================================================
-        # ✅ 2. Trip Details Header (Customer-ന് കാണാൻ)
+        # âœ… 2. Trip Details Header (Customer-à´¨àµ à´•à´¾à´£à´¾àµ»)
         # ============================================================
         st.markdown(f"""
         <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid #2c3e50;">
-            <h3 style="margin: 0; color: #2c3e50;">🆔 ട്രിപ്പ് ഐഡി: {trip_id}</h3>
-            <p style="margin: 5px 0; color: #555;">👤 കസ്റ്റമർ: {customer_name}</p>
-            <p style="margin: 5px 0; color: #555;">🚖 ഡ്രൈവർ: {driver_name}</p>
-            <p style="margin: 5px 0; color: #555;">🔢 വാഹന നമ്പർ: {vehicle_number}</p>
+            <h3 style="margin: 0; color: #2c3e50;">ðŸ†” à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿: {trip_id}</h3>
+            <p style="margin: 5px 0; color: #555;">ðŸ‘¤ à´•à´¸àµà´±àµà´±à´®àµ¼: {customer_name}</p>
+            <p style="margin: 5px 0; color: #555;">ðŸš– à´¡àµà´°àµˆà´µàµ¼: {driver_name}</p>
+            <p style="margin: 5px 0; color: #555;">ðŸ”¢ à´µà´¾à´¹à´¨ à´¨à´®àµà´ªàµ¼: {vehicle_number}</p>
         </div>
         """, unsafe_allow_html=True)
 
         # ============================================================
-        # ✅ 3. Warning Message (App Close ചെയ്യരുത്)
+        # âœ… 3. Warning Message (App Close à´šàµ†à´¯àµà´¯à´°àµà´¤àµ)
         # ============================================================
         st.warning("""
-        ⚠️ **ശ്രദ്ധിക്കുക:**
-        • ഈ ആപ്പ് ക്ലോസ് ചെയ്യരുത്
-        • ഇന്റർനെറ്റ് ഓഫ് ചെയ്യരുത്
-        • ഫോൺ sleep mode-ൽ വെക്കരുത്
-        • ഡ്രൈവർ വരുന്നത് വരെ കാത്തിരിക്കുക
+        âš ï¸ **à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•:**
+        â€¢ à´ˆ à´†à´ªàµà´ªàµ à´•àµà´²àµ‹à´¸àµ à´šàµ†à´¯àµà´¯à´°àµà´¤àµ
+        â€¢ à´‡à´¨àµà´±àµ¼à´¨àµ†à´±àµà´±àµ à´“à´«àµ à´šàµ†à´¯àµà´¯à´°àµà´¤àµ
+        â€¢ à´«àµ‹àµº sleep mode-àµ½ à´µàµ†à´•àµà´•à´°àµà´¤àµ
+        â€¢ à´¡àµà´°àµˆà´µàµ¼ à´µà´°àµà´¨àµà´¨à´¤àµ à´µà´°àµ† à´•à´¾à´¤àµà´¤à´¿à´°à´¿à´•àµà´•àµà´•
         """)
 
         # ============================================================
-        # ✅ 4. Accept Notification (Driver Accept ചെയ്ത ഉടനെ)
+        # âœ… 4. Accept Notification (Driver Accept à´šàµ†à´¯àµà´¤ à´‰à´Ÿà´¨àµ†)
         # ============================================================
         if trip_status == "Accepted":
             if not st.session_state.get('accept_alert_shown', False):
-                st.success("✅ **ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ട്!**")
+                st.success("âœ… **à´¡àµà´°àµˆà´µàµ¼ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ!**")
                 
-                # 📱 Vibration
+                # ðŸ“± Vibration
                 st.markdown("""
                     <script>
                     if (navigator.vibrate) {
@@ -313,7 +313,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                     </script>
                 """, unsafe_allow_html=True)
                 
-                # 🔊 Sound
+                # ðŸ”Š Sound
                 sound_html = """
                 <audio autoplay>
                     <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
@@ -323,23 +323,23 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                 st.session_state.accept_alert_shown = True
 
         # ============================================================
-        # ✅ 5. Vehicle Header
+        # âœ… 5. Vehicle Header
         # ============================================================
-        if "Auto" in vehicle_type or "auto" in vehicle_type.lower() or "ഓട്ടോ" in vehicle_type:
-            st.markdown("### 🛺 ഓട്ടോറിക്ഷ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
+        if "Auto" in vehicle_type or "auto" in vehicle_type.lower() or "à´“à´Ÿàµà´Ÿàµ‹" in vehicle_type:
+            st.markdown("### ðŸ›º à´“à´Ÿàµà´Ÿàµ‹à´±à´¿à´•àµà´· à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´…à´Ÿàµà´¤àµà´¤àµ‡à´•àµà´•àµ à´µà´°àµà´¨àµà´¨àµ...")
             vehicle_icon = folium.Icon(color="orange", icon="motorcycle", prefix="fa")
         else:
-            st.markdown("### 🚗 ടാക്സി കാർ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
+            st.markdown("### ðŸš— à´Ÿà´¾à´•àµà´¸à´¿ à´•à´¾àµ¼ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´…à´Ÿàµà´¤àµà´¤àµ‡à´•àµà´•àµ à´µà´°àµà´¨àµà´¨àµ...")
             vehicle_icon = folium.Icon(color="blue", icon="car", prefix="fa")
 
         # ============================================================
-        # ✅ 6. Arrived Status Check (Driver "Arrived" tap ചെയ്തിട്ടുണ്ടോ?)
+        # âœ… 6. Arrived Status Check (Driver "Arrived" tap à´šàµ†à´¯àµà´¤à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ‹?)
         # ============================================================
         if trip_status == "Arrived":
-            st.success("🎉 **അലേർട്ട്:** ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിരിക്കുന്നു!")
-            st.toast("🚗 ഡ്രൈവർ എത്തി!", icon="✅")
+            st.success("ðŸŽ‰ **à´…à´²àµ‡àµ¼à´Ÿàµà´Ÿàµ:** à´¡àµà´°àµˆà´µàµ¼ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´²àµŠà´•àµà´•àµ‡à´·à´¨à´¿àµ½ à´Žà´¤àµà´¤à´¿à´¯à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ!")
+            st.toast("ðŸš— à´¡àµà´°àµˆà´µàµ¼ à´Žà´¤àµà´¤à´¿!", icon="âœ…")
             
-            # 📱 Vibration
+            # ðŸ“± Vibration
             components.html("""
                 <script>
                
@@ -350,13 +350,13 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                 </script>
             """, height=0)
             
-            # 🔔 പുഷ് നോട്ടിഫിക്കേഷൻ അയക്കുക (ഒരിക്കൽ മാത്രം)
+            # ðŸ”” à´ªàµà´·àµ à´¨àµ‹à´Ÿàµà´Ÿà´¿à´«à´¿à´•àµà´•àµ‡à´·àµ» à´…à´¯à´•àµà´•àµà´• (à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚)
             if not st.session_state.get('arrived_notification_sent', False):
                 components.html("""
                     <script>
                         if (Notification.permission === 'granted') {
-                            new Notification('🚗 ഡ്രൈവർ എത്തി!', {
-                                body: 'നിങ്ങളുടെ ഡ്രൈവർ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിരിക്കുന്നു!',
+                            new Notification('ðŸš— à´¡àµà´°àµˆà´µàµ¼ à´Žà´¤àµà´¤à´¿!', {
+                                body: 'à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´¡àµà´°àµˆà´µàµ¼ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´²àµŠà´•àµà´•àµ‡à´·à´¨à´¿àµ½ à´Žà´¤àµà´¤à´¿à´¯à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ!',
                                 icon: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
                                 vibrate: [300, 100, 300, 100, 300],
                                 requireInteraction: true
@@ -370,13 +370,13 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
         
 
         # ============================================================
-        # ✅ 7. Driver Live Location & Distance Calculation
+        # âœ… 7. Driver Live Location & Distance Calculation
         # ============================================================
         driver_loc = None
         try:
             driver_loc = get_live_tracking_from_firebase(trip_id)
         except Exception as e:
-            print(f"⚠️ Driver location fetch error: {e}")
+            print(f"âš ï¸ Driver location fetch error: {e}")
 
         if driver_loc and 'lat' in driver_loc and 'lon' in driver_loc:
             driver_lat = driver_loc['lat']
@@ -389,10 +389,10 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                 distance = None
 
             if distance is not None:
-                # 🎯 30 മീറ്റർ അകലെ ആകുമ്പോൾ
+                # ðŸŽ¯ 30 à´®àµ€à´±àµà´±àµ¼ à´…à´•à´²àµ† à´†à´•àµà´®àµà´ªàµ‹àµ¾
                 if distance <= 30:
                     if not st.session_state.get('alert_30m_sent', False):
-                        st.success("🎉 **അലേർട്ട്:** നിങ്ങളുടെ വാഹനം പിക്ക്അപ്പ് ലൊക്കേഷനിൽ എത്തിച്ചേർന്നിരിക്കുന്നു!")
+                        st.success("ðŸŽ‰ **à´…à´²àµ‡àµ¼à´Ÿàµà´Ÿàµ:** à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´µà´¾à´¹à´¨à´‚ à´ªà´¿à´•àµà´•àµà´…à´ªàµà´ªàµ à´²àµŠà´•àµà´•àµ‡à´·à´¨à´¿àµ½ à´Žà´¤àµà´¤à´¿à´šàµà´šàµ‡àµ¼à´¨àµà´¨à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ!")
                         st.markdown("""
                             <script>
                             if (navigator.vibrate) {
@@ -403,14 +403,14 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                         st.session_state.alert_30m_sent = True
                         st.session_state.alert_100m_sent = False # Reset 100m flag
                     else:
-                        st.success(f"📍 വാഹനം ഏകദേശം **{int(distance)} മീറ്റർ** അകലെയാണ്.")
+                        st.success(f"ðŸ“ à´µà´¾à´¹à´¨à´‚ à´à´•à´¦àµ‡à´¶à´‚ **{int(distance)} à´®àµ€à´±àµà´±àµ¼** à´…à´•à´²àµ†à´¯à´¾à´£àµ.")
 
-                # 🎯 100 മീറ്റർ അകലെ ആകുമ്പോൾ (Nearby Alert)
+                # ðŸŽ¯ 100 à´®àµ€à´±àµà´±àµ¼ à´…à´•à´²àµ† à´†à´•àµà´®àµà´ªàµ‹àµ¾ (Nearby Alert)
                 elif distance <= 100:
                     if not st.session_state.get('alert_100m_sent', False):
-                        st.warning("🔔 **ഡ്രൈവർ 100 മീറ്റർ അകലെയാണ്!** വാഹനം വരുന്നുണ്ട്, തയ്യാറാകുക.")
+                        st.warning("ðŸ”” **à´¡àµà´°àµˆà´µàµ¼ 100 à´®àµ€à´±àµà´±àµ¼ à´…à´•à´²àµ†à´¯à´¾à´£àµ!** à´µà´¾à´¹à´¨à´‚ à´µà´°àµà´¨àµà´¨àµà´£àµà´Ÿàµ, à´¤à´¯àµà´¯à´¾à´±à´¾à´•àµà´•.")
                         
-                        # 📱 Vibration
+                        # ðŸ“± Vibration
                         st.markdown("""
                             <script>
                             if (navigator.vibrate) {
@@ -419,7 +419,7 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                             </script>
                         """, unsafe_allow_html=True)
                         
-                        # 🔊 Sound
+                        # ðŸ”Š Sound
                         sound_html = """
                         <audio autoplay>
                             <source src="https://www.soundjay.com/phones/sounds/phone-ringing-01.mp3" type="audio/mpeg">
@@ -429,59 +429,59 @@ def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
                         st.session_state.alert_100m_sent = True
                         st.session_state.alert_30m_sent = False # Reset 30m flag
                     else:
-                        st.info(f"📍 വാഹനം ഏകദേശം **{int(distance)} മീറ്റർ** അകലെയാണ്.")
+                        st.info(f"ðŸ“ à´µà´¾à´¹à´¨à´‚ à´à´•à´¦àµ‡à´¶à´‚ **{int(distance)} à´®àµ€à´±àµà´±àµ¼** à´…à´•à´²àµ†à´¯à´¾à´£àµ.")
 
-                # 🎯 100 മീറ്ററിൽ കൂടുതൽ അകലെയാണെങ്കിൽ
+                # ðŸŽ¯ 100 à´®àµ€à´±àµà´±à´±à´¿àµ½ à´•àµ‚à´Ÿàµà´¤àµ½ à´…à´•à´²àµ†à´¯à´¾à´£àµ†à´™àµà´•à´¿àµ½
                 else:
                     st.session_state.alert_100m_sent = False
                     st.session_state.alert_30m_sent = False
-                    st.info(f"📍 വാഹനം ഏകദേശം **{int(distance)} മീറ്റർ** അകലെയാണ്.")
+                    st.info(f"ðŸ“ à´µà´¾à´¹à´¨à´‚ à´à´•à´¦àµ‡à´¶à´‚ **{int(distance)} à´®àµ€à´±àµà´±àµ¼** à´…à´•à´²àµ†à´¯à´¾à´£àµ.")
         else:
             driver_lat, driver_lon = customer_lat, customer_lon
-            st.warning("⏳ ഡ്രൈവർ യാത്ര ആരംഭിക്കുന്നതുവരെ കാത്തിരിക്കുക...")
+            st.warning("â³ à´¡àµà´°àµˆà´µàµ¼ à´¯à´¾à´¤àµà´° à´†à´°à´‚à´­à´¿à´•àµà´•àµà´¨àµà´¨à´¤àµà´µà´°àµ† à´•à´¾à´¤àµà´¤à´¿à´°à´¿à´•àµà´•àµà´•...")
 
         # ============================================================
-        # ✅ 8. Folium Map
+        # âœ… 8. Folium Map
         # ============================================================
         m = folium.Map(location=[customer_lat, customer_lon], zoom_start=15)
 
         # Customer marker (green)
         folium.Marker(
             [customer_lat, customer_lon],
-            popup="നിങ്ങളുടെ പിക്കപ്പ് സ്ഥലം",
+            popup="à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´¸àµà´¥à´²à´‚",
             icon=folium.Icon(color="green", icon="home", prefix="fa")
         ).add_to(m)
 
         # Driver marker (vehicle icon)
         folium.Marker(
             [driver_lat, driver_lon],
-            popup=f"ഡ്രൈവർ ({vehicle_type}) വരുന്ന വഴി",
+            popup=f"à´¡àµà´°àµˆà´µàµ¼ ({vehicle_type}) à´µà´°àµà´¨àµà´¨ à´µà´´à´¿",
             icon=vehicle_icon
         ).add_to(m)
 
         st_folium(m, width="100%", height=350, key=f"map_{trip_id}")
         # ============================================================
-        # ✅ ഗുഡ്ബൈ സന്ദേശം (മാപ്പിന് താഴെ, ബലൂൺ ഇല്ലാതെ)
+        # âœ… à´—àµà´¡àµà´¬àµˆ à´¸à´¨àµà´¦àµ‡à´¶à´‚ (à´®à´¾à´ªàµà´ªà´¿à´¨àµ à´¤à´¾à´´àµ†, à´¬à´²àµ‚àµº à´‡à´²àµà´²à´¾à´¤àµ†)
         # ============================================================
         if trip_status == "Arrived":
             st.markdown("""
                 <div style="background-color: #d4edda; padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px;">
-                    <h2 style="color: #155724;">🙏 നന്ദി! വീണ്ടും വരിക!</h2>
+                    <h2 style="color: #155724;">ðŸ™ à´¨à´¨àµà´¦à´¿! à´µàµ€à´£àµà´Ÿàµà´‚ à´µà´°à´¿à´•!</h2>
                     <p style="color: #155724; font-size: 16px;">
-                        നിങ്ങളുടെ യാത്ര വിജയകരമായി പൂർത്തിയായി. <br>
-                        Easy Auto Taxi ഉപയോഗിച്ചതിന് നന്ദി! <br>
-                        അടുത്ത യാത്രയിൽ വീണ്ടും കാണാം. 🚖
+                        à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´¯à´¾à´¤àµà´° à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´ªàµ‚àµ¼à´¤àµà´¤à´¿à´¯à´¾à´¯à´¿. <br>
+                        Easy Auto Taxi à´‰à´ªà´¯àµ‹à´—à´¿à´šàµà´šà´¤à´¿à´¨àµ à´¨à´¨àµà´¦à´¿! <br>
+                        à´…à´Ÿàµà´¤àµà´¤ à´¯à´¾à´¤àµà´°à´¯à´¿àµ½ à´µàµ€à´£àµà´Ÿàµà´‚ à´•à´¾à´£à´¾à´‚. ðŸš–
                     </p>
                 </div>
             """, unsafe_allow_html=True)
-            if st.button("🏠 ഹോം പേജിലേക്ക് പോകുക"):
+            if st.button("ðŸ  à´¹àµ‹à´‚ à´ªàµ‡à´œà´¿à´²àµ‡à´•àµà´•àµ à´ªàµ‹à´•àµà´•"):
                 for key in list(st.session_state.keys()):
                     del st.session_state[key]
                 st.rerun()            
     except Exception as e:    
         
-        st.error(f"🗺️ Map load error: {e}")
-# --- ബോട്ട് സെറ്റപ്പ് ഇവിടെ തുടങ്ങുന്നു ---
+        st.error(f"ðŸ—ºï¸ Map load error: {e}")
+# --- à´¬àµ‹à´Ÿàµà´Ÿàµ à´¸àµ†à´±àµà´±à´ªàµà´ªàµ à´‡à´µà´¿à´Ÿàµ† à´¤àµà´Ÿà´™àµà´™àµà´¨àµà´¨àµ ---
 TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
 @st.cache_resource
 def setup_bot():
@@ -493,35 +493,35 @@ bot = setup_bot()
     
 
 
-# --- ബോട്ട് സെറ്റപ്പ് ഇവിടെ അവസാനിക്കുന്നു ---
+# --- à´¬àµ‹à´Ÿàµà´Ÿàµ à´¸àµ†à´±àµà´±à´ªàµà´ªàµ à´‡à´µà´¿à´Ÿàµ† à´…à´µà´¸à´¾à´¨à´¿à´•àµà´•àµà´¨àµà´¨àµ ---
 # ============================================================
-# Google Sheets കണക്ഷൻ സെറ്റപ്പ് (തൽക്കാലം ഡിസേബിൾ ചെയ്തിരിക്കുന്നു)
+# Google Sheets à´•à´£à´•àµà´·àµ» à´¸àµ†à´±àµà´±à´ªàµà´ªàµ (à´¤àµ½à´•àµà´•à´¾à´²à´‚ à´¡à´¿à´¸àµ‡à´¬à´¿àµ¾ à´šàµ†à´¯àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ)
 # ============================================================
-# Google Sheets കണക്ഷൻ സെറ്റപ്പ്
+# Google Sheets à´•à´£à´•àµà´·àµ» à´¸àµ†à´±àµà´±à´ªàµà´ªàµ
 #scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-# നിങ്ങളുടെ JSON ഫയലിന്റെ പേര് ഇവിടെ നൽകുക
+# à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† JSON à´«à´¯à´²à´¿à´¨àµà´±àµ† à´ªàµ‡à´°àµ à´‡à´µà´¿à´Ÿàµ† à´¨àµ½à´•àµà´•
 #creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Users\Asu Mj\Desktop\test taxi\service_account.json', scope)
 #client = gspread.authorize(creds)
 
-# നിങ്ങളുടെ ഷീറ്റിന്റെ പേരും ടാബിന്റെ പേരും ഇവിടെ മാറ്റുക
+# à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´·àµ€à´±àµà´±à´¿à´¨àµà´±àµ† à´ªàµ‡à´°àµà´‚ à´Ÿà´¾à´¬à´¿à´¨àµà´±àµ† à´ªàµ‡à´°àµà´‚ à´‡à´µà´¿à´Ÿàµ† à´®à´¾à´±àµà´±àµà´•
 #sheet = client.open("Taxi_Management").worksheet("Trips")
 # =====================================================================
-# ഡ്രൈവർമാരെ ഏരിയ തിരിച്ച് ഫയർബേസിൽ നിന്ന് കണ്ടെത്തുന്ന പുതിയ ഫങ്ഷൻ
+# à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµ† à´à´°à´¿à´¯ à´¤à´¿à´°à´¿à´šàµà´šàµ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´•à´£àµà´Ÿàµ†à´¤àµà´¤àµà´¨àµà´¨ à´ªàµà´¤à´¿à´¯ à´«à´™àµà´·àµ»
 # =====================================================================
 
 def get_all_drivers_by_area(area_name):
     try:
         # -------------------------------------------------------------
-        # 1. പഴയ ഗൂഗിൾ ഷീറ്റ് കോഡ് (എറർ വരാതിരിക്കാൻ താൽക്കാലികമായി കമന്റ് ചെയ്തിരിക്കുന്നു)
+        # 1. à´ªà´´à´¯ à´—àµ‚à´—à´¿àµ¾ à´·àµ€à´±àµà´±àµ à´•àµ‹à´¡àµ (à´Žà´±àµ¼ à´µà´°à´¾à´¤à´¿à´°à´¿à´•àµà´•à´¾àµ» à´¤à´¾àµ½à´•àµà´•à´¾à´²à´¿à´•à´®à´¾à´¯à´¿ à´•à´®à´¨àµà´±àµ à´šàµ†à´¯àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ)
         # -------------------------------------------------------------
         # driver_sheet = client.open("Taxi_Management").worksheet("Filtered_Data")
         # data = driver_sheet.get_all_records()
         
         # -------------------------------------------------------------
-        # 2. പുതിയ ഫയർബേസ് ഡാറ്റാബേസ് ലോജിക് (Firebase Logic)
+        # 2. à´ªàµà´¤à´¿à´¯ à´«à´¯àµ¼à´¬àµ‡à´¸àµ à´¡à´¾à´±àµà´±à´¾à´¬àµ‡à´¸àµ à´²àµ‹à´œà´¿à´•àµ (Firebase Logic)
         # -------------------------------------------------------------
-        # നിങ്ങളുടെ ഫയർബേസിൽ ഡ്രൈവർമാരുടെ ഡാറ്റ സേവ് ചെയ്തിരിക്കുന്ന പാത്ത് (Node) 
-        # 'drivers' അല്ലെങ്കിൽ നിങ്ങളുടെ ഡാറ്റാബേസ് ഘടനയ്ക്കനുസരിച്ച് മാറ്റുക.
+        # à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµà´Ÿàµ† à´¡à´¾à´±àµà´± à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨ à´ªà´¾à´¤àµà´¤àµ (Node) 
+        # 'drivers' à´…à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´¡à´¾à´±àµà´±à´¾à´¬àµ‡à´¸àµ à´˜à´Ÿà´¨à´¯àµà´•àµà´•à´¨àµà´¸à´°à´¿à´šàµà´šàµ à´®à´¾à´±àµà´±àµà´•.
         ref = db.reference('drivers') 
         drivers_data = ref.get()
         
@@ -529,18 +529,18 @@ def get_all_drivers_by_area(area_name):
         selected_area = str(area_name).strip().lower()
         
         if drivers_data:
-            # ഫയർബേസ് ഡാറ്റ ഡിക്ഷ്ണറി (Dictionary) അല്ലെങ്കിൽ ലിസ്റ്റ് ആയിട്ടാകാം വരുന്നത്
+            # à´«à´¯àµ¼à´¬àµ‡à´¸àµ à´¡à´¾à´±àµà´± à´¡à´¿à´•àµà´·àµà´£à´±à´¿ (Dictionary) à´…à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´²à´¿à´¸àµà´±àµà´±àµ à´†à´¯à´¿à´Ÿàµà´Ÿà´¾à´•à´¾à´‚ à´µà´°àµà´¨àµà´¨à´¤àµ
             items = drivers_data.items() if isinstance(drivers_data, dict) else enumerate(drivers_data)
             
             for key, d in items:
                 if not isinstance(d, dict):
                     continue
                 
-                # ഫയർബേസിലെ ഫീൽഡുകൾ (Area, Telegram Chat ID എന്നിവ കൃത്യമായി നൽകുക)
+                # à´«à´¯àµ¼à´¬àµ‡à´¸à´¿à´²àµ† à´«àµ€àµ½à´¡àµà´•àµ¾ (Area, Telegram Chat ID à´Žà´¨àµà´¨à´¿à´µ à´•àµƒà´¤àµà´¯à´®à´¾à´¯à´¿ à´¨àµ½à´•àµà´•)
                 sheet_area = str(d.get('Area', d.get('area', ''))).strip().lower()
                 telegram_id = str(d.get('Telegram Chat ID', d.get('telegram_chat_id', ''))).strip()
                 
-                # കൺസോൾ ഡീബഗ്ഗിംഗ്
+                # à´•àµºà´¸àµ‹àµ¾ à´¡àµ€à´¬à´—àµà´—à´¿à´‚à´—àµ
                 print(f"DEBUG Firebase: Checking '{selected_area}' against '{sheet_area}' with ID: '{telegram_id}'")
                 
                 if selected_area == sheet_area and telegram_id:
@@ -553,10 +553,10 @@ def get_all_drivers_by_area(area_name):
         print(f"DEBUG FIREBASE ERROR: {e}")
         return []
 # ---------------------------------------------------------
-# ഇതിന് തൊട്ടു താഴെയായി നിങ്ങളുടെ 'SMART MAPPING' ഭാഗം വരാം
+# à´‡à´¤à´¿à´¨àµ à´¤àµŠà´Ÿàµà´Ÿàµ à´¤à´¾à´´àµ†à´¯à´¾à´¯à´¿ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† 'SMART MAPPING' à´­à´¾à´—à´‚ à´µà´°à´¾à´‚
 # ---------------------------------------------------------
 # ============================================================
-# 🗺️ SMART MAPPING & FALLBACK ENGINE (FULL FIXED)
+# ðŸ—ºï¸ SMART MAPPING & FALLBACK ENGINE (FULL FIXED)
 # ============================================================
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -603,8 +603,8 @@ def get_real_road_distance(pickup_place, drop_place):
 
         
 # ==========================================================
-    # 🛑 ഇവിടെയാണ് geocode_place ഫങ്ഷൻ തുടങ്ങുന്നത്. 
-    # ഈ ഫങ്ഷന്റെ ഏറ്റവും തുടക്കത്തിൽ ഫയർബേസ് ചെക്ക് വെക്കുക:
+    # ðŸ›‘ à´‡à´µà´¿à´Ÿàµ†à´¯à´¾à´£àµ geocode_place à´«à´™àµà´·àµ» à´¤àµà´Ÿà´™àµà´™àµà´¨àµà´¨à´¤àµ. 
+    # à´ˆ à´«à´™àµà´·à´¨àµà´±àµ† à´à´±àµà´±à´µàµà´‚ à´¤àµà´Ÿà´•àµà´•à´¤àµà´¤à´¿àµ½ à´«à´¯àµ¼à´¬àµ‡à´¸àµ à´šàµ†à´•àµà´•àµ à´µàµ†à´•àµà´•àµà´•:
     # ==========================================================
     
     # Geocoding function with Firebase check & fallback
@@ -711,17 +711,17 @@ def get_real_road_distance(pickup_place, drop_place):
 
     return round(road_estimate, 1)
 # ====================================================================
-# 📐 Haversine Distance Calculator
+# ðŸ“ Haversine Distance Calculator
 # ====================================================================
 def haversine_distance(lat1, lon1, lat2, lon2):
-    R = 6371  # ഭൂമിയുടെ ആരം (കിലോമീറ്ററിൽ)
+    R = 6371  # à´­àµ‚à´®à´¿à´¯àµà´Ÿàµ† à´†à´°à´‚ (à´•à´¿à´²àµ‹à´®àµ€à´±àµà´±à´±à´¿àµ½)
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
     a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     return R * c
 # ============================================================
-# ⚙️ CONFIGURATION - All configs in one place
+# âš™ï¸ CONFIGURATION - All configs in one place
 # ============================================================
 #GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw_WDIJgYvtCy0r13wQu20BNZE9KqfGmyxQm7_iFsV2kLLq3eQ8O-3e5BfP3JCrYnTorw/exec"
 
@@ -748,7 +748,7 @@ import os
 import threading
 import requests
 import streamlit as st
-# ഫയർബേസ് ഡാറ്റാബേസ് കണക്ഷൻ സെറ്റ് ചെയ്യുക
+# à´«à´¯àµ¼à´¬àµ‡à´¸àµ à´¡à´¾à´±àµà´±à´¾à´¬àµ‡à´¸àµ à´•à´£à´•àµà´·àµ» à´¸àµ†à´±àµà´±àµ à´šàµ†à´¯àµà´¯àµà´•
 if not firebase_admin._apps:
     creds_dict = dict(st.secrets["firebase_service_account"])
     cred = credentials.Certificate(creds_dict)
@@ -759,36 +759,36 @@ if not firebase_admin._apps:
 
 registration_data = {}
 def auto_cancel_trip(trip_id, delay_seconds=1800):
-    """30 മിനിറ്റിന് ശേഷം ട്രിപ്പ് ഓട്ടോമാറ്റിക് ആയി ക്യാൻസൽ ചെയ്യുക"""
+    """30 à´®à´¿à´¨à´¿à´±àµà´±à´¿à´¨àµ à´¶àµ‡à´·à´‚ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´“à´Ÿàµà´Ÿàµ‹à´®à´¾à´±àµà´±à´¿à´•àµ à´†à´¯à´¿ à´•àµà´¯à´¾àµ»à´¸àµ½ à´šàµ†à´¯àµà´¯àµà´•"""
     def cancel_task():
-        time.sleep(delay_seconds)  # 30 മിനിറ്റ് (1800 സെക്കൻഡ്) കാത്തിരിക്കുക
+        time.sleep(delay_seconds)  # 30 à´®à´¿à´¨à´¿à´±àµà´±àµ (1800 à´¸àµ†à´•àµà´•àµ»à´¡àµ) à´•à´¾à´¤àµà´¤à´¿à´°à´¿à´•àµà´•àµà´•
         try:
             ref = db.reference(f"trips/{trip_id}")
             trip_data = ref.get()
             
             if trip_data:
                 current_status = trip_data.get("status", "Pending")
-                # ട്രിപ്പ് ഇപ്പോഴും Pending/Available ആണെങ്കിൽ മാത്രം ക്യാൻസൽ ചെയ്യുക
+                # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´‡à´ªàµà´ªàµ‹à´´àµà´‚ Pending/Available à´†à´£àµ†à´™àµà´•à´¿àµ½ à´®à´¾à´¤àµà´°à´‚ à´•àµà´¯à´¾àµ»à´¸àµ½ à´šàµ†à´¯àµà´¯àµà´•
                 if current_status in ["Pending", "Available", "Unassigned"]:
                     ref.update({
                         "status": "Cancelled",
                         "cancel_reason": "No driver accepted within 30 minutes",
                         "cancelled_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     })
-                    print(f"⏰ Trip {trip_id} auto-cancelled after 30 minutes")
+                    print(f"â° Trip {trip_id} auto-cancelled after 30 minutes")
                 else:
-                    print(f"✅ Trip {trip_id} already {current_status} - no need to cancel")
+                    print(f"âœ… Trip {trip_id} already {current_status} - no need to cancel")
         except Exception as e:
-            print(f"❌ Auto-cancel error for {trip_id}: {e}")
+            print(f"âŒ Auto-cancel error for {trip_id}: {e}")
     
-    # Background thread-ൽ റൺ ചെയ്യുക
+    # Background thread-àµ½ à´±àµº à´šàµ†à´¯àµà´¯àµà´•
     thread = threading.Thread(target=cancel_task, daemon=True)
     thread.start()
 
 
 def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, distance=0.0, pickup_link=""):
     """
-    കസ്റ്റമർ ബുക്ക് ചെയ്യു മ്പോൾ വിവരങ്ങളും ദൂരവും ഫയർബേസിലേക്ക് സേവ് ചെയ്യുന്നു
+    à´•à´¸àµà´±àµà´±à´®àµ¼ à´¬àµà´•àµà´•àµ à´šàµ†à´¯àµà´¯àµ à´®àµà´ªàµ‹àµ¾ à´µà´¿à´µà´°à´™àµà´™à´³àµà´‚ à´¦àµ‚à´°à´µàµà´‚ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿à´²àµ‡à´•àµà´•àµ à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
     """
     try:
         trip_data = {
@@ -799,11 +799,11 @@ def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, dista
             "customer_phone": str(customer_phone),
             "pickup": pickup,
             "drop": drop,
-            "pickup_link": pickup_link,  # 👈 ഇവിടെ എറർ വരാതിരിക്കാൻ ഇത് ആർഗ്യുമെന്റിൽ ചേർത്തിട്ടുണ്ട്
-            "distance": distance,  # കിലോമീറ്റർ മാത്രം സേവ് ചെയ്യുന്നു
-            "total_fare": 0.0,              # ഫെയർ തൽക്കാലം 0 ആയി വെക്കുന്നു
+            "pickup_link": pickup_link,  # ðŸ‘ˆ à´‡à´µà´¿à´Ÿàµ† à´Žà´±àµ¼ à´µà´°à´¾à´¤à´¿à´°à´¿à´•àµà´•à´¾àµ» à´‡à´¤àµ à´†àµ¼à´—àµà´¯àµà´®àµ†à´¨àµà´±à´¿àµ½ à´šàµ‡àµ¼à´¤àµà´¤à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ
+            "distance": distance,  # à´•à´¿à´²àµ‹à´®àµ€à´±àµà´±àµ¼ à´®à´¾à´¤àµà´°à´‚ à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
+            "total_fare": 0.0,              # à´«àµ†à´¯àµ¼ à´¤àµ½à´•àµà´•à´¾à´²à´‚ 0 à´†à´¯à´¿ à´µàµ†à´•àµà´•àµà´¨àµà´¨àµ
             "status": "Pending",
-            "is_locked": False,  # <-- ഇത് ചേർക്കുക
+            "is_locked": False,  # <-- à´‡à´¤àµ à´šàµ‡àµ¼à´•àµà´•àµà´•
             "driver_name": "",
             "driver_phone": "",
             "driver_chat_id": "",
@@ -812,15 +812,15 @@ def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, dista
         
         trip_ref = db.reference(f"trips/{booking_id}")
         trip_ref.set(trip_data)
-        # 🆕 30 മിനിറ്റിന് ശേഷം auto-cancel scheduler ആരംഭിക്കുക
+        # ðŸ†• 30 à´®à´¿à´¨à´¿à´±àµà´±à´¿à´¨àµ à´¶àµ‡à´·à´‚ auto-cancel scheduler à´†à´°à´‚à´­à´¿à´•àµà´•àµà´•
         auto_cancel_trip(booking_id, delay_seconds=1800)
         
         
 
-        print(f"✅ Trip {booking_id} saved with distance {distance} km successfully.")
+        print(f"âœ… Trip {booking_id} saved with distance {distance} km successfully.")
         return True
     except Exception as e:
-        print(f"❌ Error saving trip to Firebase: {e}")
+        print(f"âŒ Error saving trip to Firebase: {e}")
         return False
 # ==========================================================
 # Send Trip to Driver (Telegram - Privacy Focused)
@@ -834,7 +834,7 @@ def send_trip_to_driver(
     drop,
     distance="N/A",
     location_link="Not Available",
-    commission="N/A"  # <--- ഇവിടെ കമ്മീഷൻ പാരാമീറ്റർ ചേർക്കാം
+    commission="N/A"  # <--- à´‡à´µà´¿à´Ÿàµ† à´•à´®àµà´®àµ€à´·àµ» à´ªà´¾à´°à´¾à´®àµ€à´±àµà´±àµ¼ à´šàµ‡àµ¼à´•àµà´•à´¾à´‚
 ):
     raw_phone = str(customer_phone or '')
     if len(raw_phone) >= 6:
@@ -846,15 +846,15 @@ def send_trip_to_driver(
     safe_location = location_link if location_link else "Not Available"
 
     message = f"""
-🚖 *പുതിയ ട്രിപ്പ് റിക്വസ്റ്റ്!*
+ðŸš– *à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´±à´¿à´•àµà´µà´¸àµà´±àµà´±àµ!*
 
-👤 കസ്റ്റമർ: {customer_name}
-📞 ഫോൺ: {masked_phone}
-📍 Pickup: {pickup}
-🏁 Drop: {drop}
-📏 ദൂരം (Distance): {safe_distance} km
-💰 Commission: {commission}
-📍 GPS Live Location:
+ðŸ‘¤ à´•à´¸àµà´±àµà´±à´®àµ¼: {customer_name}
+ðŸ“ž à´«àµ‹àµº: {masked_phone}
+ðŸ“ Pickup: {pickup}
+ðŸ Drop: {drop}
+ðŸ“ à´¦àµ‚à´°à´‚ (Distance): {safe_distance} km
+ðŸ’° Commission: {commission}
+ðŸ“ GPS Live Location:
 {safe_location}
 
 Click ACCEPT to confirm trip.
@@ -869,7 +869,7 @@ Click ACCEPT to confirm trip.
             "inline_keyboard": [
                 [
                     {
-                        "text": "✅ ACCEPT TRIP",
+                        "text": "âœ… ACCEPT TRIP",
                         "callback_data": booking_id
                     }
                 ]
@@ -894,7 +894,7 @@ def bg_log(message):
 def initialize_firebase():
     try:
         if firebase_admin._apps:
-            bg_log("✅ Firebase already initialized")
+            bg_log("âœ… Firebase already initialized")
             return True
 
         base_dir = os.path.dirname(
@@ -907,9 +907,9 @@ def initialize_firebase():
             "firebase_key.json.json"
         ]
 
-        # Firebase ഇതിനകം ഇനിഷ്യലൈസ് ചെയ്തിട്ടില്ലെങ്കിൽ മാത്രം
+        # Firebase à´‡à´¤à´¿à´¨à´•à´‚ à´‡à´¨à´¿à´·àµà´¯à´²àµˆà´¸àµ à´šàµ†à´¯àµà´¤à´¿à´Ÿàµà´Ÿà´¿à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´®à´¾à´¤àµà´°à´‚
         if not firebase_admin._apps:
-            # Secrets-ൽ നിന്ന് JSON ഉള്ളടക്കം എടുക്കുക
+            # Secrets-àµ½ à´¨à´¿à´¨àµà´¨àµ JSON à´‰à´³àµà´³à´Ÿà´•àµà´•à´‚ à´Žà´Ÿàµà´•àµà´•àµà´•
             creds_dict = dict(st.secrets["firebase_service_account"])
             cred = credentials.Certificate(creds_dict)
             firebase_admin.initialize_app(cred, {
@@ -941,7 +941,7 @@ def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id):
         
     ref.update({
         "status": "Accepted",
-        "is_locked": True,  # <-- ഇത് ചേർക്കുക
+        "is_locked": True,  # <-- à´‡à´¤àµ à´šàµ‡àµ¼à´•àµà´•àµà´•
         "driver_name": driver_name,
         "driver_phone": driver_phone,
         "driver_chat_id": str(driver_chat_id)
@@ -950,15 +950,15 @@ def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id):
 
 
 # ==========================================================
-# ✅ ADMIN TRIP NOTIFICATION FUNCTION
+# âœ… ADMIN TRIP NOTIFICATION FUNCTION
 # ==========================================================
 def send_admin_trip_notification(trip_data):
     """
-    Admin-ന് പുതിയ trip notification അയക്കുന്നു.
+    Admin-à´¨àµ à´ªàµà´¤à´¿à´¯ trip notification à´…à´¯à´•àµà´•àµà´¨àµà´¨àµ.
     """
     try:
         if not bot or not ADMIN_TELEGRAM_CHAT_ID:
-            print("⚠️ Admin notification skipped: bot or chat_id missing")
+            print("âš ï¸ Admin notification skipped: bot or chat_id missing")
             return False
 
         trip_id = trip_data.get("trip_id", "N/A")
@@ -978,9 +978,9 @@ def send_admin_trip_notification(trip_data):
         )
         try:
             commission = float(commission)
-            commission_display = f"₹{commission:.2f}"
+            commission_display = f"â‚¹{commission:.2f}"
         except:
-            commission_display = f"₹{commission}"
+            commission_display = f"â‚¹{commission}"
 
         # Masked phone
         raw_phone = str(trip_data.get("customer_phone", ""))
@@ -997,23 +997,23 @@ def send_admin_trip_notification(trip_data):
             or ""
         )
         if gps_url and gps_url.startswith("http"):
-            gps_line = f"🔗 GPS: [📍 Location]({gps_url})"
+            gps_line = f"ðŸ”— GPS: [ðŸ“ Location]({gps_url})"
         else:
-            gps_line = "🔗 GPS: ലഭ്യമല്ല"
+            gps_line = "ðŸ”— GPS: à´²à´­àµà´¯à´®à´²àµà´²"
 
         # Admin message
         admin_msg = (
-            f"🔔 *പുതിയ ട്രിപ്പ് (Admin)*\n\n"
-            f"🆔 *Trip ID:* {trip_id}\n"
-            f"🕐 *Time:* {booking_time}\n"
-            f"👤 *കസ്റ്റമർ:* {customer_name}\n"
-            f"📞 *ഫോൺ:* {masked_phone}\n"
-            f"📍 *പിക്കപ്പ്:* {pickup}\n"
-            f"🏁 *ഡ്രോപ്പ്:* {drop}\n"
-            f"📍 *ഏരിയ:* {area}\n"
-            f"🚗 *വാഹനം:* {vehicle}\n"
-            f"📏 *ദൂരം:* {distance} km\n"
-            f"💰 *Commission:* {commission_display}\n"
+            f"ðŸ”” *à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµ (Admin)*\n\n"
+            f"ðŸ†” *Trip ID:* {trip_id}\n"
+            f"ðŸ• *Time:* {booking_time}\n"
+            f"ðŸ‘¤ *à´•à´¸àµà´±àµà´±à´®àµ¼:* {customer_name}\n"
+            f"ðŸ“ž *à´«àµ‹àµº:* {masked_phone}\n"
+            f"ðŸ“ *à´ªà´¿à´•àµà´•à´ªàµà´ªàµ:* {pickup}\n"
+            f"ðŸ *à´¡àµà´°àµ‹à´ªàµà´ªàµ:* {drop}\n"
+            f"ðŸ“ *à´à´°à´¿à´¯:* {area}\n"
+            f"ðŸš— *à´µà´¾à´¹à´¨à´‚:* {vehicle}\n"
+            f"ðŸ“ *à´¦àµ‚à´°à´‚:* {distance} km\n"
+            f"ðŸ’° *Commission:* {commission_display}\n"
             f"{gps_line}"
         )
 
@@ -1024,11 +1024,11 @@ def send_admin_trip_notification(trip_data):
             disable_web_page_preview=True
         )
 
-        print(f"✅ Admin notified: {trip_id}")
+        print(f"âœ… Admin notified: {trip_id}")
         return True
 
     except Exception as e:
-        print(f"❌ Admin notification error: {e}")
+        print(f"âŒ Admin notification error: {e}")
         return False
 def listener(event):
     try:
@@ -1036,12 +1036,12 @@ def listener(event):
             return
 
         # ============================================
-        # ✅ FIX: Sub-path updates skip
-        # Path = "/TRIP-XXXX" → Process (trip creation)
-        # Path = "/TRIP-XXXX/notified_drivers" → Skip
+        # âœ… FIX: Sub-path updates skip
+        # Path = "/TRIP-XXXX" â†’ Process (trip creation)
+        # Path = "/TRIP-XXXX/notified_drivers" â†’ Skip
         # ============================================
         if event.path and event.path.count("/") > 1:
-            print(f"   ⏭️ Sub-path skip: {event.path}")
+            print(f"   â­ï¸ Sub-path skip: {event.path}")
             return
 
         trip_data = event.data
@@ -1059,11 +1059,11 @@ def listener(event):
             
         try:
             # ============================================
-            # ✅ ADMIN NOTIFICATION — function call (ഒരിക്കൽ മാത്രം)
+            # âœ… ADMIN NOTIFICATION â€” function call (à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚)
             # ============================================
             send_admin_trip_notification(trip_data)
             
-            bg_log("🚖 Admin Notification Sent Successfully")
+            bg_log("ðŸš– Admin Notification Sent Successfully")
             
             # backup_done flag set (trip_id fallback)
             try:
@@ -1107,14 +1107,14 @@ def accept_trip_safely(
             current_data.get("status", "Pending")
         ).strip()
 
-        # ട്രിപ്പ് ഇതുവരെ സ്വീകരിച്ചിട്ടില്ലെന്ന് ഉറപ്പാക്കുക
+        # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´‡à´¤àµà´µà´°àµ† à´¸àµà´µàµ€à´•à´°à´¿à´šàµà´šà´¿à´Ÿàµà´Ÿà´¿à´²àµà´²àµ†à´¨àµà´¨àµ à´‰à´±à´ªàµà´ªà´¾à´•àµà´•àµà´•
         if current_status not in [
             "Pending", "Available", "Unassigned",
             "PENDING", "AVAILABLE", "UNASSIGNED"
         ]:
             return
 
-        # ഡ്രൈവർ വിവരങ്ങൾ ട്രിപ്പിൽ സേവ് ചെയ്യുക
+        # à´¡àµà´°àµˆà´µàµ¼ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´Ÿàµà´°à´¿à´ªàµà´ªà´¿àµ½ à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¯àµà´•
         urrent_data["status"] = "Accepted"
         current_data["is_locked"] = True
         current_data["driver_chat_id"] = str(driver_chat_id)
@@ -1132,13 +1132,13 @@ def accept_trip_safely(
             and str(result.get("status", "")).strip().upper() == "ACCEPTED"
             and str(result.get("driver_chat_id", "")).strip() == str(driver_chat_id)
         ):
-            return result  # Dictionary റിട്ടേൺ ചെയ്യുക
+            return result  # Dictionary à´±à´¿à´Ÿàµà´Ÿàµ‡àµº à´šàµ†à´¯àµà´¯àµà´•
 
-        return None  # ട്രിപ്പ് ലഭിച്ചില്ലെങ്കിൽ None റിട്ടേൺ ചെയ്യുക
+        return None  # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´²à´­à´¿à´šàµà´šà´¿à´²àµà´²àµ†à´™àµà´•à´¿àµ½ None à´±à´¿à´Ÿàµà´Ÿàµ‡àµº à´šàµ†à´¯àµà´¯àµà´•
 
     except Exception as e:
-        print(f"❌ Safe trip acceptance error: {e}")
-        return None  # എറർ വന്നാലും None റിട്ടേൺ ചെയ്യുക
+        print(f"âŒ Safe trip acceptance error: {e}")
+        return None  # à´Žà´±àµ¼ à´µà´¨àµà´¨à´¾à´²àµà´‚ None à´±à´¿à´Ÿàµà´Ÿàµ‡àµº à´šàµ†à´¯àµà´¯àµà´•
 
 # ==========================================================
 # Telegram Callback Query Handler (Button Clicks)
@@ -1149,7 +1149,7 @@ def handle_telegram_callback(update, context):
     
     callback_data = query.data
     chat_id = query.message.chat_id
-    print(f"🔥 DEBUG: Callback വന്നിരിക്കുന്നു -> {callback_data}")
+    print(f"ðŸ”¥ DEBUG: Callback à´µà´¨àµà´¨à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ -> {callback_data}")
     
     if callback_data.startswith("arrived_"):
         booking_id = callback_data.replace("arrived_", "")
@@ -1159,16 +1159,16 @@ def handle_telegram_callback(update, context):
         if trip_data and str(trip_data.get("driver_chat_id")) == str(chat_id):
             ref.update({"status": "Arrived"})
             query.edit_message_text(
-                text=query.message.text + "\n\n🔴 **[Status: Arrived at Location]** - കസ്റ്റമർക്ക് നോട്ടിഫിക്കേഷൻ അയച്ചിട്ടുണ്ട്."
+                text=query.message.text + "\n\nðŸ”´ **[Status: Arrived at Location]** - à´•à´¸àµà´±àµà´±à´®àµ¼à´•àµà´•àµ à´¨àµ‹à´Ÿàµà´Ÿà´¿à´«à´¿à´•àµà´•àµ‡à´·àµ» à´…à´¯à´šàµà´šà´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ."
             )
         else:
-            query.edit_message_text(text="❌ അസാധുവായ റിക്വസ്റ്റ് അല്ലെങ്കിൽ നിങ്ങൾക്ക് ഈ ട്രിപ്പിൽ അധികാരമില്ല.")
+            query.edit_message_text(text="âŒ à´…à´¸à´¾à´§àµà´µà´¾à´¯ à´±à´¿à´•àµà´µà´¸àµà´±àµà´±àµ à´…à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´¨à´¿à´™àµà´™àµ¾à´•àµà´•àµ à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªà´¿àµ½ à´…à´§à´¿à´•à´¾à´°à´®à´¿à´²àµà´².")
             
     else:
-        # ഇത് "accept_" എന്ന് തുടങ്ങുന്ന ബട്ടണാണ്
+        # à´‡à´¤àµ "accept_" à´Žà´¨àµà´¨àµ à´¤àµà´Ÿà´™àµà´™àµà´¨àµà´¨ à´¬à´Ÿàµà´Ÿà´£à´¾à´£àµ
         booking_id = callback_data.replace("accept_", "").strip()
             
-        # 1. ഡ്രൈവറുടെ വിവരങ്ങൾ ഫയർബേസിൽ നിന്ന് എടുക്കുക
+        # 1. à´¡àµà´°àµˆà´µà´±àµà´Ÿàµ† à´µà´¿à´µà´°à´™àµà´™àµ¾ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´Žà´Ÿàµà´•àµà´•àµà´•
         driver_ref = db.reference(f"drivers/{chat_id}")
         driver_data = driver_ref.get() or {}
             
@@ -1193,7 +1193,7 @@ def handle_telegram_callback(update, context):
             or "N/A"
         )
             
-        # 2. accept_trip_safely വിളിക്കുക
+        # 2. accept_trip_safely à´µà´¿à´³à´¿à´•àµà´•àµà´•
         result = accept_trip_safely(
             trip_id=booking_id,
             driver_chat_id=chat_id,
@@ -1202,28 +1202,28 @@ def handle_telegram_callback(update, context):
             vehicle_number=vehicle_number
         )
             
-        # 3. ഫലം അനുസരിച്ച് സന്ദേശം അയക്കുക
-        if result:  # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്തു
+        # 3. à´«à´²à´‚ à´…à´¨àµà´¸à´°à´¿à´šàµà´šàµ à´¸à´¨àµà´¦àµ‡à´¶à´‚ à´…à´¯à´•àµà´•àµà´•
+        if result:  # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤àµ
             query.edit_message_text(
-                text=f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
-                    f"ട്രിപ്പ് ഐഡി: `{booking_id}`\n"
-                    f"ഡ്രൈവർ: {driver_name}\n"
-                     f"വാഹനം: {vehicle_number}",
+                text=f"âœ… *à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤àµ!*\n\n"
+                    f"à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿: `{booking_id}`\n"
+                    f"à´¡àµà´°àµˆà´µàµ¼: {driver_name}\n"
+                     f"à´µà´¾à´¹à´¨à´‚: {vehicle_number}",
                  parse_mode="Markdown"
             )
                 
-            # ഡ്രൈവർ പാനൽ ലിങ്ക് അയക്കുക
+            # à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ à´²à´¿à´™àµà´•àµ à´…à´¯à´•àµà´•àµà´•
             driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={booking_id}&driver_chat_id={chat_id}"
             bot.send_message(
                 chat_id,
-                f"📍 *ഡ്രൈവർ പാനൽ തുറക്കാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:*\n\n[ട്രിപ്പ് പാനൽ തുറക്കുക]({driver_panel_url})",
+                f"ðŸ“ *à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ à´¤àµà´±à´•àµà´•à´¾àµ» à´¤à´¾à´´àµ†à´¯àµà´³àµà´³ à´²à´¿à´™àµà´•à´¿àµ½ à´•àµà´²à´¿à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´•:*\n\n[à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ à´¤àµà´±à´•àµà´•àµà´•]({driver_panel_url})",
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
         else:
-            # ട്രിപ്പ് ലഭിച്ചില്ല (മറ്റൊരാൾ എടുത്തു)
+            # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´²à´­à´¿à´šàµà´šà´¿à´²àµà´² (à´®à´±àµà´±àµŠà´°à´¾àµ¾ à´Žà´Ÿàµà´¤àµà´¤àµ)
             query.edit_message_text(
-                text="❌ ക്ഷമിക്കണം, ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ ഇതിനകം സ്വീകരിച്ചിട്ടുണ്ട്.",
+                text="âŒ à´•àµà´·à´®à´¿à´•àµà´•à´£à´‚, à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´®à´±àµà´±àµŠà´°àµ à´¡àµà´°àµˆà´µàµ¼ à´‡à´¤à´¿à´¨à´•à´‚ à´¸àµà´µàµ€à´•à´°à´¿à´šàµà´šà´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ.",
                 parse_mode="Markdown"
             ) 
                 
@@ -1250,7 +1250,7 @@ def create_trip_in_firebase(
         ref.set(payload)
 
         bg_log(
-            "✅ Trip Saved To Firebase"
+            "âœ… Trip Saved To Firebase"
         )
 
         return True
@@ -1276,7 +1276,7 @@ def get_locations_from_firebase():
             if isinstance(data, list):
                 return [str(item) for item in data if item and item is not True]
             elif isinstance(data, dict):
-                # ലൊക്കേഷൻ പേരുകൾ കീ (Keys) ആയിട്ടായതുകൊണ്ട് data.keys() എടുക്കുന്നു
+                # à´²àµŠà´•àµà´•àµ‡à´·àµ» à´ªàµ‡à´°àµà´•àµ¾ à´•àµ€ (Keys) à´†à´¯à´¿à´Ÿàµà´Ÿà´¾à´¯à´¤àµà´•àµŠà´£àµà´Ÿàµ data.keys() à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨àµ
                 return [str(k) for k in data.keys() if k and k is not True]
         return [] 
     except Exception as e:
@@ -1292,7 +1292,7 @@ def get_areas_from_firebase():
             if isinstance(data, list):
                 return [str(item) for item in data if item and item is not True]
             elif isinstance(data, dict):
-                # ഏരിയയുടെ പേര് കീ (Key) ആയതുകൊണ്ട് data.keys() ഉപയോഗിക്കുന്നു
+                # à´à´°à´¿à´¯à´¯àµà´Ÿàµ† à´ªàµ‡à´°àµ à´•àµ€ (Key) à´†à´¯à´¤àµà´•àµŠà´£àµà´Ÿàµ data.keys() à´‰à´ªà´¯àµ‹à´—à´¿à´•àµà´•àµà´¨àµà´¨àµ
                 return [str(k) for k in data.keys() if k and k is not True]
         return [] 
     except Exception as e:
@@ -1303,26 +1303,26 @@ def get_areas_from_firebase():
 # MAIN STARTUP
 # ==========================================================
 # ==========================================================
-# ✅ FIX #3: Firebase Listener — ഒരിക്കൽ മാത്രം Start
-# Streamlit rerun-ൽ duplicate listener threads ഒഴിവാക്കാൻ
+# âœ… FIX #3: Firebase Listener â€” à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚ Start
+# Streamlit rerun-àµ½ duplicate listener threads à´’à´´à´¿à´µà´¾à´•àµà´•à´¾àµ»
 # ==========================================================
 @st.cache_resource
 def start_firebase_background_services():
     """
-    @st.cache_resource കാരണം app session-ൽ ഒരിക്കൽ മാത്രം
-    execute ആകും. Streamlit rerun ചെയ്താലും പുതിയ
-    listener threads ഉണ്ടാകില്ല.
+    @st.cache_resource à´•à´¾à´°à´£à´‚ app session-àµ½ à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚
+    execute à´†à´•àµà´‚. Streamlit rerun à´šàµ†à´¯àµà´¤à´¾à´²àµà´‚ à´ªàµà´¤à´¿à´¯
+    listener threads à´‰à´£àµà´Ÿà´¾à´•à´¿à´²àµà´².
     """
     try:
         initialize_firebase()
         
         def run_listener():
             try:
-                bg_log("🚀 Starting Firebase Trip Listener...")
+                bg_log("ðŸš€ Starting Firebase Trip Listener...")
                 trips_ref = db.reference("trips")
                 trips_ref.listen(listener)
             except Exception as e:
-                bg_log(f"❌ Listener Thread Error: {e}")
+                bg_log(f"âŒ Listener Thread Error: {e}")
                 import traceback
                 traceback.print_exc()
         
@@ -1334,15 +1334,15 @@ def start_firebase_background_services():
         add_script_run_ctx(firebase_thread)
         firebase_thread.start()
         
-        bg_log("✅ Firebase Listener Started (ONCE)")
+        bg_log("âœ… Firebase Listener Started (ONCE)")
         return True
         
     except Exception as e:
-        bg_log(f"❌ Background Services Error: {e}")
+        bg_log(f"âŒ Background Services Error: {e}")
         return False
 
 
-# App init-ൽ ഒരിക്കൽ മാത്രം execute ആകും
+# App init-àµ½ à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚ execute à´†à´•àµà´‚
 start_firebase_background_services()
 # ==========================================================
 # START FIREBASE BACKGROUND SERVICES
@@ -1359,11 +1359,11 @@ def get_stands_from_sheets():
         if response.status_code == 200:
             res_json = response.json()
             
-            # 1. ഗൂഗിൾ ഷീറ്റ് നേരിട്ട് ഒരു ലിസ്റ്റ് (List) ആണ് അയക്കുന്നതെങ്കിൽ
+            # 1. à´—àµ‚à´—à´¿àµ¾ à´·àµ€à´±àµà´±àµ à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´’à´°àµ à´²à´¿à´¸àµà´±àµà´±àµ (List) à´†à´£àµ à´…à´¯à´•àµà´•àµà´¨àµà´¨à´¤àµ†à´™àµà´•à´¿àµ½
             if isinstance(res_json, list):
                 return res_json
                 
-            # 2. ഡിക്ഷണറി (Dictionary) ആണെങ്കിൽ പല സാധ്യമായ കീകളും പരിശോധിക്കുന്നു
+            # 2. à´¡à´¿à´•àµà´·à´£à´±à´¿ (Dictionary) à´†à´£àµ†à´™àµà´•à´¿àµ½ à´ªà´² à´¸à´¾à´§àµà´¯à´®à´¾à´¯ à´•àµ€à´•à´³àµà´‚ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ
             if isinstance(res_json, dict):
                 for key in ["stands", "data", "result", "items"]:
                     if key in res_json and isinstance(res_json[key], list):
@@ -1381,11 +1381,11 @@ def get_areas_from_sheets():
         if response.status_code == 200:
             res_json = response.json()
             
-            # 1. നേരിട്ട് ലിസ്റ്റ് ആണെങ്കിൽ
+            # 1. à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´²à´¿à´¸àµà´±àµà´±àµ à´†à´£àµ†à´™àµà´•à´¿àµ½
             if isinstance(res_json, list):
                 return res_json
                 
-            # 2. ഡിക്ഷണറി ആണെങ്കിൽ കീസ് പരിശോധിക്കുന്നു
+            # 2. à´¡à´¿à´•àµà´·à´£à´±à´¿ à´†à´£àµ†à´™àµà´•à´¿àµ½ à´•àµ€à´¸àµ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ
             if isinstance(res_json, dict):
                 for key in ["areas", "data", "result", "items"]:
                     if key in res_json and isinstance(res_json[key], list):
@@ -1395,7 +1395,7 @@ def get_areas_from_sheets():
     except Exception as e:
         print(f"Areas Error: {e}")
         return []
-# ഡിഫോൾട്ട് ഏരിയ (നിങ്ങൾ ആവശ്യപ്പെട്ടതുപോലെ Manjeri Central മാത്രം)
+# à´¡à´¿à´«àµ‹àµ¾à´Ÿàµà´Ÿàµ à´à´°à´¿à´¯ (à´¨à´¿à´™àµà´™àµ¾ à´†à´µà´¶àµà´¯à´ªàµà´ªàµ†à´Ÿàµà´Ÿà´¤àµà´ªàµ‹à´²àµ† Manjeri Central à´®à´¾à´¤àµà´°à´‚)
 DEFAULT_AREAS = ["Manjeri Central"]
 
 @st.cache_data(ttl=60)
@@ -1405,29 +1405,29 @@ def get_areas_from_sheets():
         if response.status_code == 200:
             res_json = response.json()
             
-            # 1. നേരിട്ട് ലിസ്റ്റ് ആണെങ്കിൽ
+            # 1. à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´²à´¿à´¸àµà´±àµà´±àµ à´†à´£àµ†à´™àµà´•à´¿àµ½
             if isinstance(res_json, list) and res_json:
                 return res_json
                 
-            # 2. ഡിക്ഷണറി ആണെങ്കിൽ കീസ് പരിശോധിക്കുന്നു
+            # 2. à´¡à´¿à´•àµà´·à´£à´±à´¿ à´†à´£àµ†à´™àµà´•à´¿àµ½ à´•àµ€à´¸àµ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ
             if isinstance(res_json, dict):
                 for key in ["areas", "data", "result", "items"]:
                     if key in res_json and isinstance(res_json[key], list) and res_json[key]:
                         return res_json[key]
                         
-        # ഷീറ്റിൽ നിന്ന് ഡാറ്റ കിട്ടിയില്ലെങ്കിൽ Manjeri Central മാത്രം റിട്ടേൺ ചെയ്യുന്നു
+        # à´·àµ€à´±àµà´±à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´¡à´¾à´±àµà´± à´•à´¿à´Ÿàµà´Ÿà´¿à´¯à´¿à´²àµà´²àµ†à´™àµà´•à´¿àµ½ Manjeri Central à´®à´¾à´¤àµà´°à´‚ à´±à´¿à´Ÿàµà´Ÿàµ‡àµº à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
         return DEFAULT_AREAS
     except Exception as e:
         print(f"Areas Error: {e}")
         return DEFAULT_AREAS        
 # ============================================================
-# 🎨 --- MODERN ULTRA-PREMIUM UI (DARK GOLD TAXI THEME) ---
+# ðŸŽ¨ --- MODERN ULTRA-PREMIUM UI (DARK GOLD TAXI THEME) ---
 # ============================================================
 st.markdown("""
     <style>
     .reportview-container { background: #121212 !important; color: #FFFFFF !important; }
     
-    /* ഹെഡർ ബോക്സിന്റെ പാഡിംഗ് കുറച്ചു */
+    /* à´¹àµ†à´¡àµ¼ à´¬àµ‹à´•àµà´¸à´¿à´¨àµà´±àµ† à´ªà´¾à´¡à´¿à´‚à´—àµ à´•àµà´±à´šàµà´šàµ */
     .header-box { 
         background: linear-gradient(135deg, #1e1e1e, #2d2d2d) !important; 
         padding: 15px !important; 
@@ -1437,12 +1437,12 @@ st.markdown("""
         box-shadow: 0px 6px 12px rgba(0,0,0,0.3) !important; 
         margin-bottom: 15px !important; 
     }
-    /* ഹെഡിംഗ് ഫോണ്ട് സൈസ് 2.5rem ൽ നിന്ന് 1.8rem ആക്കി കുറച്ചു */
+    /* à´¹àµ†à´¡à´¿à´‚à´—àµ à´«àµ‹à´£àµà´Ÿàµ à´¸àµˆà´¸àµ 2.5rem àµ½ à´¨à´¿à´¨àµà´¨àµ 1.8rem à´†à´•àµà´•à´¿ à´•àµà´±à´šàµà´šàµ */
     .header-box h1 { color: #ffcc00 !important; font-weight: 900 !important; letter-spacing: 1px !important; margin: 0 !important; font-size: 1.8rem !important; }
-    /* സബ് ഹെഡിംഗ് ഫോണ്ട് സൈസ് 14px ൽ നിന്ന് 11px ആക്കി കുറച്ചു */
+    /* à´¸à´¬àµ à´¹àµ†à´¡à´¿à´‚à´—àµ à´«àµ‹à´£àµà´Ÿàµ à´¸àµˆà´¸àµ 14px àµ½ à´¨à´¿à´¨àµà´¨àµ 11px à´†à´•àµà´•à´¿ à´•àµà´±à´šàµà´šàµ */
     .header-box p { color: #b3b3b3 !important; font-size: 11px !important; margin-top: 3px !important; text-transform: uppercase !important; }
     
-    /* ഫോമിന്റെ പാഡിംഗ് കുറച്ചു */
+    /* à´«àµ‹à´®à´¿à´¨àµà´±àµ† à´ªà´¾à´¡à´¿à´‚à´—àµ à´•àµà´±à´šàµà´šàµ */
     div[data-testid="stForm"] { 
         background-color: #1e1e1e !important; 
         border: 1px solid #333333 !important; 
@@ -1484,7 +1484,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# 🔌 EXTERNAL CLIENT INITIALIZATION
+# ðŸ”Œ EXTERNAL CLIENT INITIALIZATION
 # ============================================================
 gc_client = None
 # try:
@@ -1493,34 +1493,34 @@ gc_client = None
 #         ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 #     )
 #     gc_client = gspread.authorize(creds)
-#     print("✅ Google Sheets Connected")
+#     print("âœ… Google Sheets Connected")
 # except Exception as e:
-#     print(f"❌ Google Sheets Error: {e}")
-# ടെലിഗ്രാം ബോട്ട് ടോക്കൺ ഇവിടെ സെറ്റ് ചെയ്യുക
+#     print(f"âŒ Google Sheets Error: {e}")
+# à´Ÿàµ†à´²à´¿à´—àµà´°à´¾à´‚ à´¬àµ‹à´Ÿàµà´Ÿàµ à´Ÿàµ‹à´•àµà´•àµº à´‡à´µà´¿à´Ÿàµ† à´¸àµ†à´±àµà´±àµ à´šàµ†à´¯àµà´¯àµà´•
 # ============================================================
-# 🔌 EXTERNAL CLIENT INITIALIZATION
+# ðŸ”Œ EXTERNAL CLIENT INITIALIZATION
 # ============================================================
 gc_client = None
 
-# ടെലിഗ്രാം ബോട്ട് ടോക്കൺ ഇവിടെ സെറ്റ് ചെയ്യുക
+# à´Ÿàµ†à´²à´¿à´—àµà´°à´¾à´‚ à´¬àµ‹à´Ÿàµà´Ÿàµ à´Ÿàµ‹à´•àµà´•àµº à´‡à´µà´¿à´Ÿàµ† à´¸àµ†à´±àµà´±àµ à´šàµ†à´¯àµà´¯àµà´•
 TELEGRAM_BOT_TOKEN = st.secrets["TELEGRAM_BOT_TOKEN"]
-# 🆕 FIX: bot ഒബ്ജക്റ്റ് ഒരിക്കൽ മാത്രം സൃഷ്ടിക്കാൻ @st.cache_resource ചേർക്കുന്നു
+# ðŸ†• FIX: bot à´’à´¬àµà´œà´•àµà´±àµà´±àµ à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚ à´¸àµƒà´·àµà´Ÿà´¿à´•àµà´•à´¾àµ» @st.cache_resource à´šàµ‡àµ¼à´•àµà´•àµà´¨àµà´¨àµ
 @st.cache_resource
 def get_telegram_bot():
     token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
     if token and "YOUR_BOT_TOKEN" not in token:
         try:
             _bot = telebot.TeleBot(token)
-            print("✅ Telegram Bot Connected")
+            print("âœ… Telegram Bot Connected")
             return _bot
         except Exception as e:
-            print(f"❌ Telegram Bot Error: {e}")
+            print(f"âŒ Telegram Bot Error: {e}")
             return None
     return None
 
 bot = get_telegram_bot()
 # ============================================================
-# 🤖 MODULE 20: DRIVER TRIP HISTORY (LAST 20 TRIPS)
+# ðŸ¤– MODULE 20: DRIVER TRIP HISTORY (LAST 20 TRIPS)
 # ============================================================
 @bot.message_handler(commands=['history'])
 def handle_driver_history(message):
@@ -1530,71 +1530,71 @@ def handle_driver_history(message):
         all_trips = ref.get()
 
         if not all_trips:
-            bot.reply_to(message, "നിങ്ങളുടെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+            bot.reply_to(message, "à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾ à´’à´¨àµà´¨àµà´‚ à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´².")
             return
 
         user_trips = []
         for booking_id, trip in all_trips.items():
             if isinstance(trip, dict) and str(trip.get("driver_chat_id")) == str(chat_id):
-                trip["trip_id"] = booking_id  # 🆕 FIX: ട്രിപ്പ് ഐഡി ഡിക്ഷണറിയിൽ ചേർക്കുന്നു
+                trip["trip_id"] = booking_id  # ðŸ†• FIX: à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´¡à´¿à´•àµà´·à´£à´±à´¿à´¯à´¿àµ½ à´šàµ‡àµ¼à´•àµà´•àµà´¨àµà´¨àµ
                 user_trips.append(trip)
 
         if user_trips:
             last_20_trips = user_trips[-20:]
-            reply = "🚖 നിങ്ങളുടെ അവസാനത്തെ ട്രിപ്പുകൾ:\n\n"
+            reply = "ðŸš– à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´…à´µà´¸à´¾à´¨à´¤àµà´¤àµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾:\n\n"
             for t in last_20_trips:
-                t_id = t.get("trip_id", "N/A")  # 🆕 ട്രിപ്പ് ഐഡി
-                t_date = t.get("booking_time", "N/A").split(" ")[0]  # 🆕 ശരിയായ തിയതി
-                t_pickup = t.get("pickup", "N/A")  # 🆕 പിക്കപ്പ്
+                t_id = t.get("trip_id", "N/A")  # ðŸ†• à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿
+                t_date = t.get("booking_time", "N/A").split(" ")[0]  # ðŸ†• à´¶à´°à´¿à´¯à´¾à´¯ à´¤à´¿à´¯à´¤à´¿
+                t_pickup = t.get("pickup", "N/A")  # ðŸ†• à´ªà´¿à´•àµà´•à´ªàµà´ªàµ
                 t_drop = t.get("drop", "N/A")
-                reply += f"🆔 {t_id}\n📅 {t_date}\n📍 {t_pickup} ➔ {t_drop}\n\n"
+                reply += f"ðŸ†” {t_id}\nðŸ“… {t_date}\nðŸ“ {t_pickup} âž” {t_drop}\n\n"
             
             bot.reply_to(message, reply, parse_mode="Markdown")
         else:
-            bot.reply_to(message, "ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+            bot.reply_to(message, "à´ˆ à´šà´¾à´±àµà´±àµ à´à´¡à´¿à´¯à´¿àµ½ à´‡à´¤àµà´µà´°àµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾ à´’à´¨àµà´¨àµà´‚ à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´².")
 
     except Exception as e:
-        bot.reply_to(message, f"❌ എറർ: {str(e)}")
+        bot.reply_to(message, f"âŒ à´Žà´±àµ¼: {str(e)}")
 
 flask_app = Flask(__name__)
 
 # ============================================================
-# 🤖 MODULE 19: TELEGRAM BOT /start & REGISTRATION HANDLER
+# ðŸ¤– MODULE 19: TELEGRAM BOT /start & REGISTRATION HANDLER
 # ============================================================
 registration_data = {}
 
 @bot.message_handler(commands=['start'])
 def handle_driver_start(message):
     print("=" * 60)
-    print("🔔 /start HANDLER CALLED")
+    print("ðŸ”” /start HANDLER CALLED")
     print(f"   Chat: {message.chat.id}")
     print("=" * 60)
     chat_id = message.chat.id
     
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("📢 പ്രൈവറ്റ് ചാനലിൽ ജോയിൻ ചെയ്യുക", url="https://t.me/+48S6XF9l4zM0MTY0"))
-    markup.add(types.InlineKeyboardButton("✅ ഞാൻ ചാനലിൽ ജോയിൻ ചെയ്തു, രജിസ്ട്രേഷൻ തുടങ്ങാം", callback_data="start_registration"))
+    markup.add(types.InlineKeyboardButton("ðŸ“¢ à´ªàµà´°àµˆà´µà´±àµà´±àµ à´šà´¾à´¨à´²à´¿àµ½ à´œàµ‹à´¯à´¿àµ» à´šàµ†à´¯àµà´¯àµà´•", url="https://t.me/+48S6XF9l4zM0MTY0"))
+    markup.add(types.InlineKeyboardButton("âœ… à´žà´¾àµ» à´šà´¾à´¨à´²à´¿àµ½ à´œàµ‹à´¯à´¿àµ» à´šàµ†à´¯àµà´¤àµ, à´°à´œà´¿à´¸àµà´Ÿàµà´°àµ‡à´·àµ» à´¤àµà´Ÿà´™àµà´™à´¾à´‚", callback_data="start_registration"))
     
     bot.send_message(
         chat_id, 
-        "🚖 *മഞ്ചേരി ഈസി ടാക്സി ബുക്കിംഗ് സിസ്റ്റത്തിലേക്ക് സ്വാഗതം!*\n\n"
-        "രജിസ്ട്രേഷൻ നടപടികൾ ആരംഭിക്കുന്നതിന് മുൻപ്, നമ്മുടെ **പ്രൈവറ്റ് ടെലിഗ്രാം ചാനലിൽ** നിർബന്ധമായും ജോയിൻ ചെയ്യുക.\n\n"
-        "ചാനലിൽ ജോയിൻ ചെയ്ത ശേഷം താഴെയുള്ള ബട്ടൺ ക്ലിക്ക് ചെയ്യുക:",
+        "ðŸš– *à´®à´žàµà´šàµ‡à´°à´¿ à´ˆà´¸à´¿ à´Ÿà´¾à´•àµà´¸à´¿ à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¸à´¿à´¸àµà´±àµà´±à´¤àµà´¤à´¿à´²àµ‡à´•àµà´•àµ à´¸àµà´µà´¾à´—à´¤à´‚!*\n\n"
+        "à´°à´œà´¿à´¸àµà´Ÿàµà´°àµ‡à´·àµ» à´¨à´Ÿà´ªà´Ÿà´¿à´•àµ¾ à´†à´°à´‚à´­à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´¿à´¨àµ à´®àµàµ»à´ªàµ, à´¨à´®àµà´®àµà´Ÿàµ† **à´ªàµà´°àµˆà´µà´±àµà´±àµ à´Ÿàµ†à´²à´¿à´—àµà´°à´¾à´‚ à´šà´¾à´¨à´²à´¿àµ½** à´¨à´¿àµ¼à´¬à´¨àµà´§à´®à´¾à´¯àµà´‚ à´œàµ‹à´¯à´¿àµ» à´šàµ†à´¯àµà´¯àµà´•.\n\n"
+        "à´šà´¾à´¨à´²à´¿àµ½ à´œàµ‹à´¯à´¿àµ» à´šàµ†à´¯àµà´¤ à´¶àµ‡à´·à´‚ à´¤à´¾à´´àµ†à´¯àµà´³àµà´³ à´¬à´Ÿàµà´Ÿàµº à´•àµà´²à´¿à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´•:",
         reply_markup=markup,
         parse_mode="Markdown"
     )
-    # 🆕 FIX: ഇവിടെ നിന്ന് തുടങ്ങുന്നു (1396-ാം വരി)
+    # ðŸ†• FIX: à´‡à´µà´¿à´Ÿàµ† à´¨à´¿à´¨àµà´¨àµ à´¤àµà´Ÿà´™àµà´™àµà´¨àµà´¨àµ (1396-à´¾à´‚ à´µà´°à´¿)
     try:
         bot.send_message(
             chat_id,
-            f"✅ *രജിസ്ട്രേഷൻ വിജയകരമായി പൂർത്തിയായി!*\n\n"
-            f"🆔 *നിങ്ങളുടെ ചാറ്റ് ഐഡി:* `{chat_id}`\n\n"
-            f"📌 ഈ ഐഡി സൂക്ഷിച്ചുവെക്കുക. ഭാവിയിൽ ട്രിപ്പ് വിവരങ്ങൾ അറിയാൻ ഇത് ഉപയോഗിക്കാം.",
+            f"âœ… *à´°à´œà´¿à´¸àµà´Ÿàµà´°àµ‡à´·àµ» à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´ªàµ‚àµ¼à´¤àµà´¤à´¿à´¯à´¾à´¯à´¿!*\n\n"
+            f"ðŸ†” *à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´šà´¾à´±àµà´±àµ à´à´¡à´¿:* `{chat_id}`\n\n"
+            f"ðŸ“Œ à´ˆ à´à´¡à´¿ à´¸àµ‚à´•àµà´·à´¿à´šàµà´šàµà´µàµ†à´•àµà´•àµà´•. à´­à´¾à´µà´¿à´¯à´¿àµ½ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´…à´±à´¿à´¯à´¾àµ» à´‡à´¤àµ à´‰à´ªà´¯àµ‹à´—à´¿à´•àµà´•à´¾à´‚.",
             parse_mode="Markdown"
         )    
-        print(f"✅ Chat ID {chat_id} sent back to driver")
+        print(f"âœ… Chat ID {chat_id} sent back to driver")
     except Exception as e:
-        print(f"❌ Error sending chat ID: {e}")
+        print(f"âŒ Error sending chat ID: {e}")
     
 
 @bot.callback_query_handler(func=lambda call: call.data == "start_registration")
@@ -1603,11 +1603,11 @@ def ask_contact_number(call):
     bot.answer_callback_query(call.id)
     
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-    markup.add(types.KeyboardButton("📱 നിങ്ങളുടെ ടെലഗ്രാം ഫോൺ നമ്പർ ഷെയർ ചെയ്യുക (Share Contact)", request_contact=True))
+    markup.add(types.KeyboardButton("ðŸ“± à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´Ÿàµ†à´²à´—àµà´°à´¾à´‚ à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ à´·àµ†à´¯àµ¼ à´šàµ†à´¯àµà´¯àµà´• (Share Contact)", request_contact=True))
     
     bot.send_message(
         chat_id, 
-        "നന്ദി! 🙏\n\nഇനി താഴെയുള്ള ബട്ടൺ ക്ലിക്ക് ചെയ്ത് നിങ്ങളുടെ ഫോൺ നമ്പർ ഷെയർ ചെയ്യുക.", 
+        "à´¨à´¨àµà´¦à´¿! ðŸ™\n\nà´‡à´¨à´¿ à´¤à´¾à´´àµ†à´¯àµà´³àµà´³ à´¬à´Ÿàµà´Ÿàµº à´•àµà´²à´¿à´•àµà´•àµ à´šàµ†à´¯àµà´¤àµ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ à´·àµ†à´¯àµ¼ à´šàµ†à´¯àµà´¯àµà´•.", 
         reply_markup=markup
     )
     registration_data[chat_id] = {"step": "waiting_phone"}
@@ -1623,7 +1623,7 @@ def handle_driver_contact(message):
         markup = types.ReplyKeyboardRemove()
         bot.send_message(
             chat_id, 
-            "നന്ദി! 📝\n\nഇനി നിങ്ങളുടെ പൂർണ്ണമായ പേര് (Full Name) ഇവിടെ ടൈപ്പ് ചെയ്ത് അയക്കൂ.", 
+            "à´¨à´¨àµà´¦à´¿! ðŸ“\n\nà´‡à´¨à´¿ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´ªàµ‚àµ¼à´£àµà´£à´®à´¾à´¯ à´ªàµ‡à´°àµ (Full Name) à´‡à´µà´¿à´Ÿàµ† à´Ÿàµˆà´ªàµà´ªàµ à´šàµ†à´¯àµà´¤àµ à´…à´¯à´•àµà´•àµ‚.", 
             reply_markup=markup
         )
 
@@ -1636,20 +1636,20 @@ def handle_driver_name(message):
     
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
-        types.InlineKeyboardButton("🛺 ഓട്ടോറിക്ഷ (Autorickshaw)", callback_data="v_auto"),
-        types.InlineKeyboardButton("🚗 ടാക്സി കാർ (Taxi Car)", callback_data="v_taxicar"),
-        types.InlineKeyboardButton("🚙 ഗുഡ്സ് ഓട്ടോ പിക്കപ്പ് (Goods Auto Pickup)", callback_data="v_goodsauto"),
-        types.InlineKeyboardButton("🚐 പിക്കപ്പ് വാൻ (Pickup Van)", callback_data="v_pickupvan"),
-        types.InlineKeyboardButton("🚚 മിനി ലോറി (Mini Lorry)", callback_data="v_minilorry"),
-        types.InlineKeyboardButton("🚛 ട്രക്ക് (Truck)", callback_data="v_truck"),
-        types.InlineKeyboardButton("🏍️ ബൈക്ക് ടാക്സി (Bike Taxi)", callback_data="v_biketaxi")
+        types.InlineKeyboardButton("ðŸ›º à´“à´Ÿàµà´Ÿàµ‹à´±à´¿à´•àµà´· (Autorickshaw)", callback_data="v_auto"),
+        types.InlineKeyboardButton("ðŸš— à´Ÿà´¾à´•àµà´¸à´¿ à´•à´¾àµ¼ (Taxi Car)", callback_data="v_taxicar"),
+        types.InlineKeyboardButton("ðŸš™ à´—àµà´¡àµà´¸àµ à´“à´Ÿàµà´Ÿàµ‹ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ (Goods Auto Pickup)", callback_data="v_goodsauto"),
+        types.InlineKeyboardButton("ðŸš à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´µà´¾àµ» (Pickup Van)", callback_data="v_pickupvan"),
+        types.InlineKeyboardButton("ðŸšš à´®à´¿à´¨à´¿ à´²àµ‹à´±à´¿ (Mini Lorry)", callback_data="v_minilorry"),
+        types.InlineKeyboardButton("ðŸš› à´Ÿàµà´°à´•àµà´•àµ (Truck)", callback_data="v_truck"),
+        types.InlineKeyboardButton("ðŸï¸ à´¬àµˆà´•àµà´•àµ à´Ÿà´¾à´•àµà´¸à´¿ (Bike Taxi)", callback_data="v_biketaxi")
     )
     
     bot.send_message(
         chat_id, 
-        f"സന്തോഷം, {driver_name}!\n\n"
-        f"⚠️ *(ശ്രദ്ധിക്കുക: പ്രൈവറ്റ് വാഹനങ്ങൾക്ക് അനുവാദമില്ല. ടാക്സി/കൊമേഴ്സ്യൽ പെർമിറ്റ് വാഹനങ്ങൾ മാത്രം തിരഞ്ഞെടുക്കുക.)*\n\n"
-        f"നിങ്ങളുടെ വാഹനം ഏതാണ്? താഴെയുള്ളതിൽ ഒരെണ്ണം തിരഞ്ഞെടുക്കുക:", 
+        f"à´¸à´¨àµà´¤àµ‹à´·à´‚, {driver_name}!\n\n"
+        f"âš ï¸ *(à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•: à´ªàµà´°àµˆà´µà´±àµà´±àµ à´µà´¾à´¹à´¨à´™àµà´™àµ¾à´•àµà´•àµ à´…à´¨àµà´µà´¾à´¦à´®à´¿à´²àµà´². à´Ÿà´¾à´•àµà´¸à´¿/à´•àµŠà´®àµ‡à´´àµà´¸àµà´¯àµ½ à´ªàµ†àµ¼à´®à´¿à´±àµà´±àµ à´µà´¾à´¹à´¨à´™àµà´™àµ¾ à´®à´¾à´¤àµà´°à´‚ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´•.)*\n\n"
+        f"à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´µà´¾à´¹à´¨à´‚ à´à´¤à´¾à´£àµ? à´¤à´¾à´´àµ†à´¯àµà´³àµà´³à´¤à´¿àµ½ à´’à´°àµ†à´£àµà´£à´‚ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´•:", 
         reply_markup=markup,
         parse_mode="Markdown"
     )
@@ -1660,22 +1660,22 @@ def handle_vehicle_selection(call):
     if chat_id in registration_data and registration_data[chat_id]["step"] == "waiting_vehicle_type":
         
         v_mapping = {
-            "v_auto": "ഓട്ടോറിക്ഷ (Autorickshaw)",
-            "v_taxicar": "ടാക്സി കാർ (Taxi Car)",
-            "v_goodsauto": "ഗുഡ്സ് ഓട്ടോ പിക്കപ്പ് (Goods Auto Pickup)",
-            "v_pickupvan": "പിക്കപ്പ് വാൻ (Pickup Van)",
-            "v_minilorry": "മിനി ലോറി (Mini Lorry)",
-            "v_truck": "ട്രക്ക് (Truck)",
-            "v_biketaxi": "ബൈക്ക് ടാക്സി (Bike Taxi)"
+            "v_auto": "à´“à´Ÿàµà´Ÿàµ‹à´±à´¿à´•àµà´· (Autorickshaw)",
+            "v_taxicar": "à´Ÿà´¾à´•àµà´¸à´¿ à´•à´¾àµ¼ (Taxi Car)",
+            "v_goodsauto": "à´—àµà´¡àµà´¸àµ à´“à´Ÿàµà´Ÿàµ‹ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ (Goods Auto Pickup)",
+            "v_pickupvan": "à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´µà´¾àµ» (Pickup Van)",
+            "v_minilorry": "à´®à´¿à´¨à´¿ à´²àµ‹à´±à´¿ (Mini Lorry)",
+            "v_truck": "à´Ÿàµà´°à´•àµà´•àµ (Truck)",
+            "v_biketaxi": "à´¬àµˆà´•àµà´•àµ à´Ÿà´¾à´•àµà´¸à´¿ (Bike Taxi)"
         }
-        vehicle_type = v_mapping.get(call.data, "ടാക്സി കാർ")
+        vehicle_type = v_mapping.get(call.data, "à´Ÿà´¾à´•àµà´¸à´¿ à´•à´¾àµ¼")
         registration_data[chat_id]["vehicle_type"] = vehicle_type
         registration_data[chat_id]["step"] = "waiting_vehicle_number"
         
         bot.answer_callback_query(call.id)
         bot.send_message(
             chat_id, 
-            f"തിരഞ്ഞെടുത്ത വാഹനം: *{vehicle_type}*\n\nഅവസാനമായി നിങ്ങളുടെ വാഹന നമ്പർ / പെർമിറ്റ് നമ്പർ ടൈപ്പ് ചെയ്ത് അയക്കൂ (ഉദാ: KL 10 AB 1234):", 
+            f"à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´¤àµà´¤ à´µà´¾à´¹à´¨à´‚: *{vehicle_type}*\n\nà´…à´µà´¸à´¾à´¨à´®à´¾à´¯à´¿ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´µà´¾à´¹à´¨ à´¨à´®àµà´ªàµ¼ / à´ªàµ†àµ¼à´®à´¿à´±àµà´±àµ à´¨à´®àµà´ªàµ¼ à´Ÿàµˆà´ªàµà´ªàµ à´šàµ†à´¯àµà´¤àµ à´…à´¯à´•àµà´•àµ‚ (à´‰à´¦à´¾: KL 10 AB 1234):", 
             parse_mode="Markdown"
         )
 
@@ -1688,13 +1688,13 @@ def handle_vehicle_number_input(message):
     registration_data[chat_id]["step"] = "waiting_agreement"
     
     disclaimer_text = (
-        "⚠️ *നിയമപരമായ നിബന്ധനകളും ഉത്തരവാദിത്ത നിരാകരണവും (Disclaimer & Terms):*\n\n"
-        "ഞാൻ മുകളിൽ നൽകിയിരിക്കുന്ന എന്റെ വാഹനത്തിന്റെ വിവരങ്ങളും പേപ്പറുകളുടെ കാലാവധിയും പൂർണ്ണമായും സത്യമാണെന്ന് ബോധ്യപ്പെടുത്തുന്നു.\n\n"
-        "ഈ പ്ലാറ്റ്‌ഫോം ഡ്രൈവർമാരെയും കസ്റ്റമർമാരെയും പരസ്പരം ബന്ധിപ്പിക്കുന്നതിനുള്ള ഒരു സാങ്കേതിക സംവിധാനം മാത്രമാണ്. യാത്രയ്ക്കിടയിൽ ഉണ്ടാകുന്ന സാമ്പത്തിക ഇടപാടുകൾക്കോ, വ്യക്തിപരമായ തർക്കങ്ങൾക്കോ, വണ്ടിക്കുണ്ടാകുന്ന തകരാറുകൾക്കോ, അപകടങ്ങൾക്കോ ഈ ആപ്പിന്റെ അഡ്മിൻമാർ ഉത്തരവാദികളായിരിക്കില്ല എന്ന് ഞാൻ പൂർണ്ണമായി സമ്മതിക്കുന്നു."
+        "âš ï¸ *à´¨à´¿à´¯à´®à´ªà´°à´®à´¾à´¯ à´¨à´¿à´¬à´¨àµà´§à´¨à´•à´³àµà´‚ à´‰à´¤àµà´¤à´°à´µà´¾à´¦à´¿à´¤àµà´¤ à´¨à´¿à´°à´¾à´•à´°à´£à´µàµà´‚ (Disclaimer & Terms):*\n\n"
+        "à´žà´¾àµ» à´®àµà´•à´³à´¿àµ½ à´¨àµ½à´•à´¿à´¯à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨ à´Žà´¨àµà´±àµ† à´µà´¾à´¹à´¨à´¤àµà´¤à´¿à´¨àµà´±àµ† à´µà´¿à´µà´°à´™àµà´™à´³àµà´‚ à´ªàµ‡à´ªàµà´ªà´±àµà´•à´³àµà´Ÿàµ† à´•à´¾à´²à´¾à´µà´§à´¿à´¯àµà´‚ à´ªàµ‚àµ¼à´£àµà´£à´®à´¾à´¯àµà´‚ à´¸à´¤àµà´¯à´®à´¾à´£àµ†à´¨àµà´¨àµ à´¬àµ‹à´§àµà´¯à´ªàµà´ªàµ†à´Ÿàµà´¤àµà´¤àµà´¨àµà´¨àµ.\n\n"
+        "à´ˆ à´ªàµà´²à´¾à´±àµà´±àµâ€Œà´«àµ‹à´‚ à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµ†à´¯àµà´‚ à´•à´¸àµà´±àµà´±à´®àµ¼à´®à´¾à´°àµ†à´¯àµà´‚ à´ªà´°à´¸àµà´ªà´°à´‚ à´¬à´¨àµà´§à´¿à´ªàµà´ªà´¿à´•àµà´•àµà´¨àµà´¨à´¤à´¿à´¨àµà´³àµà´³ à´’à´°àµ à´¸à´¾à´™àµà´•àµ‡à´¤à´¿à´• à´¸à´‚à´µà´¿à´§à´¾à´¨à´‚ à´®à´¾à´¤àµà´°à´®à´¾à´£àµ. à´¯à´¾à´¤àµà´°à´¯àµà´•àµà´•à´¿à´Ÿà´¯à´¿àµ½ à´‰à´£àµà´Ÿà´¾à´•àµà´¨àµà´¨ à´¸à´¾à´®àµà´ªà´¤àµà´¤à´¿à´• à´‡à´Ÿà´ªà´¾à´Ÿàµà´•àµ¾à´•àµà´•àµ‹, à´µàµà´¯à´•àµà´¤à´¿à´ªà´°à´®à´¾à´¯ à´¤àµ¼à´•àµà´•à´™àµà´™àµ¾à´•àµà´•àµ‹, à´µà´£àµà´Ÿà´¿à´•àµà´•àµà´£àµà´Ÿà´¾à´•àµà´¨àµà´¨ à´¤à´•à´°à´¾à´±àµà´•àµ¾à´•àµà´•àµ‹, à´…à´ªà´•à´Ÿà´™àµà´™àµ¾à´•àµà´•àµ‹ à´ˆ à´†à´ªàµà´ªà´¿à´¨àµà´±àµ† à´…à´¡àµà´®à´¿àµ»à´®à´¾àµ¼ à´‰à´¤àµà´¤à´°à´µà´¾à´¦à´¿à´•à´³à´¾à´¯à´¿à´°à´¿à´•àµà´•à´¿à´²àµà´² à´Žà´¨àµà´¨àµ à´žà´¾àµ» à´ªàµ‚àµ¼à´£àµà´£à´®à´¾à´¯à´¿ à´¸à´®àµà´®à´¤à´¿à´•àµà´•àµà´¨àµà´¨àµ."
     )
     
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("✅ ഞാൻ ഈ നിബന്ധനകൾ വായിച്ചു മനസ്സിലാക്കി അംഗീകരിക്കുന്നു (I Agree)", callback_data="final_agree"))
+    markup.add(types.InlineKeyboardButton("âœ… à´žà´¾àµ» à´ˆ à´¨à´¿à´¬à´¨àµà´§à´¨à´•àµ¾ à´µà´¾à´¯à´¿à´šàµà´šàµ à´®à´¨à´¸àµà´¸à´¿à´²à´¾à´•àµà´•à´¿ à´…à´‚à´—àµ€à´•à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ (I Agree)", callback_data="final_agree"))
     
     bot.send_message(
         chat_id,
@@ -1721,7 +1721,7 @@ def save_data_to_firebase_final(call):
             "telegram_username": f"@{username}",
             "status": "ONLINE",
             "area": "Manjeri",
-            "wallet_balance": 0.0,  # 🆕 ഈ വരി ഇവിടെ ചേർക്കുക
+            "wallet_balance": 0.0,  # ðŸ†• à´ˆ à´µà´°à´¿ à´‡à´µà´¿à´Ÿàµ† à´šàµ‡àµ¼à´•àµà´•àµà´•
         }
         
         try:
@@ -1729,22 +1729,22 @@ def save_data_to_firebase_final(call):
             driver_ref.set(driver_data)
             
             success_text = (
-                f"🎉 *രജിസ്ട്രേഷൻ വിജയകരമായി പൂർത്തിയായി!* 🎉\n\n"
-                f"വണക്കം {data['driver_name']},\n"
-                f"നിങ്ങളുടെ വിവരങ്ങൾ  ഡാറ്റാബേസിൽ സുരക്ഷിതമായി സേവ് ചെയ്തിരിക്കുന്നു.\n\n"
-                f"🚕 ഇനിമുതൽ റൈഡ് റിക്വസ്റ്റുകൾ ഈ ചാറ്റിലേക്ക് വരുന്നതാണ്."
+                f"ðŸŽ‰ *à´°à´œà´¿à´¸àµà´Ÿàµà´°àµ‡à´·àµ» à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´ªàµ‚àµ¼à´¤àµà´¤à´¿à´¯à´¾à´¯à´¿!* ðŸŽ‰\n\n"
+                f"à´µà´£à´•àµà´•à´‚ {data['driver_name']},\n"
+                f"à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´µà´¿à´µà´°à´™àµà´™àµ¾  à´¡à´¾à´±àµà´±à´¾à´¬àµ‡à´¸à´¿àµ½ à´¸àµà´°à´•àµà´·à´¿à´¤à´®à´¾à´¯à´¿ à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ.\n\n"
+                f"ðŸš• à´‡à´¨à´¿à´®àµà´¤àµ½ à´±àµˆà´¡àµ à´±à´¿à´•àµà´µà´¸àµà´±àµà´±àµà´•àµ¾ à´ˆ à´šà´¾à´±àµà´±à´¿à´²àµ‡à´•àµà´•àµ à´µà´°àµà´¨àµà´¨à´¤à´¾à´£àµ."
             )
             bot.send_message(chat_id=chat_id, text=success_text, parse_mode="Markdown")
             del registration_data[chat_id]
             
         except Exception as e:
-            bot.send_message(chat_id=chat_id, text=f"❌ രജിസ്ട്രേഷനിൽ തടസ്സം നേരിട്ടു: {e}")
+            bot.send_message(chat_id=chat_id, text=f"âŒ à´°à´œà´¿à´¸àµà´Ÿàµà´°àµ‡à´·à´¨à´¿àµ½ à´¤à´Ÿà´¸àµà´¸à´‚ à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ: {e}")
 
 
 
 
 # ============================================================
-# 🗺️ SMART MAPPING & FALLBACK ENGINE (FINAL FIXED)
+# ðŸ—ºï¸ SMART MAPPING & FALLBACK ENGINE (FINAL FIXED)
 # ============================================================
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -1786,12 +1786,12 @@ def get_real_road_distance(pickup_place, drop_place):
             try:
                 loc_ref = db.reference(f'locations/{place}').get()
                 if isinstance(loc_ref, dict) and 'lat' in loc_ref and 'lng' in loc_ref:
-                    print(f"✅ Firebase manual: {place}")
+                    print(f"âœ… Firebase manual: {place}")
                     return float(loc_ref['lat']), float(loc_ref['lng'])
             except Exception as e:
-                print(f"⚠️ Firebase error: {e}")
+                print(f"âš ï¸ Firebase error: {e}")
 
-            # 2. Nominatim — 4 queries
+            # 2. Nominatim â€” 4 queries
             cleaned_place = clean_place(place)
             query_variants = [
                 f"{cleaned_place}, Kerala, India",
@@ -1802,7 +1802,7 @@ def get_real_road_distance(pickup_place, drop_place):
 
             for idx, query in enumerate(query_variants):
                 try:
-                    print(f"🌐 Query {idx+1}: {query}")
+                    print(f"ðŸŒ Query {idx+1}: {query}")
                     url = (
                         f"https://nominatim.openstreetmap.org/search"
                         f"?format=json&q={urllib.parse.quote(query)}"
@@ -1823,32 +1823,32 @@ def get_real_road_distance(pickup_place, drop_place):
                                     'source': f'nominatim_q{idx+1}',
                                     'cached_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                 })
-                                print(f"✅ Cached: {place}")
+                                print(f"âœ… Cached: {place}")
                             except Exception as e:
-                                print(f"⚠️ Cache error: {e}")
+                                print(f"âš ï¸ Cache error: {e}")
                             return lat, lon
                     time.sleep(1.5)
                 except Exception as e:
-                    print(f"⚠️ Query {idx+1} failed: {e}")
+                    print(f"âš ï¸ Query {idx+1} failed: {e}")
                     time.sleep(1.5)
                     continue
 
-            # 🎯 — 3. Manjeri ONLY fallback
-            print(f"⚠️ Nominatim failed: {place} — using Manjeri center")
+            # ðŸŽ¯ â€” 3. Manjeri ONLY fallback
+            print(f"âš ï¸ Nominatim failed: {place} â€” using Manjeri center")
 
             try:
                 area_ref = db.reference(f'areas/Manjeri').get()
                 if isinstance(area_ref, dict) and 'lat' in area_ref and 'lng' in area_ref:
-                    print(f"✅ Manjeri center fallback")
+                    print(f"âœ… Manjeri center fallback")
                     return float(area_ref['lat']), float(area_ref['lng'])
             except Exception as e:
-                print(f"⚠️ Manjeri fallback error: {e}")
+                print(f"âš ï¸ Manjeri fallback error: {e}")
 
-            print(f"❌ Location not found: {place}")
+            print(f"âŒ Location not found: {place}")
             return None
 
         except Exception as e:
-            print(f"❌ Geocode error: {e}")
+            print(f"âŒ Geocode error: {e}")
             return None
 
     # ============================================================
@@ -1858,12 +1858,12 @@ def get_real_road_distance(pickup_place, drop_place):
     drop_coords = geocode_place(drop_place)
 
     if pickup_coords is None or drop_coords is None:
-        raise ValueError(f"Geocoding failed: {pickup_place} → {drop_place}")
+        raise ValueError(f"Geocoding failed: {pickup_place} â†’ {drop_place}")
 
     p_lat, p_lon = pickup_coords
     d_lat, d_lon = drop_coords
 
-    # 🎯 — Sanity check
+    # ðŸŽ¯ â€” Sanity check
     if p_lat == d_lat and p_lon == d_lon:
         raise ValueError("Pickup and Drop coordinates are the same")
 
@@ -1881,12 +1881,12 @@ def get_real_road_distance(pickup_place, drop_place):
             osrm_data = osrm_response.json()
             if osrm_data.get("code") == "Ok":
                 distance_km = osrm_data["routes"][0]["distance"] / 1000
-                print(f"✅ Distance source: OSRM ({distance_km:.1f} km)")
+                print(f"âœ… Distance source: OSRM ({distance_km:.1f} km)")
                 return round(distance_km, 1)
 
-        print("⚠️ OSRM failed → GraphHopper")
+        print("âš ï¸ OSRM failed â†’ GraphHopper")
     except Exception as e:
-        print(f"⚠️ OSRM error: {e}")
+        print(f"âš ï¸ OSRM error: {e}")
 
     # ============================================================
     # GRAPHHOPPER FALLBACK
@@ -1905,12 +1905,12 @@ def get_real_road_distance(pickup_place, drop_place):
             gh_data = gh_response.json()
             if "paths" in gh_data:
                 distance_km = gh_data["paths"][0]["distance"] / 1000
-                print(f"✅ Distance source: GraphHopper ({distance_km:.1f} km)")
+                print(f"âœ… Distance source: GraphHopper ({distance_km:.1f} km)")
                 return round(distance_km, 1)
 
-        print("⚠️ GraphHopper failed → Geoapify")
+        print("âš ï¸ GraphHopper failed â†’ Geoapify")
     except Exception as e:
-        print(f"⚠️ GraphHopper error: {e}")
+        print(f"âš ï¸ GraphHopper error: {e}")
 
     # ============================================================
     # GEOAPIFY FALLBACK
@@ -1929,43 +1929,43 @@ def get_real_road_distance(pickup_place, drop_place):
             if 'features' in geo_data and len(geo_data['features']) > 0:
                 distance_meters = geo_data['features'][0]['properties']['distance']
                 distance_km = distance_meters / 1000.0
-                print(f"✅ Distance source: Geoapify ({distance_km:.1f} km)")
+                print(f"âœ… Distance source: Geoapify ({distance_km:.1f} km)")
                 return round(distance_km, 1)
     except Exception as e:
-        print(f"⚠️ Geoapify error: {e}")
+        print(f"âš ï¸ Geoapify error: {e}")
 
     # ============================================================
-    # FINAL FALLBACK — Haversine
+    # FINAL FALLBACK â€” Haversine
     # ============================================================
-    print("⚠️ Using Haversine fallback")
+    print("âš ï¸ Using Haversine fallback")
     return round(haversine_distance(p_lat, p_lon, d_lat, d_lon), 1)
 # ============================================================
-# 💰 MASTER COMMISSION LOGIC
+# ðŸ’° MASTER COMMISSION LOGIC
 # ============================================================
 def calculate_admin_commission(km):
-    """ദൂരത്തിന്റെ അടിസ്ഥാനത്തിൽ അഡ്മിൻ കമ്മീഷൻ കണക്കാക്കുക"""
+    """à´¦àµ‚à´°à´¤àµà´¤à´¿à´¨àµà´±àµ† à´…à´Ÿà´¿à´¸àµà´¥à´¾à´¨à´¤àµà´¤à´¿àµ½ à´…à´¡àµà´®à´¿àµ» à´•à´®àµà´®àµ€à´·àµ» à´•à´£à´•àµà´•à´¾à´•àµà´•àµà´•"""
     if not ENABLE_COMMISSION:
         return 0.0
     
     if km <= 1.5:
-        commission = 0.50  # ആദ്യ 1.5 കി.മീ-ന് ₹0.50
+        commission = 0.50  # à´†à´¦àµà´¯ 1.5 à´•à´¿.à´®àµ€-à´¨àµ â‚¹0.50
     else:
-        # 1.5 കി.മീ കഴിഞ്ഞുള്ള അധിക ദൂരം
+        # 1.5 à´•à´¿.à´®àµ€ à´•à´´à´¿à´žàµà´žàµà´³àµà´³ à´…à´§à´¿à´• à´¦àµ‚à´°à´‚
         extra_distance = km - 1.5
         
-        # അതിനെ അടുത്ത പൂർണ്ണ കി.മീയിലേക്ക് റൗണ്ട് ചെയ്യുക (ഉദാ: 0.1 → 1, 1.5 → 2)
+        # à´…à´¤à´¿à´¨àµ† à´…à´Ÿàµà´¤àµà´¤ à´ªàµ‚àµ¼à´£àµà´£ à´•à´¿.à´®àµ€à´¯à´¿à´²àµ‡à´•àµà´•àµ à´±àµ—à´£àµà´Ÿàµ à´šàµ†à´¯àµà´¯àµà´• (à´‰à´¦à´¾: 0.1 â†’ 1, 1.5 â†’ 2)
         rounded_extra = math.ceil(extra_distance)
         
-        # ഓരോ അധിക കി.മീ-നും ₹22.50 വെച്ച് കണക്കാക്കുക
+        # à´“à´°àµ‹ à´…à´§à´¿à´• à´•à´¿.à´®àµ€-à´¨àµà´‚ â‚¹22.50 à´µàµ†à´šàµà´šàµ à´•à´£à´•àµà´•à´¾à´•àµà´•àµà´•
         extra_fare = rounded_extra * 22.50
         
-        # അതിന്റെ 1.5% കമ്മീഷൻ കണക്കാക്കുക
+        # à´…à´¤à´¿à´¨àµà´±àµ† 1.5% à´•à´®àµà´®àµ€à´·àµ» à´•à´£à´•àµà´•à´¾à´•àµà´•àµà´•
         commission = 0.50 + (extra_fare * 0.015)
     
     return round(commission, 2)
 
 # ============================================================
-# 📍 AREA ROUTING MAP
+# ðŸ“ AREA ROUTING MAP
 # ============================================================
 AREA_ROUTING_MAP = {
     "manjeri": ["malappuram", "perinthalmanna"],
@@ -1982,7 +1982,7 @@ if 'saved_gps_link' not in st.session_state: st.session_state.saved_gps_link = "
 if "user_submission_tracker" not in st.session_state: st.session_state.user_submission_tracker = {}
 
 # ============================================================
-# 🛡️ MODULE 21: ANTI-SPAM BOMBING & RATE LIMITER ENGINE
+# ðŸ›¡ï¸ MODULE 21: ANTI-SPAM BOMBING & RATE LIMITER ENGINE
 # ============================================================
 def check_spam_and_rate_limit(user_identifier):
     current_time = time.time()
@@ -1991,26 +1991,26 @@ def check_spam_and_rate_limit(user_identifier):
     if current_time - last_sub_time < 30:
         remaining_time = int(30 - (current_time - last_sub_time))
         log_and_report_error(f"Spam attempt blocked for User: {user_identifier}", "Rate_Limiter")
-        return False, f"⚠️ താൽക്കാലികമായി സിസ്റ്റം നിങ്ങളെ തടഞ്ഞിരിക്കുന്നു! ദയവായി {remaining_time} സെക്കൻഡിന് ശേഷം വീണ്ടും ശ്രമിക്കുക."
+        return False, f"âš ï¸ à´¤à´¾àµ½à´•àµà´•à´¾à´²à´¿à´•à´®à´¾à´¯à´¿ à´¸à´¿à´¸àµà´±àµà´±à´‚ à´¨à´¿à´™àµà´™à´³àµ† à´¤à´Ÿà´žàµà´žà´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ! à´¦à´¯à´µà´¾à´¯à´¿ {remaining_time} à´¸àµ†à´•àµà´•àµ»à´¡à´¿à´¨àµ à´¶àµ‡à´·à´‚ à´µàµ€à´£àµà´Ÿàµà´‚ à´¶àµà´°à´®à´¿à´•àµà´•àµà´•."
         
     st.session_state.user_submission_tracker[user_identifier] = current_time
     return True, "ALLOWED"
 
 # ============================================================
-# 🚨 MODULE 20: CENTRALIZED ERROR TRACKING & MONITORING ENGINE
+# ðŸš¨ MODULE 20: CENTRALIZED ERROR TRACKING & MONITORING ENGINE
 # ============================================================
 def log_and_report_error(error_message, function_name):
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     error_details = str(error_message)
-    print(f"🛑 [SYSTEM ERROR] in {function_name} at {current_time}: {error_details}")
+    print(f"ðŸ›‘ [SYSTEM ERROR] in {function_name} at {current_time}: {error_details}")
     
     if bot and ADMIN_TELEGRAM_CHAT_ID:
         telegram_alert_text = (
-            f"🚨 *CRITICAL SYSTEM ERROR DETECTED* 🚨\n\n"
-            f"📂 *മൊഡ്യൂൾ/ഫങ്ക്ഷൻ:* {function_name}\n"
-            f"⏰ *സമയം:* {current_time}\n"
-            f"📝 *എറർ വിവരണം:* `{error_details}`\n\n"
-            f"🛠️ *ശ്രദ്ധിക്കുക:* ദയവായി അഡ്മിൻ പാനലോ ഗൂഗിൾ ഷീറ്റ് ലോഗുകളോ പരിശോധിക്കുക."
+            f"ðŸš¨ *CRITICAL SYSTEM ERROR DETECTED* ðŸš¨\n\n"
+            f"ðŸ“‚ *à´®àµŠà´¡àµà´¯àµ‚àµ¾/à´«à´™àµà´•àµà´·àµ»:* {function_name}\n"
+            f"â° *à´¸à´®à´¯à´‚:* {current_time}\n"
+            f"ðŸ“ *à´Žà´±àµ¼ à´µà´¿à´µà´°à´£à´‚:* `{error_details}`\n\n"
+            f"ðŸ› ï¸ *à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•:* à´¦à´¯à´µà´¾à´¯à´¿ à´…à´¡àµà´®à´¿àµ» à´ªà´¾à´¨à´²àµ‹ à´—àµ‚à´—à´¿àµ¾ à´·àµ€à´±àµà´±àµ à´²àµ‹à´—àµà´•à´³àµ‹ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´•."
         )
         try: bot.send_message(chat_id=ADMIN_TELEGRAM_CHAT_ID, text=telegram_alert_text, parse_mode="Markdown")
         except: pass
@@ -2033,7 +2033,7 @@ def log_and_report_error(error_message, function_name):
 
 
 # ============================================================
-# 🔒 SECURITY & UTILITY FUNCTIONS
+# ðŸ”’ SECURITY & UTILITY FUNCTIONS
 # ============================================================
 def sanitize_input(text):
     if not text: return ""
@@ -2061,23 +2061,23 @@ def initialize_captcha_system():
 def render_smart_captcha_field():
     initialize_captcha_system()
     if st.session_state.total_bookings_count >= 3:
-        st.error("🚨 സുരക്ഷാ മുന്നറിയിപ്പ്: തുടർച്ചയായ ബുക്കിംഗ് ശ്രമങ്ങൾ!")
+        st.error("ðŸš¨ à´¸àµà´°à´•àµà´·à´¾ à´®àµà´¨àµà´¨à´±à´¿à´¯à´¿à´ªàµà´ªàµ: à´¤àµà´Ÿàµ¼à´šàµà´šà´¯à´¾à´¯ à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¶àµà´°à´®à´™àµà´™àµ¾!")
         if "captcha_text_question" not in st.session_state:
             val1 = random.randint(2, 9)
             val2 = random.randint(2, 9)
             st.session_state.correct_captcha_sum = val1 + val2
-            st.session_state.captcha_text_question = f"വ്യാജ ബുക്കിംഗുകൾ തടയുന്നതിനായി: {val1} + {val2} = ?"
+            st.session_state.captcha_text_question = f"à´µàµà´¯à´¾à´œ à´¬àµà´•àµà´•à´¿à´‚à´—àµà´•àµ¾ à´¤à´Ÿà´¯àµà´¨àµà´¨à´¤à´¿à´¨à´¾à´¯à´¿: {val1} + {val2} = ?"
             
         st.markdown(f"**{st.session_state.captcha_text_question}**")
-        user_captcha_ans = st.number_input("ഉത്തരം", step=1, key="captcha_input")
+        user_captcha_ans = st.number_input("à´‰à´¤àµà´¤à´°à´‚", step=1, key="captcha_input")
         
         if user_captcha_ans == st.session_state.correct_captcha_sum:
             st.session_state.captcha_verified = True
-            st.success("✅ സുരക്ഷാ പരിശോധന വിജയകരം!")
+            st.success("âœ… à´¸àµà´°à´•àµà´·à´¾ à´ªà´°à´¿à´¶àµ‹à´§à´¨ à´µà´¿à´œà´¯à´•à´°à´‚!")
             return True
         else:
             st.session_state.captcha_verified = False
-            st.warning("❌ തെറ്റായ ഉത്തരം!")
+            st.warning("âŒ à´¤àµ†à´±àµà´±à´¾à´¯ à´‰à´¤àµà´¤à´°à´‚!")
             return False
     return True
 
@@ -2095,7 +2095,7 @@ def calculate_spam_risk_score(c_name, c_phone):
     return risk_score
 
 # ============================================================
-# 🗺️ AREA ROUTING FUNCTIONS
+# ðŸ—ºï¸ AREA ROUTING FUNCTIONS
 # ============================================================
 def get_live_areas_from_google_sheet():
     default_fallback_areas = ["Manjeri", "Malappuram", "Perinthalmanna"]
@@ -2119,7 +2119,7 @@ def get_live_areas_from_google_sheet():
     return default_fallback_areas
 
 # ============================================================
-# 💾 MODULE 22: ADVANCED AREA-WISE MASTER BACKUP SYSTEM
+# ðŸ’¾ MODULE 22: ADVANCED AREA-WISE MASTER BACKUP SYSTEM
 # ============================================================
 BACKUP_CONFIG = {
     "manjeri": "BACKUP_SPREADSHEET_ID_1",
@@ -2168,9 +2168,9 @@ def sync_to_backups(data, data_type="driver", area=None):
         return False
 
 # ============================================================
-# 🚗 DRIVER & ROUTING FUNCTIONS
+# ðŸš— DRIVER & ROUTING FUNCTIONS
 # ============================================================
-# 1. പുതിയ ഫങ്ഷൻ ഇവിടെ നൽകുക (ഡെക്കറേറ്ററിന് മുകളിൽ)
+# 1. à´ªàµà´¤à´¿à´¯ à´«à´™àµà´·àµ» à´‡à´µà´¿à´Ÿàµ† à´¨àµ½à´•àµà´• (à´¡àµ†à´•àµà´•à´±àµ‡à´±àµà´±à´±à´¿à´¨àµ à´®àµà´•à´³à´¿àµ½)
 def get_all_drivers_by_area(target_area):
     try:
         ref = db.reference("drivers")
@@ -2194,7 +2194,7 @@ def get_all_drivers_by_area(target_area):
         return []
 @st.cache_data(ttl=60)
 def fetch_all_drivers_from_sheet():
-    # Cache management (30 സെക്കൻഡ് വരെ പഴയ ഡാറ്റ ഉപയോഗിക്കുന്നു)
+    # Cache management (30 à´¸àµ†à´•àµà´•àµ»à´¡àµ à´µà´°àµ† à´ªà´´à´¯ à´¡à´¾à´±àµà´± à´‰à´ªà´¯àµ‹à´—à´¿à´•àµà´•àµà´¨àµà´¨àµ)
     if (
         "cached_drivers" in st.session_state
         and (
@@ -2204,16 +2204,16 @@ def fetch_all_drivers_from_sheet():
         return st.session_state.cached_drivers
 
     try:
-        # ഗൂഗിൾ ഷീറ്റിൽ നിന്ന് ഡാറ്റ എടുക്കുന്നു
+        # à´—àµ‚à´—à´¿àµ¾ à´·àµ€à´±àµà´±à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´¡à´¾à´±àµà´± à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨àµ
         res = requests.get(
             f"{GOOGLE_SHEET_URL}?action=get_all_drivers",
             timeout=40
         )
 
-        # സ്റ്റാറ്റസ് 200 ആണോ എന്ന് പരിശോധിക്കുന്നു
+        # à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ 200 à´†à´£àµ‹ à´Žà´¨àµà´¨àµ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ
         if res.status_code == 200:
             content = res.text.strip()
-            # ഡാറ്റ ശരിയായ JSON ഫോർമാറ്റിലാണോ എന്ന് ഉറപ്പാക്കുന്നു
+            # à´¡à´¾à´±àµà´± à´¶à´°à´¿à´¯à´¾à´¯ JSON à´«àµ‹àµ¼à´®à´¾à´±àµà´±à´¿à´²à´¾à´£àµ‹ à´Žà´¨àµà´¨àµ à´‰à´±à´ªàµà´ªà´¾à´•àµà´•àµà´¨àµà´¨àµ
             if content.startswith(('[', '{')):
                 data = res.json()
                 if isinstance(data, list):
@@ -2221,16 +2221,16 @@ def fetch_all_drivers_from_sheet():
                     st.session_state.cache_time = time.time()
                     return data
             else:
-                # ടെർമിനലിൽ എറർ കാണിക്കും, പക്ഷെ ആപ്പ് ക്രാഷ് ആകില്ല
-                print("ശ്രദ്ധിക്കുക: ഷീറ്റ് ഡാറ്റ JSON അല്ല -", content[:50])
+                # à´Ÿàµ†àµ¼à´®à´¿à´¨à´²à´¿àµ½ à´Žà´±àµ¼ à´•à´¾à´£à´¿à´•àµà´•àµà´‚, à´ªà´•àµà´·àµ† à´†à´ªàµà´ªàµ à´•àµà´°à´¾à´·àµ à´†à´•à´¿à´²àµà´²
+                print("à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•: à´·àµ€à´±àµà´±àµ à´¡à´¾à´±àµà´± JSON à´…à´²àµà´² -", content[:50])
         else:
-            print("ഷീറ്റ് കണക്ഷൻ പരാജയപ്പെട്ടു, സ്റ്റാറ്റസ് കോഡ്:", res.status_code)
+            print("à´·àµ€à´±àµà´±àµ à´•à´£à´•àµà´·àµ» à´ªà´°à´¾à´œà´¯à´ªàµà´ªàµ†à´Ÿàµà´Ÿàµ, à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´•àµ‹à´¡àµ:", res.status_code)
                 
     except Exception as e:
-        # ഇവിടെ എറർ റിപ്പോർട്ട് ചെയ്യുന്നു, പക്ഷെ ആപ്പ് തടസ്സമില്ലാതെ പ്രവർത്തിക്കും
-        print(f"fetch_all_drivers_from_sheet എറർ: {e}")
+        # à´‡à´µà´¿à´Ÿàµ† à´Žà´±àµ¼ à´±à´¿à´ªàµà´ªàµ‹àµ¼à´Ÿàµà´Ÿàµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ, à´ªà´•àµà´·àµ† à´†à´ªàµà´ªàµ à´¤à´Ÿà´¸àµà´¸à´®à´¿à´²àµà´²à´¾à´¤àµ† à´ªàµà´°à´µàµ¼à´¤àµà´¤à´¿à´•àµà´•àµà´‚
+        print(f"fetch_all_drivers_from_sheet à´Žà´±àµ¼: {e}")
 
-    # ഡാറ്റ കിട്ടിയില്ലെങ്കിൽ പഴയ ക്യാഷ് ഉണ്ടോ എന്ന് നോക്കുന്നു, അല്ലെങ്കിൽ ഒഴിഞ്ഞ ലിസ്റ്റ്
+    # à´¡à´¾à´±àµà´± à´•à´¿à´Ÿàµà´Ÿà´¿à´¯à´¿à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´ªà´´à´¯ à´•àµà´¯à´¾à´·àµ à´‰à´£àµà´Ÿàµ‹ à´Žà´¨àµà´¨àµ à´¨àµ‹à´•àµà´•àµà´¨àµà´¨àµ, à´…à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´’à´´à´¿à´žàµà´ž à´²à´¿à´¸àµà´±àµà´±àµ
     return st.session_state.get("cached_drivers", [])
 def save_trip_dual_backup(payload):
     try:
@@ -2238,7 +2238,7 @@ def save_trip_dual_backup(payload):
         if not trip_id:
             return False
         
-        # ഫയർബേസിലെ trips നോഡിലേക്ക് നേരിട്ട് ഡാറ്റ സേവ് ചെയ്യുന്നു
+        # à´«à´¯àµ¼à´¬àµ‡à´¸à´¿à´²àµ† trips à´¨àµ‹à´¡à´¿à´²àµ‡à´•àµà´•àµ à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´¡à´¾à´±àµà´± à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
         ref = db.reference(f"trips/{trip_id}")
         ref.set(payload)
         return True
@@ -2278,11 +2278,11 @@ def send_individual_trip_link(
     trip_details
 ):
     """
-    ഡ്രൈവർക്ക് trip notification അയക്കുന്നു.
+    à´¡àµà´°àµˆà´µàµ¼à´•àµà´•àµ trip notification à´…à´¯à´•àµà´•àµà´¨àµà´¨àµ.
     Format: Clean, privacy-focused, mobile-friendly.
     Includes: Booking Date + Time
     """
-    # 🆕 FIX: commission_amount ഇവിടെ ഡിഫൈൻ ചെയ്യുന്നു
+    # ðŸ†• FIX: commission_amount à´‡à´µà´¿à´Ÿàµ† à´¡à´¿à´«àµˆàµ» à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
     commission_amount = trip_details.get("commission_amount", 0)
     try:
         if not bot or not driver.get("chat_id"):
@@ -2294,13 +2294,13 @@ def send_individual_trip_link(
         wallet_balance = float(
             driver.get("wallet_balance", 0.0)
         )
-        # 👇 2297-ാം വരി: ഇവിടെ നിന്നാണ് പുതിയ കോഡ് തുടങ്ങുന്നത് (8 സ്പേസ് ഇൻഡന്റേഷൻ)
-        # ⚠️ ₹25 ആകുമ്പോൾ വാണിംഗ് കാണിക്കാൻ
+        # ðŸ‘‡ 2297-à´¾à´‚ à´µà´°à´¿: à´‡à´µà´¿à´Ÿàµ† à´¨à´¿à´¨àµà´¨à´¾à´£àµ à´ªàµà´¤à´¿à´¯ à´•àµ‹à´¡àµ à´¤àµà´Ÿà´™àµà´™àµà´¨àµà´¨à´¤àµ (8 à´¸àµà´ªàµ‡à´¸àµ à´‡àµ»à´¡à´¨àµà´±àµ‡à´·àµ»)
+        # âš ï¸ â‚¹25 à´†à´•àµà´®àµà´ªàµ‹àµ¾ à´µà´¾à´£à´¿à´‚à´—àµ à´•à´¾à´£à´¿à´•àµà´•à´¾àµ»
         if WARNING_LIMIT <= wallet_balance < BLOCK_LIMIT:
             try:
                 bot.send_message(
                     chat_id=driver["chat_id"],
-                    text=f"⚠️ *ശ്രദ്ധിക്കുക:* നിങ്ങളുടെ കമ്മീഷൻ കുടിശ്ശിക ₹{wallet_balance} ആണ്. ഇത് ₹{BLOCK_LIMIT} കഴിഞ്ഞാൽ നിങ്ങൾക്ക് പുതിയ ട്രിപ്പുകൾ ലഭിക്കുന്നതല്ല."
+                    text=f"âš ï¸ à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•: à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´•à´®àµà´®àµ€à´·àµ» à´•àµà´Ÿà´¿à´¶àµà´¶à´¿à´• â‚¹{wallet_balance} à´†à´£àµ. à´‡à´¤àµ â‚¹{BLOCK_LIMIT} à´•à´´à´¿à´žàµà´žà´¾àµ½ à´¨à´¿à´™àµà´™àµ¾à´•àµà´•àµ à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾ à´²à´­à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´²àµà´²."
                 )
             except:
                 pass
@@ -2312,7 +2312,7 @@ def send_individual_trip_link(
             try:
                 bot.send_message(
                     chat_id=driver["chat_id"],
-                    text="🛑 വാലറ്റ് കമ്മീഷൻ പരിധി കടന്നതിനാൽ പുതിയ ട്രിപ്പുകൾ തടഞ്ഞിരിക്കുന്നു."
+                    text="ðŸ›‘ à´µà´¾à´²à´±àµà´±àµ à´•à´®àµà´®àµ€à´·àµ» à´ªà´°à´¿à´§à´¿ à´•à´Ÿà´¨àµà´¨à´¤à´¿à´¨à´¾àµ½ à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾ à´¤à´Ÿà´žàµà´žà´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ."
                 )
             except:
                 pass
@@ -2333,7 +2333,7 @@ def send_individual_trip_link(
         )
 
         # ============================================================
-        # ✅ Booking Date & Time
+        # âœ… Booking Date & Time
         # ============================================================
         booking_time_raw = (
             trip_details.get('booking_time')
@@ -2342,7 +2342,7 @@ def send_individual_trip_link(
         )
 
         try:
-            # "2026-09-22 10:32:45" → date + time
+            # "2026-09-22 10:32:45" â†’ date + time
             if " " in str(booking_time_raw):
                 parts = str(booking_time_raw).split(" ")
                 date_only = parts[0]                          # 2026-09-22
@@ -2396,34 +2396,34 @@ def send_individual_trip_link(
         )
 
         if gps_url and gps_url.startswith("http"):
-            gps_line = f"🔗 GPS: [📍 Location കാണുക]({gps_url})"
+            gps_line = f"ðŸ”— GPS: [ðŸ“ Location à´•à´¾à´£àµà´•]({gps_url})"
         else:
-            gps_line = "🔗 GPS: ലഭ്യമല്ല"
+            gps_line = "ðŸ”— GPS: à´²à´­àµà´¯à´®à´²àµà´²"
 
         # ============================================================
         # Wallet Warning
         # ============================================================
         warning_text = ""
         if wallet_balance >= WARNING_LIMIT:
-            warning_text = "⚠️ *മുന്നറിയിപ്പ്: വാലറ്റ് ബാലൻസ് കുറവാണ്!*\n\n"
+            warning_text = "âš ï¸ *à´®àµà´¨àµà´¨à´±à´¿à´¯à´¿à´ªàµà´ªàµ: à´µà´¾à´²à´±àµà´±àµ à´¬à´¾à´²àµ»à´¸àµ à´•àµà´±à´µà´¾à´£àµ!*\n\n"
 
         # ============================================================
         # Final Message (with Date + Time)
         # ============================================================
         message_text = (
-            f"🚖 *പുതിയ ട്രിപ്പ് ലഭ്യമാണ്!*\n"
-            f"🆔 {trip_id}\n"
-            f"📅 Date: {date_display}\n"       # 👈 NEW
-            f"🕐 Time: {time_display}\n"       # 👈 NEW
-            f"👤 {customer_name}\n"
-            f"📞 {masked_phone}\n"
-            f"📍 പിക്കപ്പ്: {pickup}\n"
-            f"🏁 ഡ്രോപ്പ്: {drop}\n"
-            f"💰 കമ്മീഷൻ: ₹{commission_amount}\n"
-            f"📏 ദൂരം: {trip_distance} km\n"
+            f"ðŸš– *à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´²à´­àµà´¯à´®à´¾à´£àµ!*\n"
+            f"ðŸ†” {trip_id}\n"
+            f"ðŸ“… Date: {date_display}\n"       # ðŸ‘ˆ NEW
+            f"ðŸ• Time: {time_display}\n"       # ðŸ‘ˆ NEW
+            f"ðŸ‘¤ {customer_name}\n"
+            f"ðŸ“ž {masked_phone}\n"
+            f"ðŸ“ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ: {pickup}\n"
+            f"ðŸ à´¡àµà´°àµ‹à´ªàµà´ªàµ: {drop}\n"
+            f"ðŸ’° à´•à´®àµà´®àµ€à´·àµ»: â‚¹{commission_amount}\n"
+            f"ðŸ“ à´¦àµ‚à´°à´‚: {trip_distance} km\n"
             f"{gps_line}\n\n"
             f"{warning_text}"
-            f"⚠️ *ആദ്യം ക്ലിക്ക് ചെയ്യുന്ന ഡ്രൈവർക്കായിരിക്കും ഈ ട്രിപ്പ്!*"
+            f"âš ï¸ *à´†à´¦àµà´¯à´‚ à´•àµà´²à´¿à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨ à´¡àµà´°àµˆà´µàµ¼à´•àµà´•à´¾à´¯à´¿à´°à´¿à´•àµà´•àµà´‚ à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªàµ!*"
         )
 
         # ============================================================
@@ -2432,7 +2432,7 @@ def send_individual_trip_link(
         reply_markup = types.InlineKeyboardMarkup(row_width=1)
         reply_markup.add(
             types.InlineKeyboardButton(
-                text="✅ ACCEPT TRIP",
+                text="âœ… ACCEPT TRIP",
                 callback_data=f"accept_{trip_id}"
             )
         )
@@ -2448,10 +2448,10 @@ def send_individual_trip_link(
             disable_web_page_preview=False
         )
 
-        print(f"✅ Trip notification sent to driver {driver['chat_id']}")
+        print(f"âœ… Trip notification sent to driver {driver['chat_id']}")
 
     except Exception as e:
-        print(f"❌ send_individual_trip_link error: {e}")
+        print(f"âŒ send_individual_trip_link error: {e}")
         try:
             log_and_report_error(e, "send_individual_trip_link")
         except:
@@ -2461,19 +2461,19 @@ def normalize_vehicle_type(vehicle_str):
     v = str(vehicle_str).lower()
     if "auto" in v and "rickshaw" in v:
         return "auto"
-    elif "ഓട്ടോ" in v:
+    elif "à´“à´Ÿàµà´Ÿàµ‹" in v:
         return "auto"
-    elif "taxi" in v or "car" in v or "കാർ" in v:
+    elif "taxi" in v or "car" in v or "à´•à´¾àµ¼" in v:
         return "car"
-    elif "goods" in v or "ഗുഡ്സ്" in v:
+    elif "goods" in v or "à´—àµà´¡àµà´¸àµ" in v:
         return "goods"
     elif "pickup" in v and "van" in v:
         return "van"
-    elif "mini" in v or "lorry" in v or "ലോറി" in v:
+    elif "mini" in v or "lorry" in v or "à´²àµ‹à´±à´¿" in v:
         return "mini"
-    elif "truck" in v or "ട്രക്ക്" in v:
+    elif "truck" in v or "à´Ÿàµà´°à´•àµà´•àµ" in v:
         return "truck"
-    elif "bike" in v or "ബൈക്ക്" in v:
+    elif "bike" in v or "à´¬àµˆà´•àµà´•àµ" in v:
         return "bike"
     return ""
 def process_radius_expansion_routing(
@@ -2482,8 +2482,8 @@ def process_radius_expansion_routing(
     customer_lon
 ):
     """
-    ഓരോ Trip ID + Driver Chat ID combination-നും
-    ഒരു Telegram notification മാത്രം അയയ്ക്കാൻ ശ്രമിക്കുന്നു.
+    à´“à´°àµ‹ Trip ID + Driver Chat ID combination-à´¨àµà´‚
+    à´’à´°àµ Telegram notification à´®à´¾à´¤àµà´°à´‚ à´…à´¯à´¯àµà´•àµà´•à´¾àµ» à´¶àµà´°à´®à´¿à´•àµà´•àµà´¨àµà´¨àµ.
     """
 
     try:
@@ -2491,19 +2491,19 @@ def process_radius_expansion_routing(
         customer_vehicle = normalize_vehicle_type(
             trip_details.get("vehicle_type", "")
         )    
-        print(f"🔍 Customer wants: {customer_vehicle}")
+        print(f"ðŸ” Customer wants: {customer_vehicle}")
         if not trip_id:
-            print("DEBUG: Trip ID ഇല്ല.")
+            print("DEBUG: Trip ID à´‡à´²àµà´².")
             return
 
         # ----------------------------------------------------
-        # 1. Firebase-ൽ നിന്ന് ഡ്രൈവർമാരെ എടുക്കുന്നു
+        # 1. Firebase-àµ½ à´¨à´¿à´¨àµà´¨àµ à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµ† à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨àµ
         # ----------------------------------------------------
         drivers_ref = db.reference("drivers")
         drivers_data = drivers_ref.get()
 
         if not drivers_data:
-            print("DEBUG: Firebase-ൽ drivers ഇല്ല.")
+            print("DEBUG: Firebase-àµ½ drivers à´‡à´²àµà´².")
             return
 
         if isinstance(drivers_data, dict):
@@ -2515,7 +2515,7 @@ def process_radius_expansion_routing(
             return
 
         # ----------------------------------------------------
-        # 2. Trip status പരിശോധിക്കുന്നു
+        # 2. Trip status à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ
         # ----------------------------------------------------
         try:
             trip_ref = db.reference(f"trips/{trip_id}")
@@ -2540,7 +2540,7 @@ def process_radius_expansion_routing(
             print(f"DEBUG: Trip status check error: {e}")
 
         # ----------------------------------------------------
-        # 3. ഇതിനകം notification അയച്ച drivers
+        # 3. à´‡à´¤à´¿à´¨à´•à´‚ notification à´…à´¯à´šàµà´š drivers
         # ----------------------------------------------------
         notified_ref = db.reference(
             f"trips/{trip_id}/notified_drivers"
@@ -2566,14 +2566,14 @@ def process_radius_expansion_routing(
             already_notified = set()
 
         # ----------------------------------------------------
-        # 4. ONLINE drivers മാത്രം
+        # 4. ONLINE drivers à´®à´¾à´¤àµà´°à´‚
         # ----------------------------------------------------
         for driver in all_drivers:
-            # 🔒 ലോക്ക് ചെക്ക് (12 സ്പേസുകൾ)
+            # ðŸ”’ à´²àµ‹à´•àµà´•àµ à´šàµ†à´•àµà´•àµ (12 à´¸àµà´ªàµ‡à´¸àµà´•àµ¾)
             current_trip = db.reference(f"trips/{trip_id}").get() or {}
             if current_trip.get("is_locked", False) or current_trip.get("status") == "Accepted":
-                print(f"⏭️ Trip {booking_id} already locked. Skipping remaining drivers.")
-                break  # ലൂപ്പിൽ നിന്ന് പുറത്തുകടക്കുക
+                print(f"â­ï¸ Trip {booking_id} already locked. Skipping remaining drivers.")
+                break  # à´²àµ‚à´ªàµà´ªà´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´ªàµà´±à´¤àµà´¤àµà´•à´Ÿà´•àµà´•àµà´•
                
             if not isinstance(driver, dict):
                 continue
@@ -2584,18 +2584,18 @@ def process_radius_expansion_routing(
 
             if driver_status != "ONLINE":
                 continue
-            # 🎯 — Vehicle type filter
+            # ðŸŽ¯ â€” Vehicle type filter
             driver_vehicle = normalize_vehicle_type(
                 driver.get("vehicle_type", "")
             )
             if customer_vehicle and driver_vehicle:
                 if customer_vehicle != driver_vehicle:
-                    print(f"⏭️ Skip {driver.get('driver_name', '?')}: {driver_vehicle} ≠ {customer_vehicle}") 
+                    print(f"â­ï¸ Skip {driver.get('driver_name', '?')}: {driver_vehicle} â‰  {customer_vehicle}") 
                     continue 
  
            
              
-            # Firebase driver record-ൽ chat_id
+            # Firebase driver record-àµ½ chat_id
             d_chat_id = str(
                 driver.get("chat_id")
                 or driver.get("telegram_chat_id")
@@ -2606,12 +2606,12 @@ def process_radius_expansion_routing(
             if not d_chat_id:
                 print(
                     f"DEBUG: Driver {driver.get('name', '')} "
-                    f"- Telegram Chat ID ഇല്ല."
+                    f"- Telegram Chat ID à´‡à´²àµà´²."
                 )
                 continue
 
             # ------------------------------------------------
-            # 5. ഇതിനകം അയച്ചിട്ടുണ്ടെങ്കിൽ skip
+            # 5. à´‡à´¤à´¿à´¨à´•à´‚ à´…à´¯à´šàµà´šà´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ†à´™àµà´•à´¿àµ½ skip
             # ------------------------------------------------
             if d_chat_id in already_notified:
                 print(
@@ -2621,8 +2621,8 @@ def process_radius_expansion_routing(
                 continue
 
             # ------------------------------------------------
-            # 6. Telegram അയയ്ക്കുന്നതിന് മുമ്പ്
-            #    notification lock ചെയ്യുന്നു
+            # 6. Telegram à´…à´¯à´¯àµà´•àµà´•àµà´¨àµà´¨à´¤à´¿à´¨àµ à´®àµà´®àµà´ªàµ
+            #    notification lock à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
             # ------------------------------------------------
             driver_notification_ref = db.reference(
                 f"trips/{trip_id}/telegram_notifications/{d_chat_id}"
@@ -2640,7 +2640,7 @@ def process_radius_expansion_routing(
                     already_notified.add(d_chat_id)
                     continue
 
-                # Lock create ചെയ്യുന്നു
+                # Lock create à´šàµ†à´¯àµà´¯àµà´¨àµà´¨àµ
                 driver_notification_ref.set({
                     "status": "SENDING",
                     "timestamp": time.time()
@@ -2686,7 +2686,7 @@ def process_radius_expansion_routing(
 
             except Exception as e:
 
-                # Send പരാജയപ്പെട്ടാൽ lock FAILED ആക്കുന്നു
+                # Send à´ªà´°à´¾à´œà´¯à´ªàµà´ªàµ†à´Ÿàµà´Ÿà´¾àµ½ lock FAILED à´†à´•àµà´•àµà´¨àµà´¨àµ
                 try:
                     driver_notification_ref.update({
                         "status": "FAILED",
@@ -2716,28 +2716,28 @@ def process_radius_expansion_routing(
             pass
 
 # ============================================================
-# 🚖 ഡ്രൈവർ ട്രിപ്പ് പാനൽ (Full Featured Web Page)
+# ðŸš– à´¡àµà´°àµˆà´µàµ¼ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ (Full Featured Web Page)
 # ============================================================
 def driver_trip_panel_page():
-    st.title("🚖 ഡ്രൈവർ ട്രിപ്പ് പാനൽ")
+    st.title("ðŸš– à´¡àµà´°àµˆà´µàµ¼ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½")
     
-    # URL-ൽ നിന്ന് ട്രിപ്പ് ഐഡി എടുക്കുക
+    # URL-àµ½ à´¨à´¿à´¨àµà´¨àµ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´Žà´Ÿàµà´•àµà´•àµà´•
     query_params = st.query_params
     trip_id = query_params.get("trip_id", "")
     driver_chat_id = query_params.get("driver_chat_id", "")
     
     if not trip_id:
-        st.error("❌ ട്രിപ്പ് ഐഡി കണ്ടെത്താനായില്ല.")
+        st.error("âŒ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´².")
         return
     
-    # ഫയർബേസിൽ നിന്ന് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
+    # à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´Žà´Ÿàµà´•àµà´•àµà´•
     trip_data = db.reference(f"trips/{trip_id}").get()
     
     if not trip_data:
-        st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ലഭ്യമല്ല.")
+        st.error("âŒ à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿à´¯à´¿àµ½ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´²à´­àµà´¯à´®à´²àµà´².")
         return
     
-    # ട്രിപ്പ് വിവരങ്ങൾ
+    # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾
     customer_name = trip_data.get("customer_name", "N/A")
     customer_phone = trip_data.get("customer_phone", "")
     pickup = trip_data.get("pickup", "N/A")
@@ -2747,32 +2747,32 @@ def driver_trip_panel_page():
     total_fare = trip_data.get("total_fare", 0)
     status = trip_data.get("status", "Accepted")
     
-    # 🆕 Distance & Commission എടുക്കുക
+    # ðŸ†• Distance & Commission à´Žà´Ÿàµà´•àµà´•àµà´•
     distance = trip_data.get("calculated_distance", "N/A")
     commission = trip_data.get("commission_amount", "N/A")
     
     # ============================================================
-    # ✅ 1. ട്രിപ്പ് വിവരങ്ങൾ (Distance & Commission സഹിതം)
+    # âœ… 1. à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ (Distance & Commission à´¸à´¹à´¿à´¤à´‚)
     # ============================================================
     st.markdown(f"""
     <div style="background-color: #e8f4f8; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid #2c3e50;">
-        <h3 style="margin: 0; color: #2c3e50;">🆔 ട്രിപ്പ് ഐഡി: {trip_id}</h3>
-        <p style="margin: 5px 0; color: #555;">👤 കസ്റ്റമർ: {customer_name}</p>
-        <p style="margin: 5px 0; color: #555;">📍 പിക്കപ്പ്: {pickup}</p>
-        <p style="margin: 5px 0; color: #555;">🏁 ഡ്രോപ്പ്: {drop}</p>
-        <p style="margin: 5px 0; color: #555;">📏 ദൂരം: {distance} km</p>
-        <p style="margin: 5px 0; color: #555;">💰 വാടക: ₹{total_fare}</p>
-        <p style="margin: 5px 0; color: #555;">💵 കമ്മീഷൻ: ₹{commission}</p>
-        <p style="margin: 5px 0; color: #555;">📊 സ്റ്റാറ്റസ്: {status}</p>
+        <h3 style="margin: 0; color: #2c3e50;">ðŸ†” à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿: {trip_id}</h3>
+        <p style="margin: 5px 0; color: #555;">ðŸ‘¤ à´•à´¸àµà´±àµà´±à´®àµ¼: {customer_name}</p>
+        <p style="margin: 5px 0; color: #555;">ðŸ“ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ: {pickup}</p>
+        <p style="margin: 5px 0; color: #555;">ðŸ à´¡àµà´°àµ‹à´ªàµà´ªàµ: {drop}</p>
+        <p style="margin: 5px 0; color: #555;">ðŸ“ à´¦àµ‚à´°à´‚: {distance} km</p>
+        <p style="margin: 5px 0; color: #555;">ðŸ’° à´µà´¾à´Ÿà´•: â‚¹{total_fare}</p>
+        <p style="margin: 5px 0; color: #555;">ðŸ’µ à´•à´®àµà´®àµ€à´·àµ»: â‚¹{commission}</p>
+        <p style="margin: 5px 0; color: #555;">ðŸ“Š à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ: {status}</p>
     </div>
     """, unsafe_allow_html=True)
     
         # ============================================================
-    # ✅ 2. ലൈവ് ലൊക്കേഷൻ ഷെയർ (Arrived ആകുന്നത് വരെ മാത്രം)
+    # âœ… 2. à´²àµˆà´µàµ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´·àµ†à´¯àµ¼ (Arrived à´†à´•àµà´¨àµà´¨à´¤àµ à´µà´°àµ† à´®à´¾à´¤àµà´°à´‚)
     # ============================================================
     if status != "Arrived":
-        st.markdown("### 📍 ലൈവ് ലൊക്കേഷൻ ഷെയർ ചെയ്യുക")
-        st.info("🔔 ഈ പേജ് ഓപ്പൺ ആയി വെക്കുക. ട്രിപ്പ് അവസാനിക്കുന്നത് വരെ ലൊക്കേഷൻ സ്വയമേവ അപ്ഡേറ്റ് ആകും.")
+        st.markdown("### ðŸ“ à´²àµˆà´µàµ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´·àµ†à´¯àµ¼ à´šàµ†à´¯àµà´¯àµà´•")
+        st.info("ðŸ”” à´ˆ à´ªàµ‡à´œàµ à´“à´ªàµà´ªàµº à´†à´¯à´¿ à´µàµ†à´•àµà´•àµà´•. à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´µà´¸à´¾à´¨à´¿à´•àµà´•àµà´¨àµà´¨à´¤àµ à´µà´°àµ† à´²àµŠà´•àµà´•àµ‡à´·àµ» à´¸àµà´µà´¯à´®àµ‡à´µ à´…à´ªàµà´¡àµ‡à´±àµà´±àµ à´†à´•àµà´‚.")
         
         @st.fragment(run_every=10)
         def update_location():
@@ -2787,41 +2787,41 @@ def driver_trip_panel_page():
                         "lon": lon,
                         "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     })
-                    st.success(f"✅ ലൊക്കേഷൻ അപ്ഡേറ്റ് ആയി: {lat:.4f}, {lon:.4f}")
+                    st.success(f"âœ… à´²àµŠà´•àµà´•àµ‡à´·àµ» à´…à´ªàµà´¡àµ‡à´±àµà´±àµ à´†à´¯à´¿: {lat:.4f}, {lon:.4f}")
                 else:
-                    st.warning("⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല. ദയവായി GPS ഓൺ ചെയ്യുക.")
+                    st.warning("âš ï¸ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´²à´­àµà´¯à´®à´²àµà´². à´¦à´¯à´µà´¾à´¯à´¿ GPS à´“àµº à´šàµ†à´¯àµà´¯àµà´•.")
             except Exception as e:
-                st.error(f"❌ എറർ: {e}")
+                st.error(f"âŒ à´Žà´±àµ¼: {e}")
         
         update_location()
 
     # ============================================================
-    # ✅ 3. നാവിഗേഷൻ ബട്ടൺ & നിർദ്ദേശം (Arrived ആകുന്നത് വരെ മാത്രം)
+    # âœ… 3. à´¨à´¾à´µà´¿à´—àµ‡à´·àµ» à´¬à´Ÿàµà´Ÿàµº & à´¨à´¿àµ¼à´¦àµà´¦àµ‡à´¶à´‚ (Arrived à´†à´•àµà´¨àµà´¨à´¤àµ à´µà´°àµ† à´®à´¾à´¤àµà´°à´‚)
     # ============================================================
     if status != "Arrived":
         if pickup_lat and pickup_lon:
             nav_url = f"https://www.google.com/maps/dir/?api=1&destination={pickup_lat},{pickup_lon}"
-            st.link_button("🗺️ കസ്റ്റമറുടെ അടുത്തേക്ക് പോകുക (Navigation)", nav_url, use_container_width=True)
+            st.link_button("ðŸ—ºï¸ à´•à´¸àµà´±àµà´±à´®à´±àµà´Ÿàµ† à´…à´Ÿàµà´¤àµà´¤àµ‡à´•àµà´•àµ à´ªàµ‹à´•àµà´• (Navigation)", nav_url, use_container_width=True)
             
-            # 🆕 നാവിഗേഷൻ നിർദ്ദേശം
+            # ðŸ†• à´¨à´¾à´µà´¿à´—àµ‡à´·àµ» à´¨à´¿àµ¼à´¦àµà´¦àµ‡à´¶à´‚
             st.info("""
-            📌 **ശ്രദ്ധിക്കുക:**
-            • നാവിഗേഷൻ ബട്ടൺ അമർത്തിയാൽ, Google Maps തുറക്കും.
-            • കസ്റ്റമറുടെ ലൊക്കേഷനിൽ എത്തിക്കഴിഞ്ഞാൽ, ഫോണിന്റെ **Back Button** അമർത്തി ഈ പേജിലേക്ക് തിരികെ വരിക.
-            • ശേഷം, താഴെയുള്ള **"ഞാൻ എത്തി"** ബട്ടൺ അമർത്തുക.
+            ðŸ“Œ **à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•:**
+            â€¢ à´¨à´¾à´µà´¿à´—àµ‡à´·àµ» à´¬à´Ÿàµà´Ÿàµº à´…à´®àµ¼à´¤àµà´¤à´¿à´¯à´¾àµ½, Google Maps à´¤àµà´±à´•àµà´•àµà´‚.
+            â€¢ à´•à´¸àµà´±àµà´±à´®à´±àµà´Ÿàµ† à´²àµŠà´•àµà´•àµ‡à´·à´¨à´¿àµ½ à´Žà´¤àµà´¤à´¿à´•àµà´•à´´à´¿à´žàµà´žà´¾àµ½, à´«àµ‹à´£à´¿à´¨àµà´±àµ† **Back Button** à´…à´®àµ¼à´¤àµà´¤à´¿ à´ˆ à´ªàµ‡à´œà´¿à´²àµ‡à´•àµà´•àµ à´¤à´¿à´°à´¿à´•àµ† à´µà´°à´¿à´•.
+            â€¢ à´¶àµ‡à´·à´‚, à´¤à´¾à´´àµ†à´¯àµà´³àµà´³ **"à´žà´¾àµ» à´Žà´¤àµà´¤à´¿"** à´¬à´Ÿàµà´Ÿàµº à´…à´®àµ¼à´¤àµà´¤àµà´•.
             """)
 
     # ============================================================
-    # ✅ 4. "ഞാൻ എത്തി" (Arrived) ബട്ടൺ
+    # âœ… 4. "à´žà´¾àµ» à´Žà´¤àµà´¤à´¿" (Arrived) à´¬à´Ÿàµà´Ÿàµº
     # ============================================================
     if status != "Arrived":
-        st.markdown("### 🚖 എത്തിയോ?")
-        if st.button("🚖 ഞാൻ എത്തി (Arrived)", type="primary", use_container_width=True):
+        st.markdown("### ðŸš– à´Žà´¤àµà´¤à´¿à´¯àµ‹?")
+        if st.button("ðŸš– à´žà´¾àµ» à´Žà´¤àµà´¤à´¿ (Arrived)", type="primary", use_container_width=True):
             db.reference(f"trips/{trip_id}").update({
                 "status": "Arrived",
                 "notification": "arrived_sound"
             })
-            # 👇 ഇവിടെയാണ് പുതിയ കോഡ് തുടങ്ങുന്നത് (12 സ്പെയ്സ് / 3 ടാബ്)
+            # ðŸ‘‡ à´‡à´µà´¿à´Ÿàµ†à´¯à´¾à´£àµ à´ªàµà´¤à´¿à´¯ à´•àµ‹à´¡àµ à´¤àµà´Ÿà´™àµà´™àµà´¨àµà´¨à´¤àµ (12 à´¸àµà´ªàµ†à´¯àµà´¸àµ / 3 à´Ÿà´¾à´¬àµ)
             try:
                 if not trip_data.get("commission_added", False):
                     trip_commission = float(trip_data.get("commission_amount", 0.0))
@@ -2835,38 +2835,47 @@ def driver_trip_panel_page():
                         new_wallet = current_wallet + trip_commission
                         driver_ref.update({"wallet_balance": new_wallet})
                         db.reference(f"trips/{trip_id}").update({"commission_added": True})
+                        # ðŸ‘‡ à´‡à´µà´¿à´Ÿàµ†à´¯à´¾à´£àµ à´ªàµà´¤à´¿à´¯ à´µà´¾à´£à´¿à´‚à´—àµ à´•àµ‹à´¡àµ à´¨àµ½à´•àµ‡à´£àµà´Ÿà´¤àµ (16 à´¸àµà´ªàµ‡à´¸àµ / 4 à´Ÿà´¾à´¬àµ à´‡àµ»à´¡à´¨àµà´±àµ‡à´·àµ»)
+                        if WARNING_LIMIT <= new_wallet < BLOCK_LIMIT:
+                            try:
+                                bot.send_message(
+                                    chat_id=driver_id,
+                                    text=f"âš ï¸ à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•: à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´•à´®àµà´®àµ€à´·àµ» à´•àµà´Ÿà´¿à´¶àµà´¶à´¿à´• â‚¹{new_wallet:.2f} à´†à´¯à´¿. à´‡à´¤àµ â‚¹{BLOCK_LIMIT} à´•à´´à´¿à´žàµà´žà´¾àµ½ à´¨à´¿à´™àµà´™àµ¾à´•àµà´•àµ à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾ à´²à´­à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´²àµà´²."
+                                )
+                            except:
+                                pass
                         try:
                             bot.send_message(
                                 chat_id=driver_id,
-                                text=f"✅ ട്രിപ്പ് അവസാനിച്ചു.\nഈ ട്രിപ്പിലെ കമ്മീഷൻ: ₹{trip_commission}\nനിലവിലെ ആകെ കുടിശ്ശിക: ₹{new_wallet:.2f}"
+                                text=f"âœ… à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´µà´¸à´¾à´¨à´¿à´šàµà´šàµ.\nà´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªà´¿à´²àµ† à´•à´®àµà´®àµ€à´·àµ»: â‚¹{trip_commission}\nà´¨à´¿à´²à´µà´¿à´²àµ† à´†à´•àµ† à´•àµà´Ÿà´¿à´¶àµà´¶à´¿à´•: â‚¹{new_wallet:.2f}"
                             )
                         except:
                             pass
             except Exception as e:   
                 print(f"Wallet Update Error: {e}")    
-            st.success("✅ കസ്റ്റമറിനെ അറിയിച്ചിട്ടുണ്ട്!")
+            st.success("âœ… à´•à´¸àµà´±àµà´±à´®à´±à´¿à´¨àµ† à´…à´±à´¿à´¯à´¿à´šàµà´šà´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ!")
             st.balloons()
             st.rerun()
 
     # ============================================================
-    # ✅ 5. കസ്റ്റമറുടെ ഫോൺ നമ്പർ (Arrived ആയതിന് ശേഷം മാത്രം)
+    # âœ… 5. à´•à´¸àµà´±àµà´±à´®à´±àµà´Ÿàµ† à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ (Arrived à´†à´¯à´¤à´¿à´¨àµ à´¶àµ‡à´·à´‚ à´®à´¾à´¤àµà´°à´‚)
     # ============================================================
     if status == "Arrived":
-        st.success("✅ നിങ്ങൾ കസ്റ്റമറുടെ അടുത്ത് എത്തിയിട്ടുണ്ട്.")
-        st.markdown("### 📞 കസ്റ്റമറുമായി ബന്ധപ്പെടുക")
+        st.success("âœ… à´¨à´¿à´™àµà´™àµ¾ à´•à´¸àµà´±àµà´±à´®à´±àµà´Ÿàµ† à´…à´Ÿàµà´¤àµà´¤àµ à´Žà´¤àµà´¤à´¿à´¯à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ.")
+        st.markdown("### ðŸ“ž à´•à´¸àµà´±àµà´±à´®à´±àµà´®à´¾à´¯à´¿ à´¬à´¨àµà´§à´ªàµà´ªàµ†à´Ÿàµà´•")
         
         customer_phone = trip_data.get("customer_phone", "")
         
         if customer_phone:
-            # 🆕 നിയമപരമായ സുരക്ഷാ മുന്നറിയിപ്പ്
+            # ðŸ†• à´¨à´¿à´¯à´®à´ªà´°à´®à´¾à´¯ à´¸àµà´°à´•àµà´·à´¾ à´®àµà´¨àµà´¨à´±à´¿à´¯à´¿à´ªàµà´ªàµ
             st.warning("""
-            ⚠️ **ശ്രദ്ധിക്കുക:**
-            • കസ്റ്റമറുടെ ഫോൺ നമ്പർ അത്യാവശ്യ ഘട്ടങ്ങളിൽ മാത്രം ഉപയോഗിക്കുക.
-            • അറൈവൽ ലൊക്കേഷനിൽ കസ്റ്റമറെ കണ്ടെത്താനായില്ലെങ്കിൽ മാത്രം വിളിക്കുക.
-            • ദുരുപയോഗം ചെയ്താൽ നിയമനടപടികൾ നേരിടേണ്ടി വരും.
+            âš ï¸ **à´¶àµà´°à´¦àµà´§à´¿à´•àµà´•àµà´•:**
+            â€¢ à´•à´¸àµà´±àµà´±à´®à´±àµà´Ÿàµ† à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ à´…à´¤àµà´¯à´¾à´µà´¶àµà´¯ à´˜à´Ÿàµà´Ÿà´™àµà´™à´³à´¿àµ½ à´®à´¾à´¤àµà´°à´‚ à´‰à´ªà´¯àµ‹à´—à´¿à´•àµà´•àµà´•.
+            â€¢ à´…à´±àµˆà´µàµ½ à´²àµŠà´•àµà´•àµ‡à´·à´¨à´¿àµ½ à´•à´¸àµà´±àµà´±à´®à´±àµ† à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´²àµ†à´™àµà´•à´¿àµ½ à´®à´¾à´¤àµà´°à´‚ à´µà´¿à´³à´¿à´•àµà´•àµà´•.
+            â€¢ à´¦àµà´°àµà´ªà´¯àµ‹à´—à´‚ à´šàµ†à´¯àµà´¤à´¾àµ½ à´¨à´¿à´¯à´®à´¨à´Ÿà´ªà´Ÿà´¿à´•àµ¾ à´¨àµ‡à´°à´¿à´Ÿàµ‡à´£àµà´Ÿà´¿ à´µà´°àµà´‚.
             """)
             
-            # 🆕 കോൾ ബട്ടൺ (നമ്പർ കാണാതെ)
+            # ðŸ†• à´•àµ‹àµ¾ à´¬à´Ÿàµà´Ÿàµº (à´¨à´®àµà´ªàµ¼ à´•à´¾à´£à´¾à´¤àµ†)
             st.markdown(f"""
             <a href="tel:{customer_phone}" style="
                 display: inline-block;
@@ -2880,15 +2889,15 @@ def driver_trip_panel_page():
                 text-align: center;
                 width: 100%;
                 box-sizing: border-box;
-            ">📞 കസ്റ്റമറെ വിളിക്കുക</a>
+            ">ðŸ“ž à´•à´¸àµà´±àµà´±à´®à´±àµ† à´µà´¿à´³à´¿à´•àµà´•àµà´•</a>
             """, unsafe_allow_html=True)
             
-            st.info("🔒 സുരക്ഷയ്ക്കായി കസ്റ്റമറുടെ ഫോൺ നമ്പർ മറച്ചുവെച്ചിരിക്കുന്നു.")
+            st.info("ðŸ”’ à´¸àµà´°à´•àµà´·à´¯àµà´•àµà´•à´¾à´¯à´¿ à´•à´¸àµà´±àµà´±à´®à´±àµà´Ÿàµ† à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ à´®à´±à´šàµà´šàµà´µàµ†à´šàµà´šà´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ.")
         else:
-            st.warning("⚠️ ഫോൺ നമ്പർ ലഭ്യമല്ല.")
+            st.warning("âš ï¸ à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ à´²à´­àµà´¯à´®à´²àµà´².")
             
 # ==========================================================
-# 🔔 REAL-TIME NOTIFICATION LISTENER
+# ðŸ”” REAL-TIME NOTIFICATION LISTENER
 # ==========================================================
         current_trip_id = trip_id
         if current_trip_id:
@@ -2906,42 +2915,42 @@ def driver_trip_panel_page():
                         components.html(sound_html, height=0)
                         
                         notification_placeholder.success(
-                            "🚖 **നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനം എത്തിച്ചേർന്നിട്ടുണ്ട്!**"
+                            "ðŸš– **à´¨à´¿à´™àµà´™àµ¾ à´¬àµà´•àµà´•àµ à´šàµ†à´¯àµà´¤ à´µà´¾à´¹à´¨à´‚ à´Žà´¤àµà´¤à´¿à´šàµà´šàµ‡àµ¼à´¨àµà´¨à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ!**"
                         )
                         trip_ref.update({"notification": "played"})
             trip_ref.listen(notification_listener)            
             
 # ====================================================================
-# 🖥️ STREAMLIT UI - CUSTOMER BOOKING INTERFACE (CLEANED & FIXED)
+# ðŸ–¥ï¸ STREAMLIT UI - CUSTOMER BOOKING INTERFACE (CLEANED & FIXED)
 # ====================================================================
 def main():
     # ============================================================
-    # 🔔 Push Notification Service Worker രജിസ്റ്റർ ചെയ്യുക
+    # ðŸ”” Push Notification Service Worker à´°à´œà´¿à´¸àµà´±àµà´±àµ¼ à´šàµ†à´¯àµà´¯àµà´•
     # ============================================================
     components.html("""
         <script>
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js')
                 .then(function(registration) {
-                    console.log('✅ Service Worker Registered');
+                    console.log('âœ… Service Worker Registered');
                 })
                 .catch(function(err) {
-                    console.log('❌ Service Worker Registration Failed:', err);
+                    console.log('âŒ Service Worker Registration Failed:', err);
                 });
             } else {
-                console.log('❌ Service Worker not supported');
+                console.log('âŒ Service Worker not supported');
             }
         </script>
     """, height=0)
-    # 🆕 URL-ൽ driver_trip_panel ഉണ്ടെങ്കിൽ, ആ പേജ് മാത്രം കാണിക്കുക
+    # ðŸ†• URL-àµ½ driver_trip_panel à´‰à´£àµà´Ÿàµ†à´™àµà´•à´¿àµ½, à´† à´ªàµ‡à´œàµ à´®à´¾à´¤àµà´°à´‚ à´•à´¾à´£à´¿à´•àµà´•àµà´•
     query_params = st.query_params
     if query_params.get("page") == "driver_trip_panel":
         driver_trip_panel_page()
-        return  # ബാക്കി കോഡ് റൺ ചെയ്യരുത്
+        return  # à´¬à´¾à´•àµà´•à´¿ à´•àµ‹à´¡àµ à´±àµº à´šàµ†à´¯àµà´¯à´°àµà´¤àµ
     st.markdown("""
     <div class="header-box" style="padding: 15px !important; margin-bottom: 15px !important;">
-        <h1 style="font-size: 1.8rem !important; margin: 0 !important; color: #ffcc00 !important;">🚕 EASY AUTO TAXI</h1>
-        <p style="font-size: 11px !important; margin-top: 3px !important; color: #b3b3b3 !important;">FAST • SECURE • RELIABLE</p>
+        <h1 style="font-size: 1.8rem !important; margin: 0 !important; color: #ffcc00 !important;">ðŸš• EASY AUTO TAXI</h1>
+        <p style="font-size: 11px !important; margin-top: 3px !important; color: #b3b3b3 !important;">FAST â€¢ SECURE â€¢ RELIABLE</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -2952,7 +2961,7 @@ def main():
         st.session_state.is_booking = False
 
     # ----------------------------------------------------------------
-    # 📍 ULTIMATE RELIABLE GPS LOCATION (Final Clean Version)
+    # ðŸ“ ULTIMATE RELIABLE GPS LOCATION (Final Clean Version)
     # ----------------------------------------------------------------
     if 'lat' not in st.session_state:
         st.session_state.lat = None
@@ -2960,10 +2969,10 @@ def main():
         st.session_state.lon = None
     if 'gps_link' not in st.session_state:
         st.session_state.gps_link = "Not Available"
-    if 'gps_enabled' not in st.session_state:      # <--- ഈ വരി ഇവിടെ ചേർക്കുക
-        st.session_state.gps_enabled = False       # <--- ഇതും
+    if 'gps_enabled' not in st.session_state:      # <--- à´ˆ à´µà´°à´¿ à´‡à´µà´¿à´Ÿàµ† à´šàµ‡àµ¼à´•àµà´•àµà´•
+        st.session_state.gps_enabled = False       # <--- à´‡à´¤àµà´‚
 
-    # 🎯 ജിപിഎസ് ഐക്കണും സ്റ്റാറ്റസ് മെസ്സേജും ഒരേ വരിയിൽ കൊണ്ടുവരാൻ കോളം ഉപയോഗിക്കുന്നു
+    # ðŸŽ¯ à´œà´¿à´ªà´¿à´Žà´¸àµ à´à´•àµà´•à´£àµà´‚ à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´®àµ†à´¸àµà´¸àµ‡à´œàµà´‚ à´’à´°àµ‡ à´µà´°à´¿à´¯à´¿àµ½ à´•àµŠà´£àµà´Ÿàµà´µà´°à´¾àµ» à´•àµ‹à´³à´‚ à´‰à´ªà´¯àµ‹à´—à´¿à´•àµà´•àµà´¨àµà´¨àµ
     col_icon, col_status = st.columns([1, 5])
 
     with col_icon:
@@ -2977,16 +2986,16 @@ def main():
             pass
 
     with col_status:
-        # ഐക്കണിന് അടുത്തേക്ക് സ്റ്റാറ്റസ് കാണിക്കാൻ
+        # à´à´•àµà´•à´£à´¿à´¨àµ à´…à´Ÿàµà´¤àµà´¤àµ‡à´•àµà´•àµ à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´•à´¾à´£à´¿à´•àµà´•à´¾àµ»
         lat = st.session_state.lat
         lon = st.session_state.lon
         
-        # ചെറിയ പാഡിംഗ് ഉപയോഗിച്ച് സ്പേസ് കുറയ്ക്കുന്നു
+        # à´šàµ†à´±à´¿à´¯ à´ªà´¾à´¡à´¿à´‚à´—àµ à´‰à´ªà´¯àµ‹à´—à´¿à´šàµà´šàµ à´¸àµà´ªàµ‡à´¸àµ à´•àµà´±à´¯àµà´•àµà´•àµà´¨àµà´¨àµ
         if lat and lon:
             st.markdown(
                 """
                 <div style="background-color: #d4edda; color: #155724; padding: 4px 8px; border-radius: 5px; border: 1px solid #c3e6cb; margin-top: 5px; margin-bottom: 0px;">
-                    <b>🎯 GPS Status:</b> <span style="color: green; font-weight: bold;">🟢 സജീവമാണ്</span>
+                    <b>ðŸŽ¯ GPS Status:</b> <span style="color: green; font-weight: bold;">ðŸŸ¢ à´¸à´œàµ€à´µà´®à´¾à´£àµ</span>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -2995,16 +3004,16 @@ def main():
             st.markdown(
                 """
                 <div style="background-color: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 5px; border: 1px solid #ffeeba; margin-top: 5px; margin-bottom: 0px;">
-                    <b>🎯 GPS Status:</b> <span style="color: #856404; font-weight: bold;">⚠️ ലൊക്കേഷൻ ലഭ്യമല്ല (പെർമിഷൻ അലോ ചെയ്യുക)</span>
+                    <b>ðŸŽ¯ GPS Status:</b> <span style="color: #856404; font-weight: bold;">âš ï¸ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´²à´­àµà´¯à´®à´²àµà´² (à´ªàµ†àµ¼à´®à´¿à´·àµ» à´…à´²àµ‹ à´šàµ†à´¯àµà´¯àµà´•)</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-    # 📝 "യാത്രാ വിവരങ്ങൾ" എന്ന ഹെഡിംഗ് (ഇത് കൂടുതൽ മുകളിലേക്ക് വരാൻ CSS)
+    # ðŸ“ "à´¯à´¾à´¤àµà´°à´¾ à´µà´¿à´µà´°à´™àµà´™àµ¾" à´Žà´¨àµà´¨ à´¹àµ†à´¡à´¿à´‚à´—àµ (à´‡à´¤àµ à´•àµ‚à´Ÿàµà´¤àµ½ à´®àµà´•à´³à´¿à´²àµ‡à´•àµà´•àµ à´µà´°à´¾àµ» CSS)
     st.markdown("""
     <style>
-        /* സ്പേസ് കുറയ്ക്കാൻ */
+        /* à´¸àµà´ªàµ‡à´¸àµ à´•àµà´±à´¯àµà´•àµà´•à´¾àµ» */
         div[data-testid="stVerticalBlock"] > div {
             margin-bottom: 0rem !important;
             gap: 0.5rem !important;
@@ -3017,90 +3026,90 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    st.markdown("### 📝 യാത്രാ വിവരങ്ങൾ രേഖപ്പെടുത്തുക")
+    st.markdown("### ðŸ“ à´¯à´¾à´¤àµà´°à´¾ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´°àµ‡à´–à´ªàµà´ªàµ†à´Ÿàµà´¤àµà´¤àµà´•")
 
-    # 🛑 st.form ഉപയോഗിച്ച് ബുക്കിംഗ് ഫോം സുരക്ഷിതമാക്കിയിരിക്കുന്നു
+    # ðŸ›‘ st.form à´‰à´ªà´¯àµ‹à´—à´¿à´šàµà´šàµ à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´«àµ‹à´‚ à´¸àµà´°à´•àµà´·à´¿à´¤à´®à´¾à´•àµà´•à´¿à´¯à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ
     with st.form("booking_form"):
-        # ... (ബാക്കി കോഡുകൾ അതേപടി ഇരിക്കട്ടെ) ...
-        c_name = st.text_input("👤 നിങ്ങളുടെ പേര് (Customer Name):", placeholder="പേര് ടൈപ്പ് ചെയ്യുക")
-        c_phone = st.text_input("📞 ഫോൺ നമ്പർ (Phone Number):", placeholder="9876543210")
+        # ... (à´¬à´¾à´•àµà´•à´¿ à´•àµ‹à´¡àµà´•àµ¾ à´…à´¤àµ‡à´ªà´Ÿà´¿ à´‡à´°à´¿à´•àµà´•à´Ÿàµà´Ÿàµ†) ...
+        c_name = st.text_input("ðŸ‘¤ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´ªàµ‡à´°àµ (Customer Name):", placeholder="à´ªàµ‡à´°àµ à´Ÿàµˆà´ªàµà´ªàµ à´šàµ†à´¯àµà´¯àµà´•")
+        c_phone = st.text_input("ðŸ“ž à´«àµ‹àµº à´¨à´®àµà´ªàµ¼ (Phone Number):", placeholder="9876543210")
 
-        # 1. ഫയർബേസിൽ നിന്ന് സ്റ്റാൻഡുകളും ഏരിയകളും നേരിട്ട് എടുക്കുന്നു
+        # 1. à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´¸àµà´±àµà´±à´¾àµ»à´¡àµà´•à´³àµà´‚ à´à´°à´¿à´¯à´•à´³àµà´‚ à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨àµ
         locations_list = get_locations_from_firebase()
         areas_list = get_areas_from_firebase()
 
-        # 2. വിവിധ വാഹനങ്ങളുടെ ഓപ്ഷനുകൾ
+        # 2. à´µà´¿à´µà´¿à´§ à´µà´¾à´¹à´¨à´™àµà´™à´³àµà´Ÿàµ† à´“à´ªàµà´·à´¨àµà´•àµ¾
         vehicle_options = [
-            "🛺 ഓട്ടോറിക്ഷ (Autorickshaw)",
-            "🚗 ടാക്സി കാർ (Taxi Car)",
-            "🚙 ഗുഡ്സ് ഓട്ടോ പിക്കപ്പ് (Goods Auto Pickup)",
-            "🚐 പിക്കപ്പ് വാൻ (Pickup Van)",
-            "🚚 മിനി ലോറി (Mini Lorry)",
-            "🚛 ട്രക്ക് (Truck)",
-            "🏍️ ബൈക്ക് ടാക്സി (Bike Taxi)"
+            "ðŸ›º à´“à´Ÿàµà´Ÿàµ‹à´±à´¿à´•àµà´· (Autorickshaw)",
+            "ðŸš— à´Ÿà´¾à´•àµà´¸à´¿ à´•à´¾àµ¼ (Taxi Car)",
+            "ðŸš™ à´—àµà´¡àµà´¸àµ à´“à´Ÿàµà´Ÿàµ‹ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ (Goods Auto Pickup)",
+            "ðŸš à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´µà´¾àµ» (Pickup Van)",
+            "ðŸšš à´®à´¿à´¨à´¿ à´²àµ‹à´±à´¿ (Mini Lorry)",
+            "ðŸš› à´Ÿàµà´°à´•àµà´•àµ (Truck)",
+            "ðŸï¸ à´¬àµˆà´•àµà´•àµ à´Ÿà´¾à´•àµà´¸à´¿ (Bike Taxi)"
         ]
-        vehicle_type = st.selectbox("🚖 വാഹനത്തിന്റെ തരം തിരഞ്ഞെടുക്കുക (Select Vehicle Type):", options=vehicle_options)
+        vehicle_type = st.selectbox("ðŸš– à´µà´¾à´¹à´¨à´¤àµà´¤à´¿à´¨àµà´±àµ† à´¤à´°à´‚ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´• (Select Vehicle Type):", options=vehicle_options)
 
-        # 3. സുരക്ഷിതമായി പിക്കപ്പ് ഡ്രോപ്പ്ഡൗൺ നൽകുന്നു
+        # 3. à´¸àµà´°à´•àµà´·à´¿à´¤à´®à´¾à´¯à´¿ à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´¡àµà´°àµ‹à´ªàµà´ªàµà´¡àµ—àµº à´¨àµ½à´•àµà´¨àµà´¨àµ
         if locations_list and len(locations_list) > 0:
-            pickup_place = st.selectbox("📍 പുറപ്പെടുന്ന സ്ഥലം (Pickup):", options=locations_list)
+            pickup_place = st.selectbox("ðŸ“ à´ªàµà´±à´ªàµà´ªàµ†à´Ÿàµà´¨àµà´¨ à´¸àµà´¥à´²à´‚ (Pickup):", options=locations_list)
         else:
-            st.warning("⚠️ ഫയർബേസിൽ 'locations' നോഡിൽ ലൊക്കേഷനുകൾ ചേർക്കുക.")
-            pickup_place = st.text_input("📍 പുറപ്പെടുന്ന സ്ഥലം (Pickup) മാനുവലായി നൽകുക:")
+            st.warning("âš ï¸ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ 'locations' à´¨àµ‹à´¡à´¿àµ½ à´²àµŠà´•àµà´•àµ‡à´·à´¨àµà´•àµ¾ à´šàµ‡àµ¼à´•àµà´•àµà´•.")
+            pickup_place = st.text_input("ðŸ“ à´ªàµà´±à´ªàµà´ªàµ†à´Ÿàµà´¨àµà´¨ à´¸àµà´¥à´²à´‚ (Pickup) à´®à´¾à´¨àµà´µà´²à´¾à´¯à´¿ à´¨àµ½à´•àµà´•:")
 
         if locations_list and len(locations_list) > 0:
-            drop_place = st.selectbox("🏁 പോകേണ്ട സ്ഥലം (Drop):", options=locations_list)
+            drop_place = st.selectbox("ðŸ à´ªàµ‹à´•àµ‡à´£àµà´Ÿ à´¸àµà´¥à´²à´‚ (Drop):", options=locations_list)
         else:
-            st.warning("⚠️ ഫയർബേസിൽ 'locations' നോഡിൽ ലൊക്കേഷനുകൾ ചേർക്കുക.")
-            drop_place = st.text_input("🏁 പോകേണ്ട സ്ഥലം (Drop) മാനുവലായി നൽകുക:")
+            st.warning("âš ï¸ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ 'locations' à´¨àµ‹à´¡à´¿àµ½ à´²àµŠà´•àµà´•àµ‡à´·à´¨àµà´•àµ¾ à´šàµ‡àµ¼à´•àµà´•àµà´•.")
+            drop_place = st.text_input("ðŸ à´ªàµ‹à´•àµ‡à´£àµà´Ÿ à´¸àµà´¥à´²à´‚ (Drop) à´®à´¾à´¨àµà´µà´²à´¾à´¯à´¿ à´¨àµ½à´•àµà´•:")
 
         if areas_list and len(areas_list) > 0:
-            trip_area = st.selectbox("📍 ഏരിയ തിരഞ്ഞെടുക്കുക (Area):", options=areas_list)
+            trip_area = st.selectbox("ðŸ“ à´à´°à´¿à´¯ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´• (Area):", options=areas_list)
         else:
-            st.warning("⚠️ ഫയർബേസിൽ 'areas' നോഡിൽ ലൊക്കേഷനുകൾ ചേർക്കുക.")
-            trip_area = st.text_input("📍 ഏരിയ മാനുവലായി നൽകുക:")
+            st.warning("âš ï¸ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ 'areas' à´¨àµ‹à´¡à´¿àµ½ à´²àµŠà´•àµà´•àµ‡à´·à´¨àµà´•àµ¾ à´šàµ‡àµ¼à´•àµà´•àµà´•.")
+            trip_area = st.text_input("ðŸ“ à´à´°à´¿à´¯ à´®à´¾à´¨àµà´µà´²à´¾à´¯à´¿ à´¨àµ½à´•àµà´•:")
 
-        # Smart Captcha (ഉണ്ടെങ്കിൽ മാത്രം റെൻഡർ ചെയ്യും)
+        # Smart Captcha (à´‰à´£àµà´Ÿàµ†à´™àµà´•à´¿àµ½ à´®à´¾à´¤àµà´°à´‚ à´±àµ†àµ»à´¡àµ¼ à´šàµ†à´¯àµà´¯àµà´‚)
         if 'render_smart_captcha_field' in globals():
             render_smart_captcha_field()
 
-        submitted = st.form_submit_button("🚗 Book Ride Now", type="primary")
+        submitted = st.form_submit_button("ðŸš— Book Ride Now", type="primary")
 
     if submitted:
         st.session_state.is_booking = True
 
-        # 🆕 1. GPS എനേബിൾ ചെയ്തിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക
-        # lat, lon ഉണ്ടെങ്കിൽ gps_enabled = True ആക്കുക (ഇത് പ്രധാനം)
+        # ðŸ†• 1. GPS à´Žà´¨àµ‡à´¬à´¿àµ¾ à´šàµ†à´¯àµà´¤à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ‹ à´Žà´¨àµà´¨àµ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´•
+        # lat, lon à´‰à´£àµà´Ÿàµ†à´™àµà´•à´¿àµ½ gps_enabled = True à´†à´•àµà´•àµà´• (à´‡à´¤àµ à´ªàµà´°à´§à´¾à´¨à´‚)
         if st.session_state.lat and st.session_state.lon:
             st.session_state.gps_enabled = True
         if not st.session_state.gps_enabled:
             st.markdown("""
             <div style="background-color: #ffebee; border-left: 5px solid #d32f2f; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;">
-                <b style="color: #c62828;">📍 GPS ലൊക്കേഷൻ ലഭ്യമല്ല!</b><br>
+                <b style="color: #c62828;">ðŸ“ GPS à´²àµŠà´•àµà´•àµ‡à´·àµ» à´²à´­àµà´¯à´®à´²àµà´²!</b><br>
                 <span style="color: #333; font-size: 12px;">
-                ബുക്കിംഗ് പൂർത്തിയാക്കാൻ ദയവായി നിങ്ങളുടെ ലൊക്കേഷൻ ഓൺ ചെയ്യുക. 
-                ബ്രൗസർ സെറ്റിംഗ്സിൽ നിന്ന് "Location Permission" നൽകുക.
+                à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´ªàµ‚àµ¼à´¤àµà´¤à´¿à´¯à´¾à´•àµà´•à´¾àµ» à´¦à´¯à´µà´¾à´¯à´¿ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´²àµŠà´•àµà´•àµ‡à´·àµ» à´“àµº à´šàµ†à´¯àµà´¯àµà´•. 
+                à´¬àµà´°àµ—à´¸àµ¼ à´¸àµ†à´±àµà´±à´¿à´‚à´—àµà´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ "Location Permission" à´¨àµ½à´•àµà´•.
                 </span>
             </div>
             """, unsafe_allow_html=True)
-            st.toast("⚠️ GPS ഓൺ ചെയ്യാതെ ബുക്കിംഗ് സാധ്യമല്ല!", icon="❌")
+            st.toast("âš ï¸ GPS à´“àµº à´šàµ†à´¯àµà´¯à´¾à´¤àµ† à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¸à´¾à´§àµà´¯à´®à´²àµà´²!", icon="âŒ")
             st.session_state.is_booking = False
             st.stop()            
 
         
         # Validation checks
         if not (c_name and c_phone and pickup_place and drop_place):
-            st.warning("⚠️ ദയവായി എല്ലാ വിവരങ്ങളും നൽകുക!")
+            st.warning("âš ï¸ à´¦à´¯à´µà´¾à´¯à´¿ à´Žà´²àµà´²à´¾ à´µà´¿à´µà´°à´™àµà´™à´³àµà´‚ à´¨àµ½à´•àµà´•!")
             st.session_state.is_booking = False
             st.stop()
 
         if pickup_place == drop_place:
-            st.warning("⚠️ Pickup, Drop ഒരേ സ്ഥലം ആകരുത്.")
-            st.warning("⚠️ ദയവായി വ്യത്യസ്തമായ സ്ഥലങ്ങൾ തിരഞ്ഞെടുക്കുക.")
+            st.warning("âš ï¸ Pickup, Drop à´’à´°àµ‡ à´¸àµà´¥à´²à´‚ à´†à´•à´°àµà´¤àµ.")
+            st.warning("âš ï¸ à´¦à´¯à´µà´¾à´¯à´¿ à´µàµà´¯à´¤àµà´¯à´¸àµà´¤à´®à´¾à´¯ à´¸àµà´¥à´²à´™àµà´™àµ¾ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´•.")
             st.session_state.is_booking = False
             st.stop()
 
-        # Spam Check (ഉണ്ടെങ്കിൽ മാത്രം)
+        # Spam Check (à´‰à´£àµà´Ÿàµ†à´™àµà´•à´¿àµ½ à´®à´¾à´¤àµà´°à´‚)
         if 'check_spam_and_rate_limit' in globals():
             is_allowed, msg = check_spam_and_rate_limit(c_phone)
             if not is_allowed:
@@ -3109,11 +3118,11 @@ def main():
                 st.stop()
 
         # Distance & Fare Calculation
-        with st.spinner("🔍 ദൂരം കണക്കാക്കുന്നു..."):
+        with st.spinner("ðŸ” à´¦àµ‚à´°à´‚ à´•à´£à´•àµà´•à´¾à´•àµà´•àµà´¨àµà´¨àµ..."):
             exact_distance = get_real_road_distance(pickup_place, drop_place) if 'get_real_road_distance' in globals() else 5.0
-        # സ്ഥലം കണ്ടെത്താനായില്ലെങ്കിൽ
+        # à´¸àµà´¥à´²à´‚ à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´²àµ†à´™àµà´•à´¿àµ½
         if exact_distance is None:
-            st.toast("📍 നിങ്ങൾ തിരഞ്ഞെടുത്ത ലൊക്കേഷൻ കണ്ടെത്താനായില്ല! ദയവായി സമീപത്തുള്ള മറ്റൊരു സ്ഥലം തിരഞ്ഞെടുക്കുക.", icon="❌")
+            st.toast("ðŸ“ à´¨à´¿à´™àµà´™àµ¾ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´¤àµà´¤ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´²! à´¦à´¯à´µà´¾à´¯à´¿ à´¸à´®àµ€à´ªà´¤àµà´¤àµà´³àµà´³ à´®à´±àµà´±àµŠà´°àµ à´¸àµà´¥à´²à´‚ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´•.", icon="âŒ")
             st.session_state.is_booking = False
             st.stop()
 
@@ -3123,19 +3132,19 @@ def main():
         commission_amount = calculate_admin_commission(exact_distance) if 'calculate_admin_commission' in globals() else 10.0
         unique_trip_id = f"TRIP-{random.randint(10000, 99999)}"
 
-        st.info(f"📊 Booking Details: {pickup_place} to {drop_place}")
+        st.info(f"ðŸ“Š Booking Details: {pickup_place} to {drop_place}")
 
         # ============================================================
-        # 🚗 DRIVER LOGIC & RADIUS ROUTING (FIXED)
+        # ðŸš— DRIVER LOGIC & RADIUS ROUTING (FIXED)
         # ============================================================
-        with st.spinner("ഡ്രൈവർമാരെ തിരയുന്നു..."):
+        with st.spinner("à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµ† à´¤à´¿à´°à´¯àµà´¨àµà´¨àµ..."):
             drivers_in_area = get_all_drivers_by_area(trip_area) if 'get_all_drivers_by_area' in globals() else []
 
             if not drivers_in_area:
-                st.warning("⚠️ ഈ ഏരിയയിൽ നിലവിൽ ഡ്രൈവർമാർ ലഭ്യമല്ല.")
+                st.warning("âš ï¸ à´ˆ à´à´°à´¿à´¯à´¯à´¿àµ½ à´¨à´¿à´²à´µà´¿àµ½ à´¡àµà´°àµˆà´µàµ¼à´®à´¾àµ¼ à´²à´­àµà´¯à´®à´²àµà´².")
             else:
                 # ============================================
-                # ✅ FIX #1: Trip ഒരിക്കൽ മാത്രം Firebase-ൽ Save
+                # âœ… FIX #1: Trip à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚ Firebase-àµ½ Save
                 # ============================================
                 payload = {
                     "action": "create_trip",
@@ -3156,60 +3165,60 @@ def main():
                     "commission_amount": commission_amount,
                     "schedule_time": "Now",
                     "booking_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    # Driver-specific fields trip-level അല്ല
+                    # Driver-specific fields trip-level à´…à´²àµà´²
                     "driver_name": "",
                     "driver_phone": "",
                     "driver_chat_id": "",
                     "notified_drivers": {}
                 }
 
-                # ഒരിക്കൽ മാത്രം save (loop ഇല്ല!)
+                # à´’à´°à´¿à´•àµà´•àµ½ à´®à´¾à´¤àµà´°à´‚ save (loop à´‡à´²àµà´²!)
                 trip_saved = save_trip_dual_backup(payload)
 
                 if trip_saved:
                     if 'register_successful_booking_attempt' in globals():
                         register_successful_booking_attempt()
 
-                    # Driver notification — Vera function വഴി
+                    # Driver notification â€” Vera function à´µà´´à´¿
                     if 'process_radius_expansion_routing' in globals():
                         process_radius_expansion_routing(payload, lat, lon)
 
-                    st.success("✅ ബുക്കിംഗ് വിജയകരമായി പൂർത്തിയായി!")
+                    st.success("âœ… à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´ªàµ‚àµ¼à´¤àµà´¤à´¿à´¯à´¾à´¯à´¿!")
 
-                    # ട്രിപ്പ് ഐഡിയും ഡ്രൈവർ സുരക്ഷാ നിർദ്ദേശങ്ങളും അടങ്ങിയ പ്രൊഫഷണൽ കാർഡ്
+                    # à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿à´¯àµà´‚ à´¡àµà´°àµˆà´µàµ¼ à´¸àµà´°à´•àµà´·à´¾ à´¨à´¿àµ¼à´¦àµà´¦àµ‡à´¶à´™àµà´™à´³àµà´‚ à´…à´Ÿà´™àµà´™à´¿à´¯ à´ªàµà´°àµŠà´«à´·à´£àµ½ à´•à´¾àµ¼à´¡àµ
                     card_html = f"""<div style="padding: 18px; border-radius: 12px; background-color: #eef2ff; border-left: 6px solid #2563eb; border-right: 6px solid #f59e0b; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 20px;">
     <div style="margin-bottom: 15px;">
-        <span style="font-size: 15px; font-weight: 600; color: #1e3a8a;">നിങ്ങളുടെ ട്രിപ്പ് ഐഡി:</span>
+        <span style="font-size: 15px; font-weight: 600; color: #1e3a8a;">à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿:</span>
         <div style="background-color: #fff3cd; border: 2px solid #ffc107; padding: 8px 14px; border-radius: 8px; display: inline-block; font-weight: bold; color: #856404; font-size: 18px; margin-top: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">{unique_trip_id}</div>
     </div>
-    <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 8px; font-size: 16px;">🚗 ഡ്രൈവർ വിവരങ്ങൾ & സുരക്ഷാ നിർദ്ദേശം:</h4>
+    <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 8px; font-size: 16px;">ðŸš— à´¡àµà´°àµˆà´µàµ¼ à´µà´¿à´µà´°à´™àµà´™àµ¾ & à´¸àµà´°à´•àµà´·à´¾ à´¨à´¿àµ¼à´¦àµà´¦àµ‡à´¶à´‚:</h4>
     <p style="color: #1f2937; font-size: 14px; line-height: 1.6; margin: 0;">
-        നിങ്ങൾ ബുക്ക് ചെയ്ത വാഹനത്തിന്റെ 🚖 ഡ്രൈവറുടെ തത്സമയ വിവരങ്ങൾ അറിയുന്നതിനായി ഈ വെബ് ആപ്പ് ക്ലോസ് ചെയ്യാതെ നിലനിർത്തുക.<br><br>
-        എന്തെങ്കിലും കാരണവശാൽ ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയാൽ, വീണ്ടും ആപ്പ് ഓപ്പൺ ചെയ്യുമ്പോൾ മുകളിൽ നൽകിയിരിക്കുന്ന ട്രിപ്പ് ഐഡി നൽകി ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കാവുന്നതാണ്.
+        à´¨à´¿à´™àµà´™àµ¾ à´¬àµà´•àµà´•àµ à´šàµ†à´¯àµà´¤ à´µà´¾à´¹à´¨à´¤àµà´¤à´¿à´¨àµà´±àµ† ðŸš– à´¡àµà´°àµˆà´µà´±àµà´Ÿàµ† à´¤à´¤àµà´¸à´®à´¯ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´…à´±à´¿à´¯àµà´¨àµà´¨à´¤à´¿à´¨à´¾à´¯à´¿ à´ˆ à´µàµ†à´¬àµ à´†à´ªàµà´ªàµ à´•àµà´²àµ‹à´¸àµ à´šàµ†à´¯àµà´¯à´¾à´¤àµ† à´¨à´¿à´²à´¨à´¿àµ¼à´¤àµà´¤àµà´•.<br><br>
+        à´Žà´¨àµà´¤àµ†à´™àµà´•à´¿à´²àµà´‚ à´•à´¾à´°à´£à´µà´¶à´¾àµ½ à´†à´ªàµà´²à´¿à´•àµà´•àµ‡à´·àµ» à´•àµà´²àµ‹à´¸àµ à´†à´¯à´¿à´ªàµà´ªàµ‹à´¯à´¾àµ½, à´µàµ€à´£àµà´Ÿàµà´‚ à´†à´ªàµà´ªàµ à´“à´ªàµà´ªàµº à´šàµ†à´¯àµà´¯àµà´®àµà´ªàµ‹àµ¾ à´®àµà´•à´³à´¿àµ½ à´¨àµ½à´•à´¿à´¯à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´¨àµ½à´•à´¿ à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•à´¾à´µàµà´¨àµà´¨à´¤à´¾à´£àµ.
     </p>
 </div>"""
                     
                     st.markdown(card_html, unsafe_allow_html=True)
 
                     # ----------------------------------------------------
-                    # 📍 ലൈവ് മാപ്പ് കോൾ
+                    # ðŸ“ à´²àµˆà´µàµ à´®à´¾à´ªàµà´ªàµ à´•àµ‹àµ¾
                     # ----------------------------------------------------
                     st.write("---")
                     trip_ref = db.reference(f"trips/{unique_trip_id}")
                     trip_data = trip_ref.get()
-                    # 🆕 സ്റ്റാറ്റസ് എടുക്കുമ്പോൾ അധിക സ്പേസുകൾ നീക്കം ചെയ്യുക
+                    # ðŸ†• à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´Žà´Ÿàµà´•àµà´•àµà´®àµà´ªàµ‹àµ¾ à´…à´§à´¿à´• à´¸àµà´ªàµ‡à´¸àµà´•àµ¾ à´¨àµ€à´•àµà´•à´‚ à´šàµ†à´¯àµà´¯àµà´•
                     if trip_data:
                         status = str(trip_data.get("status", "Pending")).strip()
                     else:
                         status = "Pending" 
                     vehicle_type_check = trip_data.get("vehicle_type", "Auto Rickshaw") if trip_data else "Auto Rickshaw"
-                    # 🆕 ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തതിന് ശേഷം ("Pending" അല്ലാത്ത എല്ലാ അവസ്ഥയിലും) ഈ കോഡ് പ്രവർത്തിക്കും
+                    # ðŸ†• à´¡àµà´°àµˆà´µàµ¼ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤à´¤à´¿à´¨àµ à´¶àµ‡à´·à´‚ ("Pending" à´…à´²àµà´²à´¾à´¤àµà´¤ à´Žà´²àµà´²à´¾ à´…à´µà´¸àµà´¥à´¯à´¿à´²àµà´‚) à´ˆ à´•àµ‹à´¡àµ à´ªàµà´°à´µàµ¼à´¤àµà´¤à´¿à´•àµà´•àµà´‚
                     if status != "Pending":
     
 
                     
                     
-                        # 🔔 1. നോട്ടിഫിക്കേഷൻ സൗണ്ട്
+                        # ðŸ”” 1. à´¨àµ‹à´Ÿàµà´Ÿà´¿à´«à´¿à´•àµà´•àµ‡à´·àµ» à´¸àµ—à´£àµà´Ÿàµ
                         notification_sound = """
                             <audio autoplay>
                               <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
@@ -3217,52 +3226,52 @@ def main():
                         """
                         st.markdown(notification_sound, unsafe_allow_html=True)
 
-                        # 2. ഡ്രൈവർ വിവരങ്ങളും മാപ്പും അടങ്ങിയ പോപ്പ്-അപ്പ് കണ്ടെയ്നർ
+                        # 2. à´¡àµà´°àµˆà´µàµ¼ à´µà´¿à´µà´°à´™àµà´™à´³àµà´‚ à´®à´¾à´ªàµà´ªàµà´‚ à´…à´Ÿà´™àµà´™à´¿à´¯ à´ªàµ‹à´ªàµà´ªàµ-à´…à´ªàµà´ªàµ à´•à´£àµà´Ÿàµ†à´¯àµà´¨àµ¼
                         with st.container():
-                            st.success("🎉 **അഭിനന്ദനങ്ങൾ! ഒരു ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിരിക്കുന്നു!**")
+                            st.success("ðŸŽ‰ **à´…à´­à´¿à´¨à´¨àµà´¦à´¨à´™àµà´™àµ¾! à´’à´°àµ à´¡àµà´°àµˆà´µàµ¼ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ!**")
                             if "taxi" in vehicle_type_check.lower() or "car" in vehicle_type_check.lower():
-                                st.markdown("### 🚖 ടാക്സി കാർ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
+                                st.markdown("### ðŸš– à´Ÿà´¾à´•àµà´¸à´¿ à´•à´¾àµ¼ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´…à´Ÿàµà´¤àµà´¤àµ‡à´•àµà´•àµ à´µà´°àµà´¨àµà´¨àµ...")
                             else:
-                                st.markdown("### 🛺 ഓട്ടോറിക്ഷ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
+                                st.markdown("### ðŸ›º à´“à´Ÿàµà´Ÿàµ‹à´±à´¿à´•àµà´· à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´…à´Ÿàµà´¤àµà´¤àµ‡à´•àµà´•àµ à´µà´°àµà´¨àµà´¨àµ...")
 
-                            st.markdown("### 👤 ഡ്രൈവർ വിവരങ്ങൾ")
-                            st.write(f"**ഡ്രൈവർ പേര്:** {trip_data.get('driver_name', 'N/A')}")
-                            st.write(f"**വാഹന നമ്പർ:** {trip_data.get('vehicle_number', 'N/A')} ({vehicle_type_check})")
+                            st.markdown("### ðŸ‘¤ à´¡àµà´°àµˆà´µàµ¼ à´µà´¿à´µà´°à´™àµà´™àµ¾")
+                            st.write(f"**à´¡àµà´°àµˆà´µàµ¼ à´ªàµ‡à´°àµ:** {trip_data.get('driver_name', 'N/A')}")
+                            st.write(f"**à´µà´¾à´¹à´¨ à´¨à´®àµà´ªàµ¼:** {trip_data.get('vehicle_number', 'N/A')} ({vehicle_type_check})")
 
-                            # മാസ്ക് ചെയ്ത ഫോൺ നമ്പർ
+                            # à´®à´¾à´¸àµà´•àµ à´šàµ†à´¯àµà´¤ à´«àµ‹àµº à´¨à´®àµà´ªàµ¼
                             raw_driver_phone = trip_data.get('driver_phone', '')
                             masked_d_phone = mask_phone_number(raw_driver_phone) if 'mask_phone_number' in globals() else raw_driver_phone
-                            st.write(f"**ഫോൺ നമ്പർ:** `{masked_d_phone}`")
+                            st.write(f"**à´«àµ‹àµº à´¨à´®àµà´ªàµ¼:** `{masked_d_phone}`")
 
                             st.markdown("---")
-                            st.markdown("### 🗺️ ഡ്രൈവറുടെ ലൈവ് ലൊക്കേഷൻ ട്രാക്കിംഗ്")
+                            st.markdown("### ðŸ—ºï¸ à´¡àµà´°àµˆà´µà´±àµà´Ÿàµ† à´²àµˆà´µàµ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´Ÿàµà´°à´¾à´•àµà´•à´¿à´‚à´—àµ")
 
                             if lat and lon:
                                 render_live_tracking_map(unique_trip_id, lat, lon, vehicle_type_check)
                             else:
-                                st.warning("⚠️ മാപ്പ് കാണുന്നതിനായി നിങ്ങളുടെ ജിപിഎസ് ലൊക്കേഷൻ സജീവമാക്കുക.")
+                                st.warning("âš ï¸ à´®à´¾à´ªàµà´ªàµ à´•à´¾à´£àµà´¨àµà´¨à´¤à´¿à´¨à´¾à´¯à´¿ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´œà´¿à´ªà´¿à´Žà´¸àµ à´²àµŠà´•àµà´•àµ‡à´·àµ» à´¸à´œàµ€à´µà´®à´¾à´•àµà´•àµà´•.")
                     else:
-                        # ഡ്രൈവർ അക്സെപ്റ്റ് ചെയ്യുന്നത് വരെ
-                        st.info("⏳ ഡ്രൈവർമാർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യുന്നതിനായി കാത്തിരിക്കുന്നു... ദയവായി ഈ പേജ് ക്ലോസ് ചെയ്യരുത്.")
+                        # à´¡àµà´°àµˆà´µàµ¼ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨à´¤àµ à´µà´°àµ†
+                        st.info("â³ à´¡àµà´°àµˆà´µàµ¼à´®à´¾àµ¼ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨à´¤à´¿à´¨à´¾à´¯à´¿ à´•à´¾à´¤àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ... à´¦à´¯à´µà´¾à´¯à´¿ à´ˆ à´ªàµ‡à´œàµ à´•àµà´²àµ‹à´¸àµ à´šàµ†à´¯àµà´¯à´°àµà´¤àµ.")
 
-                    with st.expander("📝 സേവന നിബന്ധനകളും ഡിസ്ക്ലൈമറും"):
+                    with st.expander("ðŸ“ à´¸àµ‡à´µà´¨ à´¨à´¿à´¬à´¨àµà´§à´¨à´•à´³àµà´‚ à´¡à´¿à´¸àµà´•àµà´²àµˆà´®à´±àµà´‚"):
                         st.write("""
-                        **ഡിസ്ക്ലൈമർ (Disclaimer):**
-                        * ഈ ആപ്ലിക്കേഷൻ ഡ്രൈവർമാരെയും യാത്രക്കാരെയും ബന്ധിപ്പിക്കുന്ന ഒരു **ഡിജിറ്റൽ മെസ്സേജിംഗ് പ്ലാറ്റ്ഫോം** മാത്രമാണ്.
-                        * യാത്രയ്ക്കിടയിൽ ഉണ്ടാകുന്ന സാങ്കേതികമോ, വ്യക്തിപരമോ ആയ പ്രശ്നങ്ങൾക്കോ, അപകടങ്ങൾക്കോ ഈ പ്ലാറ്റ്ഫോമോ, അഡ്മിനിസ്ട്രേറ്റർമാരോ ഉത്തരവാദികളായിരിക്കുന്നതല്ല.
-                        * ഡ്രൈവർമാരുമായുള്ള ഇടപാടുകളിൽ യാത്രക്കാർ ജാഗ്രത പാലിക്കേണ്ടതാണ്.
-                        * ഈ സേവനം ഉപയോഗിക്കുന്നതിലൂടെ നിങ്ങൾ ഈ നിബന്ധനകൾ അംഗീകരിക്കുന്നു.
+                        **à´¡à´¿à´¸àµà´•àµà´²àµˆà´®àµ¼ (Disclaimer):**
+                        * à´ˆ à´†à´ªàµà´²à´¿à´•àµà´•àµ‡à´·àµ» à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµ†à´¯àµà´‚ à´¯à´¾à´¤àµà´°à´•àµà´•à´¾à´°àµ†à´¯àµà´‚ à´¬à´¨àµà´§à´¿à´ªàµà´ªà´¿à´•àµà´•àµà´¨àµà´¨ à´’à´°àµ **à´¡à´¿à´œà´¿à´±àµà´±àµ½ à´®àµ†à´¸àµà´¸àµ‡à´œà´¿à´‚à´—àµ à´ªàµà´²à´¾à´±àµà´±àµà´«àµ‹à´‚** à´®à´¾à´¤àµà´°à´®à´¾à´£àµ.
+                        * à´¯à´¾à´¤àµà´°à´¯àµà´•àµà´•à´¿à´Ÿà´¯à´¿àµ½ à´‰à´£àµà´Ÿà´¾à´•àµà´¨àµà´¨ à´¸à´¾à´™àµà´•àµ‡à´¤à´¿à´•à´®àµ‹, à´µàµà´¯à´•àµà´¤à´¿à´ªà´°à´®àµ‹ à´†à´¯ à´ªàµà´°à´¶àµà´¨à´™àµà´™àµ¾à´•àµà´•àµ‹, à´…à´ªà´•à´Ÿà´™àµà´™àµ¾à´•àµà´•àµ‹ à´ˆ à´ªàµà´²à´¾à´±àµà´±àµà´«àµ‹à´®àµ‹, à´…à´¡àµà´®à´¿à´¨à´¿à´¸àµà´Ÿàµà´°àµ‡à´±àµà´±àµ¼à´®à´¾à´°àµ‹ à´‰à´¤àµà´¤à´°à´µà´¾à´¦à´¿à´•à´³à´¾à´¯à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´²àµà´².
+                        * à´¡àµà´°àµˆà´µàµ¼à´®à´¾à´°àµà´®à´¾à´¯àµà´³àµà´³ à´‡à´Ÿà´ªà´¾à´Ÿàµà´•à´³à´¿àµ½ à´¯à´¾à´¤àµà´°à´•àµà´•à´¾àµ¼ à´œà´¾à´—àµà´°à´¤ à´ªà´¾à´²à´¿à´•àµà´•àµ‡à´£àµà´Ÿà´¤à´¾à´£àµ.
+                        * à´ˆ à´¸àµ‡à´µà´¨à´‚ à´‰à´ªà´¯àµ‹à´—à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´¿à´²àµ‚à´Ÿàµ† à´¨à´¿à´™àµà´™àµ¾ à´ˆ à´¨à´¿à´¬à´¨àµà´§à´¨à´•àµ¾ à´…à´‚à´—àµ€à´•à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ.
                         """)
                 else:
-                    st.error("❌ ബുക്കിംഗ് സേവ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.")
+                    st.error("âŒ à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¸àµ‡à´µàµ à´šàµ†à´¯àµà´¯àµà´¨àµà´¨à´¤à´¿àµ½ à´ªà´°à´¾à´œà´¯à´ªàµà´ªàµ†à´Ÿàµà´Ÿàµ.")
 
         st.session_state.is_booking = False
         st.write("---")
     # ========================================================
-    # വെബ്‌സൈറ്റ് ഫൂട്ടറും ഡ്രൈവർ & SOS പാനലുകളും (മുഴുവൻ ഫീച്ചറുകളും ഉള്ളത്)
+    # à´µàµ†à´¬àµâ€Œà´¸àµˆà´±àµà´±àµ à´«àµ‚à´Ÿàµà´Ÿà´±àµà´‚ à´¡àµà´°àµˆà´µàµ¼ & SOS à´ªà´¾à´¨à´²àµà´•à´³àµà´‚ (à´®àµà´´àµà´µàµ» à´«àµ€à´šàµà´šà´±àµà´•à´³àµà´‚ à´‰à´³àµà´³à´¤àµ)
     # ========================================================
 
-    # ഫൂട്ടറിന് ബോക്സും ബോർഡറും നൽകാനുള്ള CSS സ്റ്റൈൽ    
+    # à´«àµ‚à´Ÿàµà´Ÿà´±à´¿à´¨àµ à´¬àµ‹à´•àµà´¸àµà´‚ à´¬àµ‹àµ¼à´¡à´±àµà´‚ à´¨àµ½à´•à´¾à´¨àµà´³àµà´³ CSS à´¸àµà´±àµà´±àµˆàµ½    
     str_lit.markdown("""
     <style>
     .footer-box {
@@ -3274,59 +3283,59 @@ def main():
     }    
     </style>
     """, unsafe_allow_html=True)
-    # ഫൂട്ടർ സെപ്പറേറ്റർ
+    # à´«àµ‚à´Ÿàµà´Ÿàµ¼ à´¸àµ†à´ªàµà´ªà´±àµ‡à´±àµà´±àµ¼
     str_lit.markdown("---")
 
-    # മൂന്ന് കോളങ്ങളിലായി മൂന്ന് പ്രധാന ബട്ടണുകൾ
+    # à´®àµ‚à´¨àµà´¨àµ à´•àµ‹à´³à´™àµà´™à´³à´¿à´²à´¾à´¯à´¿ à´®àµ‚à´¨àµà´¨àµ à´ªàµà´°à´§à´¾à´¨ à´¬à´Ÿàµà´Ÿà´£àµà´•àµ¾
     footer_col1, footer_col2, footer_col3 = str_lit.columns(3)
-    # 1. Contact Us ബട്ടൺ
+    # 1. Contact Us à´¬à´Ÿàµà´Ÿàµº
     with footer_col1:
-        if str_lit.button("📞 Contact Us"):
-            str_lit.info("സഹായത്തിന് വിളിക്കുക: +91 XXXXXXXXXX | Email: support@example.com")
-    # 2. SOS / Emergency ബട്ടൺ
+        if str_lit.button("ðŸ“ž Contact Us"):
+            str_lit.info("à´¸à´¹à´¾à´¯à´¤àµà´¤à´¿à´¨àµ à´µà´¿à´³à´¿à´•àµà´•àµà´•: +91 XXXXXXXXXX | Email: support@example.com")
+    # 2. SOS / Emergency à´¬à´Ÿàµà´Ÿàµº
     with footer_col2:
-        if str_lit.button("🚨 SOS / Emergency"):
+        if str_lit.button("ðŸš¨ SOS / Emergency"):
             str_lit.session_state['show_sos_panel'] = True
-            str_lit.session_state['show_driver_panel'] = False  # ഡ്രൈവർ പാനൽ ക്ലോസ് ചെയ്യാൻ
-    # 3. Driver Panel ബട്ടൺ
+            str_lit.session_state['show_driver_panel'] = False  # à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ à´•àµà´²àµ‹à´¸àµ à´šàµ†à´¯àµà´¯à´¾àµ»
+    # 3. Driver Panel à´¬à´Ÿàµà´Ÿàµº
     with footer_col3:
-        if str_lit.button("🚗 Driver Panel"):
+        if str_lit.button("ðŸš— Driver Panel"):
             str_lit.session_state['show_driver_panel'] = True
-            str_lit.session_state['show_sos_panel'] = False  # SOS പാനൽ ക്ലോസ് ചെയ്യാൻ   
+            str_lit.session_state['show_sos_panel'] = False  # SOS à´ªà´¾à´¨àµ½ à´•àµà´²àµ‹à´¸àµ à´šàµ†à´¯àµà´¯à´¾àµ»   
     # --------------------------------------------------------
-    # SOS പാനൽ (ഡയറക്ട് കോൾ ലിങ്കുകളും വാട്സാപ്പ് ഷെയറും)
+    # SOS à´ªà´¾à´¨àµ½ (à´¡à´¯à´±à´•àµà´Ÿàµ à´•àµ‹àµ¾ à´²à´¿à´™àµà´•àµà´•à´³àµà´‚ à´µà´¾à´Ÿàµà´¸à´¾à´ªàµà´ªàµ à´·àµ†à´¯à´±àµà´‚)
     # --------------------------------------------------------        
     if str_lit.session_state.get('show_sos_panel', False):
         str_lit.markdown("---")
-        str_lit.error("🚨 അടിയന്തര സഹായ വിഭാഗം (Emergency Control Rooms)") 
-        # നമ്പറുകളിൽ അമർത്തിയാൽ നേരിട്ട് കോൾ പോകുന്ന ലിങ്കുകൾ (tel: link)
+        str_lit.error("ðŸš¨ à´…à´Ÿà´¿à´¯à´¨àµà´¤à´° à´¸à´¹à´¾à´¯ à´µà´¿à´­à´¾à´—à´‚ (Emergency Control Rooms)") 
+        # à´¨à´®àµà´ªà´±àµà´•à´³à´¿àµ½ à´…à´®àµ¼à´¤àµà´¤à´¿à´¯à´¾àµ½ à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´•àµ‹àµ¾ à´ªàµ‹à´•àµà´¨àµà´¨ à´²à´¿à´™àµà´•àµà´•àµ¾ (tel: link)
         str_lit.markdown("""
-        * **👮 പോലീസ് കൺട്രോൾ റൂം (112 / 100):** &nbsp; [📞 112 കോൾ ചെയ്യുക](tel:112)
-        * **🔥 ഫയർഫോഴ്സ് (101):** &nbsp; [📞 101 കോൾ ചെയ്യുക](tel:101)
-        * **🏥 ഹോസ്പിറ്റൽ / ആംബുലൻസ് (108):** &nbsp; [📞 108 കോൾ ചെയ്യുക](tel:108)
+        * **ðŸ‘® à´ªàµ‹à´²àµ€à´¸àµ à´•àµºà´Ÿàµà´°àµ‹àµ¾ à´±àµ‚à´‚ (112 / 100):** &nbsp; [ðŸ“ž 112 à´•àµ‹àµ¾ à´šàµ†à´¯àµà´¯àµà´•](tel:112)
+        * **ðŸ”¥ à´«à´¯àµ¼à´«àµ‹à´´àµà´¸àµ (101):** &nbsp; [ðŸ“ž 101 à´•àµ‹àµ¾ à´šàµ†à´¯àµà´¯àµà´•](tel:101)
+        * **ðŸ¥ à´¹àµ‹à´¸àµà´ªà´¿à´±àµà´±àµ½ / à´†à´‚à´¬àµà´²àµ»à´¸àµ (108):** &nbsp; [ðŸ“ž 108 à´•àµ‹àµ¾ à´šàµ†à´¯àµà´¯àµà´•](tel:108)
         """, unsafe_allow_html=True)
     
         str_lit.markdown("---")
-        str_lit.subheader("📱 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കാൻ")
+        str_lit.subheader("ðŸ“± à´µà´¾à´Ÿàµà´¸à´¾à´ªàµà´ªàµ à´µà´´à´¿ à´•àµà´Ÿàµà´‚à´¬à´¾à´‚à´—à´™àµà´™àµ¾à´•àµà´•àµ à´…à´¯à´•àµà´•à´¾àµ»")
     
-        sos_message = "എനിക്ക് അടിയന്തര സഹായം ആവശ്യമാണ്! ദയവായി ഉടൻ ബന്ധപ്പെടുക. (ഡ്രൈവർ/യാത്രക്കാരൻ)"
+        sos_message = "à´Žà´¨à´¿à´•àµà´•àµ à´…à´Ÿà´¿à´¯à´¨àµà´¤à´° à´¸à´¹à´¾à´¯à´‚ à´†à´µà´¶àµà´¯à´®à´¾à´£àµ! à´¦à´¯à´µà´¾à´¯à´¿ à´‰à´Ÿàµ» à´¬à´¨àµà´§à´ªàµà´ªàµ†à´Ÿàµà´•. (à´¡àµà´°àµˆà´µàµ¼/à´¯à´¾à´¤àµà´°à´•àµà´•à´¾à´°àµ»)"
         whatsapp_share_url = f"https://api.whatsapp.com/send?text={urllib.parse.quote(sos_message)}"
     
         str_lit.markdown(f"""
         <a href="{whatsapp_share_url}" target="_blank">
             <button style="background-color: #25D366; color: white; padding: 12px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%;">
-                💬 വാട്സാപ്പ് വഴി കുടുംബാംഗങ്ങൾക്ക് അയക്കുക
+                ðŸ’¬ à´µà´¾à´Ÿàµà´¸à´¾à´ªàµà´ªàµ à´µà´´à´¿ à´•àµà´Ÿàµà´‚à´¬à´¾à´‚à´—à´™àµà´™àµ¾à´•àµà´•àµ à´…à´¯à´•àµà´•àµà´•
             </button>
         </a>
         """, unsafe_allow_html=True)
     
         str_lit.markdown("<br>", unsafe_allow_html=True)
     
-        if str_lit.button("SOS പാനൽ അടയ്ക്കുക"):
+        if str_lit.button("SOS à´ªà´¾à´¨àµ½ à´…à´Ÿà´¯àµà´•àµà´•àµà´•"):
             str_lit.session_state['show_sos_panel'] = False
             str_lit.rerun() 
 # ============================================================
-# 📊 ഡ്രൈവർ ഹിസ്റ്ററി ഫയർബേസിൽ നിന്ന് എടുക്കുന്ന ഫംഗ്ഷൻ
+# ðŸ“Š à´¡àµà´°àµˆà´µàµ¼ à´¹à´¿à´¸àµà´±àµà´±à´±à´¿ à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨ à´«à´‚à´—àµà´·àµ»
 # ============================================================
     def fetch_driver_history_from_firebase(chat_id):
         try:
@@ -3350,37 +3359,37 @@ def main():
                     })
             return result_data
         except Exception as e:
-            print(f"❌ Error fetching history: {e}")
+            print(f"âŒ Error fetching history: {e}")
             return []
 
 
 # ============================================================
-# 🚗 ഡ്രൈവർ പാനൽ - ഫയർബേസ് ഡാറ്റ കണക്ഷൻ
+# ðŸš— à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ - à´«à´¯àµ¼à´¬àµ‡à´¸àµ à´¡à´¾à´±àµà´± à´•à´£à´•àµà´·àµ»
 # ============================================================
     if str_lit.session_state.get('show_driver_panel', False):
         str_lit.markdown("---")
-        str_lit.subheader("🚗 ഡ്രൈവർ പാനൽ - ചാറ്റ് & ട്രിപ്പ് ഹിസ്റ്ററി")
+        str_lit.subheader("ðŸš— à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ - à´šà´¾à´±àµà´±àµ & à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´¹à´¿à´¸àµà´±àµà´±à´±à´¿")
         
-        driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ടെലഗ്രാം ചാറ്റ് ഐഡി (Telegram Chat ID) നൽകുക:", key="driver_id_input_main")
+        driver_telegram_id = str_lit.text_input("à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´Ÿàµ†à´²à´—àµà´°à´¾à´‚ à´šà´¾à´±àµà´±àµ à´à´¡à´¿ (Telegram Chat ID) à´¨àµ½à´•àµà´•:", key="driver_id_input_main")
         
-        # മൊബൈൽ ഉപയോക്താക്കൾക്ക് വേണ്ടി സെർച്ച് ബട്ടൺ
-        search_clicked = str_lit.button("🔍 ഹിസ്റ്ററി പരിശോധിക്കുക (Search)")
+        # à´®àµŠà´¬àµˆàµ½ à´‰à´ªà´¯àµ‹à´•àµà´¤à´¾à´•àµà´•àµ¾à´•àµà´•àµ à´µàµ‡à´£àµà´Ÿà´¿ à´¸àµ†àµ¼à´šàµà´šàµ à´¬à´Ÿàµà´Ÿàµº
+        search_clicked = str_lit.button("ðŸ” à´¹à´¿à´¸àµà´±àµà´±à´±à´¿ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´• (Search)")
         
-        # ചാറ്റ് ഐഡി നൽകി സെർച്ച് അമർത്തുമ്പോൾ മാത്രം ഹിസ്റ്ററി ലോഡ് ആകും
+        # à´šà´¾à´±àµà´±àµ à´à´¡à´¿ à´¨àµ½à´•à´¿ à´¸àµ†àµ¼à´šàµà´šàµ à´…à´®àµ¼à´¤àµà´¤àµà´®àµà´ªàµ‹àµ¾ à´®à´¾à´¤àµà´°à´‚ à´¹à´¿à´¸àµà´±àµà´±à´±à´¿ à´²àµ‹à´¡àµ à´†à´•àµà´‚
         if driver_telegram_id and search_clicked:
-            str_lit.info(f"ചാറ്റ് ഐഡി ({driver_telegram_id}) പരിശോധിക്കുന്നു...")
+            str_lit.info(f"à´šà´¾à´±àµà´±àµ à´à´¡à´¿ ({driver_telegram_id}) à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ...")
             
-            # ഫംഗ്ഷൻ കോൾ ചെയ്ത് ഡാറ്റ എടുക്കുന്നു
+            # à´«à´‚à´—àµà´·àµ» à´•àµ‹àµ¾ à´šàµ†à´¯àµà´¤àµ à´¡à´¾à´±àµà´± à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨àµ
             driver_history_data = fetch_driver_history_from_firebase(driver_telegram_id.strip())
             
             if driver_history_data:
-                str_lit.success("✅ ഡ്രൈവർ ഹിസ്റ്ററി വിജയകരമായി ലോഡ് ചെയ്തു!")
-                str_lit.markdown("### 📋 നിങ്ങളുടെ മുൻകാല ട്രിപ്പുകൾ:")
+                str_lit.success("âœ… à´¡àµà´°àµˆà´µàµ¼ à´¹à´¿à´¸àµà´±àµà´±à´±à´¿ à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´²àµ‹à´¡àµ à´šàµ†à´¯àµà´¤àµ!")
+                str_lit.markdown("### ðŸ“‹ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´®àµàµ»à´•à´¾à´² à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾:")
                 str_lit.table(driver_history_data)
             else:
-                str_lit.warning("⚠️ ഈ ചാറ്റ് ഐഡിയിൽ ഇതുവരെ ട്രിപ്പുകൾ ഒന്നും കണ്ടെത്താനായില്ല.")
+                str_lit.warning("âš ï¸ à´ˆ à´šà´¾à´±àµà´±àµ à´à´¡à´¿à´¯à´¿àµ½ à´‡à´¤àµà´µà´°àµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾ à´’à´¨àµà´¨àµà´‚ à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¾à´¨à´¾à´¯à´¿à´²àµà´².")
                 
-        if str_lit.button("പാനൽ അടയ്ക്കുക"):
+        if str_lit.button("à´ªà´¾à´¨àµ½ à´…à´Ÿà´¯àµà´•àµà´•àµà´•"):
             str_lit.session_state['show_driver_panel'] = False
             str_lit.rerun()
     
@@ -3389,7 +3398,7 @@ def main():
     # ==========================================================
     st.markdown("---")
 
-    # മലയാളം ടെക്സ്റ്റിന് മാത്രം ഷാഡോയും പ്രൊഫഷണൽ ലുക്കും നൽകാനുള്ള CSS ഉം ബട്ടൺ കളർ മാറ്റാനുള്ള സ്റ്റൈലും
+    # à´®à´²à´¯à´¾à´³à´‚ à´Ÿàµ†à´•àµà´¸àµà´±àµà´±à´¿à´¨àµ à´®à´¾à´¤àµà´°à´‚ à´·à´¾à´¡àµ‹à´¯àµà´‚ à´ªàµà´°àµŠà´«à´·à´£àµ½ à´²àµà´•àµà´•àµà´‚ à´¨àµ½à´•à´¾à´¨àµà´³àµà´³ CSS à´‰à´‚ à´¬à´Ÿàµà´Ÿàµº à´•à´³àµ¼ à´®à´¾à´±àµà´±à´¾à´¨àµà´³àµà´³ à´¸àµà´±àµà´±àµˆà´²àµà´‚
     st.markdown("""
         <style>
         .malayalam-title-card { 
@@ -3400,7 +3409,7 @@ def main():
             border: 1px solid #e0e0e0;
             margin-bottom: 15px;  
         } 
-        /* സ്റ്റാറ്റസ് നോക്കൂ ബട്ടൺ കൂടുതൽ ആകർഷകമാക്കാൻ */
+        /* à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´¨àµ‹à´•àµà´•àµ‚ à´¬à´Ÿàµà´Ÿàµº à´•àµ‚à´Ÿàµà´¤àµ½ à´†à´•àµ¼à´·à´•à´®à´¾à´•àµà´•à´¾àµ» */
         .stButton > button {
             background-color: #e67e22;
             color: white;
@@ -3414,36 +3423,36 @@ def main():
         }
         </style>
         <div class="malayalam-title-card">
-            <h3 style="margin:0; color: #2c3e50; font-size: 19px;">🔍 നിങ്ങളുടെ നിലവിലെ ബുക്കിംഗ് സ്റ്റാറ്റസ് അറിയാൻ</h3>
-            <p style="margin: 8px 0 0 0; color: #555555; font-size: 14px;">ആപ്ലിക്കേഷൻ ക്ലോസ് ആയിപ്പോയോ? മുൻപത്തെ ബുക്കിംഗ് സ്റ്റാറ്റസ് പരിശോധിക്കുന്നതിനായി ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക.</p>
+            <h3 style="margin:0; color: #2c3e50; font-size: 19px;">ðŸ” à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´¨à´¿à´²à´µà´¿à´²àµ† à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´…à´±à´¿à´¯à´¾àµ»</h3>
+            <p style="margin: 8px 0 0 0; color: #555555; font-size: 14px;">à´†à´ªàµà´²à´¿à´•àµà´•àµ‡à´·àµ» à´•àµà´²àµ‹à´¸àµ à´†à´¯à´¿à´ªàµà´ªàµ‹à´¯àµ‹? à´®àµàµ»à´ªà´¤àµà´¤àµ† à´¬àµà´•àµà´•à´¿à´‚à´—àµ à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´¿à´¨à´¾à´¯à´¿ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´‡à´µà´¿à´Ÿàµ† à´¨àµ½à´•àµà´•.</p>
         </div>
     """, unsafe_allow_html=True)    
     col1, col2 = st.columns([3, 1])
     with col1: 
-        footer_trip_id = st.text_input("ട്രിപ്പ് ഐഡി നൽകുക:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="ട്രിപ്പ് ഐഡി ഇവിടെ നൽകുക (ഉദാ: TRIP-XXXXX)") 
+        footer_trip_id = st.text_input("à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´¨àµ½à´•àµà´•:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´‡à´µà´¿à´Ÿàµ† à´¨àµ½à´•àµà´• (à´‰à´¦à´¾: TRIP-XXXXX)") 
     with col2:
-        footer_check_btn = st.button("സ്റ്റാറ്റസ് നോക്കൂ", key="independent_footer_btn", use_container_width=True)        
+        footer_check_btn = st.button("à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ à´¨àµ‹à´•àµà´•àµ‚", key="independent_footer_btn", use_container_width=True)        
         if footer_check_btn:    
             if footer_trip_id: 
-                with st.spinner("🔍 ട്രിപ്പ് വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
+                with st.spinner("ðŸ” à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ..."):
                     try:
                         
-                        # 🆕 ഫയർബേസിൽ നിന്ന് നേരിട്ട് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുന്നു
+                        # ðŸ†• à´«à´¯àµ¼à´¬àµ‡à´¸à´¿àµ½ à´¨à´¿à´¨àµà´¨àµ à´¨àµ‡à´°à´¿à´Ÿàµà´Ÿàµ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´Žà´Ÿàµà´•àµà´•àµà´¨àµà´¨àµ
                         trip_ref = db.reference(f"trips/{footer_trip_id.strip()}")
                         trip_data = trip_ref.get()
                         if trip_data:
-                            st.success(f"✅ ട്രിപ്പ് വിവരങ്ങൾ വിജയകരമായി കണ്ടെത്തി!")
-                            st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}")
-                            st.markdown(f"📊 **നിലവിലെ സ്റ്റാറ്റസ്:** {trip_data.get('status', 'Pending')}")
+                            st.success(f"âœ… à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´µà´¿à´œà´¯à´•à´°à´®à´¾à´¯à´¿ à´•à´£àµà´Ÿàµ†à´¤àµà´¤à´¿!")
+                            st.info(f"ðŸ“ **à´ªà´¿à´•àµà´•à´ªàµà´ªàµ:** {trip_data.get('pickup', 'N/A')}\n\nðŸ **à´¡àµà´°àµ‹à´ªàµà´ªàµ:** {trip_data.get('drop', 'N/A')}")
+                            st.markdown(f"ðŸ“Š **à´¨à´¿à´²à´µà´¿à´²àµ† à´¸àµà´±àµà´±à´¾à´±àµà´±à´¸àµ:** {trip_data.get('status', 'Pending')}")
                         else:
-                            st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ഒന്നും ലഭ്യമാവുന്നില്ല. ഐഡി പരിശോധിച്ച് വീണ്ടും നൽകുക.")
+                            st.error("âŒ à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿à´¯à´¿àµ½ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´’à´¨àµà´¨àµà´‚ à´²à´­àµà´¯à´®à´¾à´µàµà´¨àµà´¨à´¿à´²àµà´². à´à´¡à´¿ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´šàµà´šàµ à´µàµ€à´£àµà´Ÿàµà´‚ à´¨àµ½à´•àµà´•.")
                     except Exception as e:
-                        st.error(f"❌ എറർ: {e}")
+                        st.error(f"âŒ à´Žà´±àµ¼: {e}")
             else:
-                st.warning("⚠️ ദയവായി ഒരു ട്രിപ്പ് ഐഡി നൽകുക.")
+                st.warning("âš ï¸ à´¦à´¯à´µà´¾à´¯à´¿ à´’à´°àµ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿ à´¨àµ½à´•àµà´•.")
                 
                 if current_status == "Arrived":
-                    st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")    
+                    st.warning("ðŸš¨ à´¡àµà´°àµˆà´µàµ¼ à´¨à´¿à´™àµà´™à´³àµà´Ÿàµ† à´ªà´¿à´•àµà´•à´ªàµà´ªàµ à´²àµŠà´•àµà´•àµ‡à´·à´¨à´¿àµ½ à´Žà´¤àµà´¤à´¿à´¯à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ!")    
                 
             
     
@@ -3481,9 +3490,9 @@ def accept_trip(
     pickup_lon
 ):
     """
-    Driver trip accept ചെയ്തതിന് ശേഷം:
-    - Firebase-ൽ status update
-    - Driver-ന് navigation + arrived + call buttons അയക്കുന്നു
+    Driver trip accept à´šàµ†à´¯àµà´¤à´¤à´¿à´¨àµ à´¶àµ‡à´·à´‚:
+    - Firebase-àµ½ status update
+    - Driver-à´¨àµ navigation + arrived + call buttons à´…à´¯à´•àµà´•àµà´¨àµà´¨àµ
     """
     print("Trip Accepted:", booking_id)
 
@@ -3491,7 +3500,7 @@ def accept_trip(
     # 1. Firebase Trip Status Update
     # ============================================================
     try:
-        # 🆕 ഡീബഗ് പ്രിന്റ് (ഇവിടെ ചേർക്കുക)
+        # ðŸ†• à´¡àµ€à´¬à´—àµ à´ªàµà´°à´¿à´¨àµà´±àµ (à´‡à´µà´¿à´Ÿàµ† à´šàµ‡àµ¼à´•àµà´•àµà´•)
         print(f"DEBUG: Updating Firebase with Driver -> Name: {driver_name}, Phone: {driver_phone}")
         db.reference(f"trips/{booking_id}").update({
             "status": "Accepted",
@@ -3501,7 +3510,7 @@ def accept_trip(
             "accepted_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
     except Exception as e:
-        print(f"❌ Firebase update error: {e}")
+        print(f"âŒ Firebase update error: {e}")
         return False
 
     # ============================================================
@@ -3510,13 +3519,13 @@ def accept_trip(
     masked_customer_phone = mask_phone_number(customer_phone)
 
     # ============================================================
-    # 🆕 ട്രിപ്പ് പാനൽ ബട്ടൺ (പുതിയ സംവിധാനം)
+    # ðŸ†• à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ à´¬à´Ÿàµà´Ÿàµº (à´ªàµà´¤à´¿à´¯ à´¸à´‚à´µà´¿à´§à´¾à´¨à´‚)
     # ============================================================
     driver_panel_url = f"https://your-app.streamlit.app/?page=driver_trip_panel&trip_id={booking_id}"
         
     markup = types.InlineKeyboardMarkup(row_width=1)
     panel_button = types.InlineKeyboardButton(
-        "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക", 
+        "ðŸš– à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ à´¤àµà´±à´•àµà´•àµà´•", 
         url=driver_panel_url
     )
     markup.add(panel_button)
@@ -3525,11 +3534,11 @@ def accept_trip(
     # 5. Driver Message
     # ============================================================
     driver_message = (
-        f"🚗 *പുതിയ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിരിക്കുന്നു!*\n\n"
-        f"🆔 TRIP-ID: `{booking_id}`\n"
-        f"👤 {customer_name}\n"
-        f"📱 `{masked_customer_phone}`\n\n"
-        f"⚠️ *അത്യാവശ്യ ഘട്ടങ്ങളിൽ മാത്രം വിളിക്കുക.*"
+        f"ðŸš— *à´ªàµà´¤à´¿à´¯ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤à´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ!*\n\n"
+        f"ðŸ†” TRIP-ID: `{booking_id}`\n"
+        f"ðŸ‘¤ {customer_name}\n"
+        f"ðŸ“± `{masked_customer_phone}`\n\n"
+        f"âš ï¸ *à´…à´¤àµà´¯à´¾à´µà´¶àµà´¯ à´˜à´Ÿàµà´Ÿà´™àµà´™à´³à´¿àµ½ à´®à´¾à´¤àµà´°à´‚ à´µà´¿à´³à´¿à´•àµà´•àµà´•.*"
     )
 
     # ============================================================
@@ -3544,7 +3553,7 @@ def accept_trip(
         )
         return True
     except Exception as e:
-        print(f"❌ Send error: {e}")
+        print(f"âŒ Send error: {e}")
         return False
         
 # ============================================================
@@ -3560,7 +3569,7 @@ def handle_accept_trip(call):
     trip_id = str(call.data).replace("accept_", "", 1).strip()
 
     try:
-        # 1. ഡ്രൈവറുടെ വിവരങ്ങൾ വായിക്കുക
+        # 1. à´¡àµà´°àµˆà´µà´±àµà´Ÿàµ† à´µà´¿à´µà´°à´™àµà´™àµ¾ à´µà´¾à´¯à´¿à´•àµà´•àµà´•
         driver_ref = db.reference(f"drivers/{chat_id}")
         driver_data = driver_ref.get() or {}
         print("DEBUG DRIVER DATA:", driver_data)
@@ -3586,24 +3595,24 @@ def handle_accept_trip(call):
             or "N/A"
         )
         # ============================================================
-        # 🔒 ട്രിപ്പ് ലോക്ക് ചെയ്യാനുള്ള കോഡ് (ഇവിടെ ചേർക്കുക)
+        # ðŸ”’ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´²àµ‹à´•àµà´•àµ à´šàµ†à´¯àµà´¯à´¾à´¨àµà´³àµà´³ à´•àµ‹à´¡àµ (à´‡à´µà´¿à´Ÿàµ† à´šàµ‡àµ¼à´•àµà´•àµà´•)
         # ============================================================
         try:
-            # 1. നിലവിലെ ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
+            # 1. à´¨à´¿à´²à´µà´¿à´²àµ† à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´µà´¿à´µà´°à´™àµà´™àµ¾ à´Žà´Ÿàµà´•àµà´•àµà´•
             trip_ref = db.reference(f"trips/{trip_id}")
             trip_data = trip_ref.get() or {}
-            # 2. ട്രിപ്പ് ഇതിനകം അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ടോ എന്ന് ചെക്ക് ചെയ്യുക
+            # 2. à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´‡à´¤à´¿à´¨à´•à´‚ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ‹ à´Žà´¨àµà´¨àµ à´šàµ†à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´•
             if trip_data.get("status") == "Accepted":
                 bot.send_message(
                     chat_id,
-                    f"❌ *ക്ഷമിക്കണം!*\n\n"
-                    f"ട്രിപ്പ് `{trip_id}` മറ്റൊരു ഡ്രൈവർ ഇതിനകം അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ട്.\n"
-                    f"ദയവായി മറ്റ് ട്രിപ്പുകൾക്കായി കാത്തിരിക്കുക.",
+                    f"âŒ *à´•àµà´·à´®à´¿à´•àµà´•à´£à´‚!*\n\n"
+                    f"à´Ÿàµà´°à´¿à´ªàµà´ªàµ `{trip_id}` à´®à´±àµà´±àµŠà´°àµ à´¡àµà´°àµˆà´µàµ¼ à´‡à´¤à´¿à´¨à´•à´‚ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤à´¿à´Ÿàµà´Ÿàµà´£àµà´Ÿàµ.\n"
+                    f"à´¦à´¯à´µà´¾à´¯à´¿ à´®à´±àµà´±àµ à´Ÿàµà´°à´¿à´ªàµà´ªàµà´•àµ¾à´•àµà´•à´¾à´¯à´¿ à´•à´¾à´¤àµà´¤à´¿à´°à´¿à´•àµà´•àµà´•.",
                     parse_mode="Markdown"
                 )
-                print(f"⏭️ Trip {trip_id} already accepted by another driver.")
+                print(f"â­ï¸ Trip {trip_id} already accepted by another driver.")
                 return
-            # 3. ട്രിപ്പ് അപ്ഡേറ്റ് ചെയ്ത് ലോക്ക് ചെയ്യുക
+            # 3. à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´ªàµà´¡àµ‡à´±àµà´±àµ à´šàµ†à´¯àµà´¤àµ à´²àµ‹à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´•
             trip_ref.update({  
                 "status": "Accepted",
                 "is_locked": True,
@@ -3613,32 +3622,32 @@ def handle_accept_trip(call):
                 "vehicle_number": vehicle_number,
                 "driver_chat_id": chat_id
             })
-            print(f"✅ Trip {trip_id} accepted and locked by driver {chat_id}")
-            # 4. ഡ്രൈവർക്ക് സ്ഥിരീകരണ സന്ദേശം അയക്കുക
+            print(f"âœ… Trip {trip_id} accepted and locked by driver {chat_id}")
+            # 4. à´¡àµà´°àµˆà´µàµ¼à´•àµà´•àµ à´¸àµà´¥à´¿à´°àµ€à´•à´°à´£ à´¸à´¨àµà´¦àµ‡à´¶à´‚ à´…à´¯à´•àµà´•àµà´•
             bot.send_message(
                 chat_id,
-                f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
-                f"ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
-                f"ഡ്രൈവർ: {driver_name}\n"
-                f"വാഹനം: {vehicle_number}",
+                f"âœ… *à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤àµ!*\n\n"
+                f"à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿: `{trip_id}`\n"
+                f"à´¡àµà´°àµˆà´µàµ¼: {driver_name}\n"
+                f"à´µà´¾à´¹à´¨à´‚: {vehicle_number}",
                 parse_mode="Markdown"
             )
             
-            # 5. ഡ്രൈവർ പാനൽ ലിങ്ക് അയക്കുക
+            # 5. à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ à´²à´¿à´™àµà´•àµ à´…à´¯à´•àµà´•àµà´•
             driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={trip_id}&driver_chat_id={chat_id}"
             bot.send_message(
                 chat_id,
-                f"📍 *ഡ്രൈവർ പാനൽ തുറക്കാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:*\n\n[ട്രിപ്പ് പാനൽ തുറക്കുക]({driver_panel_url})",
+                f"ðŸ“ *à´¡àµà´°àµˆà´µàµ¼ à´ªà´¾à´¨àµ½ à´¤àµà´±à´•àµà´•à´¾àµ» à´¤à´¾à´´àµ†à´¯àµà´³àµà´³ à´²à´¿à´™àµà´•à´¿àµ½ à´•àµà´²à´¿à´•àµà´•àµ à´šàµ†à´¯àµà´¯àµà´•:*\n\n[à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ à´¤àµà´±à´•àµà´•àµà´•]({driver_panel_url})",
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
         except Exception as e:
-            print(f"❌ Trip lock error: {e}")
-            bot.send_message(chat_id, f"❌ എറർ: ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ({e})")    
+            print(f"âŒ Trip lock error: {e}")
+            bot.send_message(chat_id, f"âŒ à´Žà´±àµ¼: à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¯à´¾àµ» à´•à´´à´¿à´žàµà´žà´¿à´²àµà´². ({e})")    
             
-        # 2. സുരക്ഷിതമായി ട്രിപ്പ് സ്വീകരിക്കുക
-        # 🔍 Debug: accept_trip_safely വിളിക്കുന്നു
-            print("🔥 Calling accept_trip_safely with:")
+        # 2. à´¸àµà´°à´•àµà´·à´¿à´¤à´®à´¾à´¯à´¿ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´¸àµà´µàµ€à´•à´°à´¿à´•àµà´•àµà´•
+        # ðŸ” Debug: accept_trip_safely à´µà´¿à´³à´¿à´•àµà´•àµà´¨àµà´¨àµ
+            print("ðŸ”¥ Calling accept_trip_safely with:")
             print(f"   trip_id = {trip_id}")
             print(f"   chat_id = {chat_id}")
             print(f"   driver_name = {driver_name}")
@@ -3652,26 +3661,26 @@ def handle_accept_trip(call):
             vehicle_number=vehicle_number
         )
         
-        # 🔍 Debug: ഫലം പരിശോധിക്കുന്നു
-        print(f"🔥 Result from accept_trip_safely: {result}")
+        # ðŸ” Debug: à´«à´²à´‚ à´ªà´°à´¿à´¶àµ‹à´§à´¿à´•àµà´•àµà´¨àµà´¨àµ
+        print(f"ðŸ”¥ Result from accept_trip_safely: {result}")
 
         if result == "success":
 
             bot.answer_callback_query(
                 call.id,
-                "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
+                "âš ï¸ à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´‡à´¤à´¿à´¨à´•à´‚ à´¸àµà´µàµ€à´•à´°à´¿à´šàµà´šà´¿à´°à´¿à´•àµà´•àµà´¨àµà´¨àµ."
             )
 
             bot.send_message(
                 chat_id=chat_id,
                 text=(
-                    "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
-                    "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
+                    "âš ï¸ à´ˆ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´®à´±àµà´±àµŠà´°àµ à´¡àµà´°àµˆà´µàµ¼ à´¸àµà´µàµ€à´•à´°à´¿à´šàµà´šà´¿à´°à´¿à´•àµà´•à´¾à´‚. "
+                    "à´¦à´¯à´µà´¾à´¯à´¿ à´®à´±àµà´±àµŠà´°àµ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´¤à´¿à´°à´žàµà´žàµ†à´Ÿàµà´•àµà´•àµà´•."
                 )
             )
             return
 
-        # 3. ACCEPT ബട്ടൺ നീക്കം ചെയ്യുക
+        # 3. ACCEPT à´¬à´Ÿàµà´Ÿàµº à´¨àµ€à´•àµà´•à´‚ à´šàµ†à´¯àµà´¯àµà´•
         try:
             bot.edit_message_reply_markup(
                 chat_id=call.message.chat.id,
@@ -3681,7 +3690,7 @@ def handle_accept_trip(call):
         except Exception as edit_error:
             print(f"Button update notice: {edit_error}")
 
-        # 4. ഡ്രൈവർ ട്രിപ്പ് പാനൽ ലിങ്ക്
+        # 4. à´¡àµà´°àµˆà´µàµ¼ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ à´²à´¿à´™àµà´•àµ
         driver_panel_url = (
             "https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/"
             f"?page=driver_trip_panel&trip_id={trip_id}"
@@ -3692,27 +3701,27 @@ def handle_accept_trip(call):
 
         markup.add(
             types.InlineKeyboardButton(
-                "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക",
+                "ðŸš– à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´ªà´¾à´¨àµ½ à´¤àµà´±à´•àµà´•àµà´•",
                 url=driver_panel_url
             )
         )
 
-        # 5. വിജയ സന്ദേശം
+        # 5. à´µà´¿à´œà´¯ à´¸à´¨àµà´¦àµ‡à´¶à´‚
         bot.answer_callback_query(
             call.id,
-            "✅ ട്രിപ്പ് സ്വീകരിച്ചു!"
+            "âœ… à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´¸àµà´µàµ€à´•à´°à´¿à´šàµà´šàµ!"
         )
 
         bot.send_message(
             chat_id=chat_id,
             text=(
-                "✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
-                f"🆔 ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
-                f"👤 ഡ്രൈവർ: {driver_name}\n"
-                f"📞 ഫോൺ: {driver_phone}\n"
-                f"🚘 വാഹനം: {vehicle_number}\n\n"
-                "നാവിഗേഷൻ, കസ്റ്റമർ വിവരങ്ങൾ, ലൈവ് ലൊക്കേഷൻ "
-                "എന്നിവയ്ക്കായി താഴെയുള്ള ബട്ടൺ അമർത്തുക."
+                "âœ… *à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´…à´•àµà´¸àµ†à´ªàµà´±àµà´±àµ à´šàµ†à´¯àµà´¤àµ!*\n\n"
+                f"ðŸ†” à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´à´¡à´¿: `{trip_id}`\n"
+                f"ðŸ‘¤ à´¡àµà´°àµˆà´µàµ¼: {driver_name}\n"
+                f"ðŸ“ž à´«àµ‹àµº: {driver_phone}\n"
+                f"ðŸš˜ à´µà´¾à´¹à´¨à´‚: {vehicle_number}\n\n"
+                "à´¨à´¾à´µà´¿à´—àµ‡à´·àµ», à´•à´¸àµà´±àµà´±à´®àµ¼ à´µà´¿à´µà´°à´™àµà´™àµ¾, à´²àµˆà´µàµ à´²àµŠà´•àµà´•àµ‡à´·àµ» "
+                "à´Žà´¨àµà´¨à´¿à´µà´¯àµà´•àµà´•à´¾à´¯à´¿ à´¤à´¾à´´àµ†à´¯àµà´³àµà´³ à´¬à´Ÿàµà´Ÿàµº à´…à´®àµ¼à´¤àµà´¤àµà´•."
             ),
             parse_mode="Markdown",
             reply_markup=markup
@@ -3724,27 +3733,27 @@ def handle_accept_trip(call):
         )
 
     except Exception as e:
-        print(f"❌ handle_accept_trip error: {e}")
+        print(f"âŒ handle_accept_trip error: {e}")
 
         try:
             bot.answer_callback_query(
                 call.id,
-                "❌ ട്രിപ്പ് സ്വീകരിക്കുന്നതിൽ പിശക്."
+                "âŒ à´Ÿàµà´°à´¿à´ªàµà´ªàµ à´¸àµà´µàµ€à´•à´°à´¿à´•àµà´•àµà´¨àµà´¨à´¤à´¿àµ½ à´ªà´¿à´¶à´•àµ."
             )
         except Exception:
             pass
 
 
 # ==========================================================
-# 🚀 START POLLING — LAST (after all handlers registered)
+# ðŸš€ START POLLING â€” LAST (after all handlers registered)
 # ==========================================================
 @st.cache_resource
 def start_bot_polling():
-    """Start bot polling — ONCE only"""
+    """Start bot polling â€” ONCE only"""
     def _run_polling():
         while True:
             try:
-                print("🚀 Bot polling started...")
+                print("ðŸš€ Bot polling started...")
                 bot.infinity_polling(
                     none_stop=True,
                     timeout=60,
@@ -3753,15 +3762,15 @@ def start_bot_polling():
             except Exception as e:
                 err = str(e)
                 if "409" in err:
-                    print("🛑 409 Conflict — stopping polling")
+                    print("ðŸ›‘ 409 Conflict â€” stopping polling")
                     break
-                print(f"⚠️ Polling error: {e}")
+                print(f"âš ï¸ Polling error: {e}")
                 time.sleep(5)
 
     _polling_thread = threading.Thread(target=_run_polling, daemon=True)
     add_script_run_ctx(_polling_thread)
     _polling_thread.start()
-    print("✅ Bot polling thread started — ONCE (via cache_resource)")
+    print("âœ… Bot polling thread started â€” ONCE (via cache_resource)")
     return True
 
 start_bot_polling()
