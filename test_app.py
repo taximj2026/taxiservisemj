@@ -2294,6 +2294,19 @@ def send_individual_trip_link(
         wallet_balance = float(
             driver.get("wallet_balance", 0.0)
         )
+        # 👇 2297-ാം വരി: ഇവിടെ നിന്നാണ് പുതിയ കോഡ് തുടങ്ങുന്നത് (8 സ്പേസ് ഇൻഡന്റേഷൻ)
+        # ⚠️ ₹25 ആകുമ്പോൾ വാണിംഗ് കാണിക്കാൻ
+        if WARNING_LIMIT <= wallet_balance < BLOCK_LIMIT:
+            try:
+                bot.send_message(
+                    chat_id=driver["chat_id"],
+                    text=f"⚠️ *ശ്രദ്ധിക്കുക:* നിങ്ങളുടെ കമ്മീഷൻ കുടിശ്ശിക ₹{wallet_balance} ആണ്. ഇത് ₹{BLOCK_LIMIT} കഴിഞ്ഞാൽ നിങ്ങൾക്ക് പുതിയ ട്രിപ്പുകൾ ലഭിക്കുന്നതല്ല."
+                )
+            except:
+                pass
+        
+        
+            
 
         if wallet_balance >= BLOCK_LIMIT:
             try:
@@ -2808,6 +2821,29 @@ def driver_trip_panel_page():
                 "status": "Arrived",
                 "notification": "arrived_sound"
             })
+            # 👇 ഇവിടെയാണ് പുതിയ കോഡ് തുടങ്ങുന്നത് (12 സ്പെയ്സ് / 3 ടാബ്)
+            try:
+                if not trip_data.get("commission_added", False):
+                    trip_commission = float(trip_data.get("commission_amount", 0.0))
+                    driver_id = trip_data.get("driver_chat_id") or trip_data.get("driver_id")
+                    
+                    if trip_commission > 0 and driver_id:
+                        driver_ref = db.reference(f"drivers/{driver_id}")
+                        driver_data = driver_ref.get() or {}
+                        current_wallet = float(driver_data.get("wallet_balance", 0.0))
+                            
+                        new_wallet = current_wallet + trip_commission
+                        driver_ref.update({"wallet_balance": new_wallet})
+                        db.reference(f"trips/{trip_id}").update({"commission_added": True})
+                        try:
+                            bot.send_message(
+                                chat_id=driver_id,
+                                text=f"✅ ട്രിപ്പ് അവസാനിച്ചു.\nഈ ട്രിപ്പിലെ കമ്മീഷൻ: ₹{trip_commission}\nനിലവിലെ ആകെ കുടിശ്ശിക: ₹{new_wallet:.2f}"
+                            )
+                        except:
+                            pass
+            except Exception as e:   
+                print(f"Wallet Update Error: {e}")    
             st.success("✅ കസ്റ്റമറിനെ അറിയിച്ചിട്ടുണ്ട്!")
             st.balloons()
             st.rerun()
