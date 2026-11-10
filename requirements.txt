@@ -10,3 +10,4 @@ streamlit-folium
 streamlit-geolocation
 Flask
 supabase
+psycopg2-binary
