@@ -81,7 +81,7 @@ st.markdown("""
 # ============================================================
 # 📦 DATABASE CONNECTION SETUP (Supabase)
 # ============================================================
-DB_URI = "postgresql://postgres.prktvpvggandbwcmfzdb:IcKoqvsFtzzVcarf@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+DB_URI = st.secrets["DB_URI"]
 
 @st.cache_resource
 def get_db_connection():
