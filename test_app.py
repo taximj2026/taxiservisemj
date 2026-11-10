@@ -49,8 +49,8 @@ from streamlit_geolocation import streamlit_geolocation
 from flask import Flask, request, jsonify
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 # സീക്രട്ടിൽ നിന്ന് കീകൾ വായിക്കുന്നു
-SUPABASE_URL = st.secrets "DB_URI"
-SUPABASE_KEY = st.secrets "SUPABASE_KEY"
+SUPABASE_URL = st.secrets ["DB_URI"]
+SUPABASE_KEY = st.secrets ["SUPABASE_KEY"]
 
 # കണക്ഷൻ ഉണ്ടാക്കുന്നു
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
