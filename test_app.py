@@ -49,12 +49,7 @@ from streamlit_geolocation import streamlit_geolocation
 from flask import Flask, request, jsonify
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 # സീക്രട്ടിൽ നിന്ന് കീകൾ വായിക്കുന്നു
-# ഡീബഗ്ഗിംഗ്: സീക്രട്ടിൽ എന്തെല്ലാം ലോഡ് ആയി എന്ന് കാണാൻ
-try:
-    # ഇത് സീക്രട്ടിലുള്ള കീകൾ മാത്രം പ്രിന്റ് ചെയ്യും (മൂല്യങ്ങൾ അല്ല)
-    st.write("Loaded Secret Keys:", list(st.secrets.keys()))
-except Exception as e:
-    st.error(f"Secrets loading failed entirely: {e}")
+
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
