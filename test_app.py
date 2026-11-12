@@ -55,7 +55,7 @@ try:
     st.write("Loaded Secret Keys:", list(st.secrets.keys()))
 except Exception as e:
     st.error(f"Secrets loading failed entirely: {e}")
-SUPABASE_URL = st.secrets["DB_URI"]
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 # കണക്ഷൻ ഉണ്ടാക്കുന്നു
