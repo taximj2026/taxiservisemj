@@ -56,7 +56,7 @@ try:
 except Exception as e:
     st.error(f"Secrets loading failed entirely: {e}")
 SUPABASE_URL = st.secrets["DB_URI"]
-SUPABASE_KEY = st.secrets ["SUPABASE_KEY"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 # കണക്ഷൻ ഉണ്ടാക്കുന്നു
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
