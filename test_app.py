@@ -34,6 +34,7 @@ import pandas as pd
 import json
 import telebot
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 import streamlit.components.v1 as components
 import streamlit as str_lit
 import psycopg2
@@ -2918,8 +2919,10 @@ def driver_trip_panel_page():
         @st.fragment(run_every=10)
         def update_location():
             try:
-                location = streamlit_geolocation()
-                if location and location.get("latitude") and location.get("longitude"):
+                with st.spinner("📍 ലൊക്കേഷൻ കണ്ടെത്തുന്നു... ദയവായി കാത്തിരിക്കുക"):
+                    location = streamlit_geolocation()
+                    
+                if location and location.get("latitude") and location.get("longitude"):    
                     lat = location.get("latitude")
                     lon = location.get("longitude")
                     
@@ -3785,7 +3788,15 @@ def main():
                             else:
                                 st.warning("⚠️ മാപ്പ് കാണുന്നതിനായി നിങ്ങളുടെ ജിപിഎസ് ലൊക്കേഷൻ സജീവമാക്കുക.")
                     else:
+                        # ഡ്രൈവർ അക്സെപ്റ്റ് ചെയ്തിട്ടില്ലാത്തതിനാൽ
+        
+                        # 1. ഓരോ 5 സെക്കൻഡിലും പേജ് ഓട്ടോമാറ്റിക് ആയി റീഫ്രെഷ് ആകാൻ (ട്രിപ്പ് ഐഡി ഉണ്ടെങ്കിൽ മാത്രം)
                         # ഡ്രൈവർ അക്സെപ്റ്റ് ചെയ്യുന്നത് വരെ
+                        if st.session_state.get('current_trip_id'): 
+                            st_autorefresh(interval=5000, key="waiting_refresh")
+                        # 2. യാത്രയുടെ ദൂരം കാണിക്കാൻ
+                        distance_val = trip_data.get('distance', 'N/A')
+                        st.info(f"📏 **യാത്രയുടെ ദൂരം:** {distance_val} കി.മീ")
                         st.markdown("""<div style="background-color: white; color: #333333; padding: 12px; border-radius: 8px; border-left: 5px solid #ffc107; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><b>⏳ ഡ്രൈവർമാർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യുന്നതിനായി കാത്തിരിക്കുന്നു...</b><span style="font-size: 13px; margin-top: 5px; display: block;">ദയവായി ഈ പേജ് ക്ലോസ് ചെയ്യരുത്.</span></div>""", unsafe_allow_html=True)    
 
                     with st.expander("📝 സേവന നിബന്ധനകളും ഡിസ്ക്ലൈമറും"):
@@ -4000,7 +4011,7 @@ def main():
         str_lit.markdown("---")
         str_lit.subheader("🚗 ഡ്രൈവർ പാനൽ")
         
-        driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ടെലഗ്രാം ചാറ്റ് ഐഡി (Chat ID):", key="driver_id_input_main")
+        driver_telegram_id = str_lit.text_input("നിങ്ങളുടെ ഐഡി ഇവിടെ നൽകുക:", key="driver_id_input_main")
         
         search_clicked = str_lit.button("🔍 ഹിസ്റ്ററി പരിശോധിക്കുക", use_container_width=True)
         
