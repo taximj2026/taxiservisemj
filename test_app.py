@@ -3623,7 +3623,7 @@ def main():
                     "location": st.session_state.get('gps_link', 'Not Available'),
                     "pickup_lat": st.session_state.lat, 
                     "pickup_lon": st.session_state.lon,
-                    "status": "AVAILABLE",
+                    "status": "Pending",
                     "calculated_distance": exact_distance,
                     "total_fare": total_fare,
                     "commission_amount": commission_amount,
@@ -3683,43 +3683,7 @@ def main():
 </div>"""
                     st.markdown(card_html, unsafe_allow_html=True)
 
-                    # 👇 Asynchronous Realtime ലിസണർ (ബാക്ക്ഗ്രൗണ്ട് ത്രെഡിൽ പ്രവർത്തിക്കാൻ)
-                    import asyncio
-                    import threading
-                    from supabase import acreate_client
-
-                    async def async_listen(trip_id, supabase_url, supabase_key):
-                        async_client = await acreate_client(supabase_url, supabase_key)
-                        channel = async_client.channel(f"trip_updates_{trip_id}")
-                        
-                        def handle_change(payload):
-                            if payload['new'].get('status') == 'Accepted':
-                                st.session_state.trip_accepted = True
-                                
-                        await channel.on_postgres_changes(
-                            event="UPDATE",
-                            schema="public",
-                            table="trips",
-                            filter=f"trip_id=eq.{trip_id}",
-                            callback=handle_change
-                        ).subscribe()
-                        
-                        # കണക്ഷൻ ഓപ്പൺ ആയി നിൽക്കാൻ
-                        await asyncio.Event().wait()
-
-                    def start_listener(trip_id, supabase_url, supabase_key):
-                        loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(loop)
-                        loop.run_until_complete(async_listen(trip_id, supabase_url, supabase_key))
-
-                    # ലിസണർ തുടങ്ങുന്നു (ഒരു തവണ മാത്രം)
-                    if 'listener_started' not in st.session_state:
-                        threading.Thread(
-                            target=start_listener, 
-                            args=(unique_trip_id, SUPABASE_URL, SUPABASE_KEY),  
-                            daemon=True
-                        ).start()
-                        st.session_state.listener_started = True
+                   
 
                     # 👇 റിയൽ ടൈം അപ്ഡേറ്റ് വന്നോ എന്ന് ചെക്ക് ചെയ്യാൻ (ഓരോ 2 സെക്കൻഡിലും)
                     @st.fragment(run_every=2)
