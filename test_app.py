@@ -899,6 +899,7 @@ def save_new_trip(booking_id, customer_name, customer_phone, pickup, drop, dista
         
     except Exception as e:
         print(f"❌ Error saving trip to Supabase: {e}")
+        st.error(f"Database Error: {e}")
         return False
 # ==========================================================
 # Send Trip to Driver (Telegram - Privacy Focused)
