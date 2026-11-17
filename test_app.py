@@ -4261,26 +4261,26 @@ def handle_accept_trip(call):
         else:
             # --- ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ പറ്റിയില്ലെങ്കിൽ (മറ്റൊരാൾ എടുത്തിട്ടുണ്ടെങ്കിൽ) ---
             if result == "already_taken":
-                    bot.answer_callback_query(
-                        call.id,
-                        "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
+                bot.answer_callback_query(
+                    call.id,
+                    "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
+                )
+                bot.send_message(
+                    chat_id=chat_id,
+                    text=(
+                        "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
+                        "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
                     )
-                    bot.send_message(
-                        chat_id=chat_id,
-                        text=(
-                            "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
-                            "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
-                        )
-                    )
-                    return
-                else:
-                    # --- മറ്റെന്തെങ്കിലും ടെക്നിക്കൽ എറർ വന്നാൽ ---
-                    bot.answer_callback_query(call.id, "❌ ടെക്നിക്കൽ എറർ!")
-                    bot.send_message(
-                        chat_id=chat_id, 
-                        text=f"❌ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല. (Error: {result})"
-                    )
-                    return
+                )
+                return
+            else:
+                # --- മറ്റെന്തെങ്കിലും ടെക്നിക്കൽ എറർ വന്നാൽ ---
+                bot.answer_callback_query(call.id, "❌ ടെക്നിക്കൽ എറർ!")
+                bot.send_message(
+                    chat_id=chat_id, 
+                    text=f"❌ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല. (Error: {result})"
+                )
+                return
 
     except Exception as e:
         print(f"❌ handle_accept_trip error: {e}")
