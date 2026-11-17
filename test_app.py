@@ -1247,52 +1247,109 @@ def listener(event):
         return
  
 
+
 # ==========================================
-# SAFE TRIP ACCEPTANCE - DRIVER DETAILS
+# SAFE TRIP ACCEPTANCE - SUPABASE POSTGRESQL
+# ATOMIC DRIVER LOCKING
 # ==========================================
-def accept_trip_safely(trip_id, driver_chat_id, driver_name, driver_phone, vehicle_number="N/A"):
+
+def accept_trip_safely(
+    trip_id,
+    driver_chat_id,
+    driver_name,
+    driver_phone,
+    vehicle_number="N/A"
+):
+    conn = None
+    cursor = None
+
     try:
         conn = psycopg2.connect(DB_URI)
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        # 1. ട്രിപ്പ് നിലവിലുണ്ടോ എന്ന് ചെക്ക് ചെയ്യുക
-        cursor.execute("SELECT * FROM trips WHERE trip_id = %s", (trip_id,))
-        trip_data = cursor.fetchone()
+        current_chat_id = str(driver_chat_id)
 
-        if not trip_data:
-            cursor.close()
-            conn.close()
-            return None
-
-        # 2. സ്റ്റാറ്റസ് ചെക്ക് ചെയ്യുക
-        current_status = str(trip_data.get("status", "Pending")).strip()
-        if current_status.upper() not in ["PENDING", "AVAILABLE", "UNASSIGNED"]:
-            cursor.close()
-            conn.close()
-            return None # മറ്റൊരാൾ എടുത്തു കഴിഞ്ഞു
-
-        # 3. ട്രിപ്പ് അപ്ഡേറ്റ് ചെയ്യുക
+        # Atomic Update: ആദ്യത്തെ ഡ്രൈവർക്ക് മാത്രം ട്രിപ്പ് ലഭിക്കും
         cursor.execute("""
-            UPDATE trips 
-            SET status = 'Accepted', 
-                is_locked = TRUE, 
-                driver_chat_id = %s, 
-                driver_name = %s, 
+            UPDATE trips
+            SET
+                status = 'Accepted',
+                is_locked = TRUE,
+                driver_chat_id = %s,
+                driver_name = %s,
                 driver_phone = %s,
                 vehicle_number = %s
-            WHERE trip_id = %s AND status IN ('Pending', 'Available', 'Unassigned')
-        """, (str(driver_chat_id), driver_name, driver_phone, vehicle_number, trip_id))
+
+            WHERE trip_id = %s
+              AND LOWER(TRIM(COALESCE(status, '')))
+                  IN ('pending', 'available', 'unassigned')
+              AND COALESCE(is_locked, FALSE) = FALSE
+
+            RETURNING trip_id, status, driver_chat_id
+        """, (
+            current_chat_id,
+            driver_name,
+            driver_phone,
+            vehicle_number,
+            trip_id
+        ))
+
+        accepted_trip = cursor.fetchone()
+
+        if accepted_trip:
+            conn.commit()
+
+            print(
+                f"✅ Trip {trip_id} accepted by "
+                f"driver {current_chat_id}"
+            )
+
+            return "success"
+
+        # Update നടന്നില്ലെങ്കിൽ നിലവിലെ ട്രിപ്പ് പരിശോധിക്കുക
+        cursor.execute("""
+            SELECT status, driver_chat_id
+            FROM trips
+            WHERE trip_id = %s
+        """, (trip_id,))
+
+        trip_data = cursor.fetchone()
 
         conn.commit()
-        cursor.close()
-        conn.close()
 
-        # ഫലം റിട്ടേൺ ചെയ്യുക (Dictionary)
-        return {"status": "Accepted", "driver_chat_id": str(driver_chat_id)}
+        if not trip_data:
+            return "not_found"
+
+        existing_status = str(
+            trip_data.get("status") or ""
+        ).strip().lower()
+
+        existing_driver = str(
+            trip_data.get("driver_chat_id") or ""
+        ).strip()
+
+        if (
+            existing_status == "accepted"
+            and existing_driver == current_chat_id
+        ):
+            return "already_accepted_by_you"
+
+        return "already_taken"
 
     except Exception as e:
+        if conn:
+            conn.rollback()
+
         print(f"❌ Safe trip acceptance error: {e}")
-        return None
+        return "error"
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if conn:
+            conn.close()
+
 # ==========================================================
 # Telegram Callback Query Handler (Button Clicks)
 # ==========================================================
