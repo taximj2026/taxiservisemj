@@ -1006,10 +1006,8 @@ def initialize_firebase():
         )
         return False
 
-
 # ==========================================================
-# Atomic Trip Acceptance & Locking Logic
-# Supabase PostgreSQL
+# Atomic Trip Acceptance & Locking Logic (Supabase PostgreSQL)
 # ==========================================================
 
 def accept_trip_safely(
@@ -1017,18 +1015,19 @@ def accept_trip_safely(
     driver_name,
     driver_phone,
     driver_chat_id,
-    vehicle_number=None
+    vehicle_number="N/A"
 ):
     conn = None
     cursor = None
 
     try:
         conn = psycopg2.connect(DB_URI)
-        cursor = conn.cursor(
-            cursor_factory=RealDictCursor
-        )
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        # Atomic Trip Acceptance
+        # Atomic Update:
+        # ഒരേസമയം രണ്ട് ഡ്രൈവർമാർ Accept ചെയ്താലും
+        # ഒരാൾക്ക് മാത്രമേ ട്രിപ്പ് ലഭിക്കൂ.
+
         cursor.execute("""
             UPDATE trips
             SET
@@ -1037,24 +1036,14 @@ def accept_trip_safely(
                 driver_name = %s,
                 driver_phone = %s,
                 driver_chat_id = %s,
-                vehicle_number = COALESCE(
-                    NULLIF(%s, ''),
-                    vehicle_number,
-                    'N/A'
-                )
+                vehicle_number = %s
 
             WHERE trip_id = %s
               AND LOWER(TRIM(COALESCE(status, '')))
                   IN ('pending', 'available', 'unassigned')
               AND COALESCE(is_locked, FALSE) = FALSE
 
-            RETURNING
-                trip_id,
-                status,
-                driver_chat_id,
-                driver_name,
-                driver_phone,
-                vehicle_number
+            RETURNING trip_id, status, driver_chat_id
         """, (
             driver_name,
             driver_phone,
@@ -1073,21 +1062,11 @@ def accept_trip_safely(
                 f"by Driver {driver_chat_id}"
             )
 
-            # Return complete driver details
-            return {
-                "result": "success",
-                "trip": dict(accepted_trip)
-            }
+            return "success"
 
-        # Check existing trip
+        # Update നടന്നില്ലെങ്കിൽ ട്രിപ്പിന്റെ നിലവിലെ സ്ഥിതി പരിശോധിക്കുക
         cursor.execute("""
-            SELECT
-                trip_id,
-                status,
-                driver_chat_id,
-                driver_name,
-                driver_phone,
-                vehicle_number
+            SELECT trip_id, status, driver_chat_id
             FROM trips
             WHERE trip_id = %s
         """, (booking_id,))
@@ -1097,10 +1076,10 @@ def accept_trip_safely(
         conn.commit()
 
         if not trip_data:
-            return {"result": "not_found"}
+            return "not_found"
 
         current_status = str(
-            trip_data.get("status") or ""
+            trip_data.get("status", "")
         ).strip().lower()
 
         existing_driver = str(
@@ -1113,15 +1092,11 @@ def accept_trip_safely(
             current_status == "accepted"
             and existing_driver == current_driver
         ):
-            return {
-                "result": "already_accepted_by_you",
-                "trip": dict(trip_data)
-            }
+            return "already_accepted_by_you"
 
-        return {"result": "already_taken"}
+        return "already_taken"
 
     except Exception as e:
-
         if conn:
             conn.rollback()
 
@@ -1129,16 +1104,14 @@ def accept_trip_safely(
             f"❌ Error in accept_trip_safely: {e}"
         )
 
-        return {"result": "error"}
+        return "error"
 
     finally:
-
         if cursor:
             cursor.close()
 
         if conn:
             conn.close()
-
 
 
 
@@ -1297,8 +1270,6 @@ def accept_trip_safely(
         current_chat_id = str(driver_chat_id)
 
         # Atomic Update: ആദ്യത്തെ ഡ്രൈവർക്ക് മാത്രം ട്രിപ്പ് ലഭിക്കും
-        
-        # Atomic Update: ആദ്യത്തെ ഡ്രൈവർക്കു മാത്രം ട്രിപ്പ് ലഭിക്കും
         cursor.execute("""
             UPDATE trips
             SET
@@ -1314,13 +1285,7 @@ def accept_trip_safely(
                   IN ('pending', 'available', 'unassigned')
               AND COALESCE(is_locked, FALSE) = FALSE
 
-            RETURNING
-                trip_id,
-                status,
-                driver_chat_id,
-                driver_name,
-                driver_phone,
-                vehicle_number
+            RETURNING trip_id, status, driver_chat_id
         """, (
             current_chat_id,
             driver_name,
@@ -1339,11 +1304,7 @@ def accept_trip_safely(
                 f"driver {current_chat_id}"
             )
 
-            return {
-                "result": "success",
-                "trip": dict(accepted_trip)
-            }
-
+            return "success"
 
         # Update നടന്നില്ലെങ്കിൽ നിലവിലെ ട്രിപ്പ് പരിശോധിക്കുക
         cursor.execute("""
