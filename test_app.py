@@ -1005,50 +1005,114 @@ def initialize_firebase():
             f"Firebase Init Error: {e}"
         )
         return False
+
 # ==========================================================
-# Atomic Trip Acceptance & Locking Logic
+# Atomic Trip Acceptance & Locking Logic (Supabase PostgreSQL)
 # ==========================================================
-def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id, vehicle_number="N/A"):
+
+def accept_trip_safely(
+    booking_id,
+    driver_name,
+    driver_phone,
+    driver_chat_id,
+    vehicle_number="N/A"
+):
+    conn = None
+    cursor = None
+
     try:
         conn = psycopg2.connect(DB_URI)
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        cursor.execute("SELECT * FROM trips WHERE trip_id = %s", (booking_id,))
-        trip_data = cursor.fetchone()
-
-        if not trip_data:
-            cursor.close()
-            conn.close()
-            return "not_found"
-
-        # ഇവിടെ .lower() ഉപയോഗിച്ച് എല്ലാം ചെറിയ അക്ഷരമാക്കി മാറ്റുന്നു
-        current_status = str(trip_data.get("status", "pending")).strip().lower()
-        
-        if current_status not in ["pending", "available", "unassigned"]:
-            cursor.close()
-            conn.close()
-            return "already_taken"
+        # Atomic Update:
+        # ഒരേസമയം രണ്ട് ഡ്രൈവർമാർ Accept ചെയ്താലും
+        # ഒരാൾക്ക് മാത്രമേ ട്രിപ്പ് ലഭിക്കൂ.
 
         cursor.execute("""
             UPDATE trips
-            SET status = 'Accepted',
+            SET
+                status = 'Accepted',
                 is_locked = TRUE,
                 driver_name = %s,
                 driver_phone = %s,
                 driver_chat_id = %s,
                 vehicle_number = %s
+
             WHERE trip_id = %s
-        """, (driver_name, driver_phone, str(driver_chat_id), vehicle_number, booking_id))
+              AND LOWER(TRIM(COALESCE(status, '')))
+                  IN ('pending', 'available', 'unassigned')
+              AND COALESCE(is_locked, FALSE) = FALSE
+
+            RETURNING trip_id, status, driver_chat_id
+        """, (
+            driver_name,
+            driver_phone,
+            str(driver_chat_id),
+            vehicle_number,
+            booking_id
+        ))
+
+        accepted_trip = cursor.fetchone()
+
+        if accepted_trip:
+            conn.commit()
+
+            print(
+                f"✅ Trip Accepted: {booking_id} "
+                f"by Driver {driver_chat_id}"
+            )
+
+            return "success"
+
+        # Update നടന്നില്ലെങ്കിൽ ട്രിപ്പിന്റെ നിലവിലെ സ്ഥിതി പരിശോധിക്കുക
+        cursor.execute("""
+            SELECT trip_id, status, driver_chat_id
+            FROM trips
+            WHERE trip_id = %s
+        """, (booking_id,))
+
+        trip_data = cursor.fetchone()
 
         conn.commit()
-        cursor.close()
-        conn.close()
 
-        return "success"
+        if not trip_data:
+            return "not_found"
+
+        current_status = str(
+            trip_data.get("status", "")
+        ).strip().lower()
+
+        existing_driver = str(
+            trip_data.get("driver_chat_id") or ""
+        ).strip()
+
+        current_driver = str(driver_chat_id).strip()
+
+        if (
+            current_status == "accepted"
+            and existing_driver == current_driver
+        ):
+            return "already_accepted_by_you"
+
+        return "already_taken"
 
     except Exception as e:
-        print(f"❌ Error in accept_trip_safely: {e}")
+        if conn:
+            conn.rollback()
+
+        print(
+            f"❌ Error in accept_trip_safely: {e}"
+        )
+
         return "error"
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if conn:
+            conn.close()
+
 
 
 # ==========================================================
@@ -1307,52 +1371,87 @@ def handle_telegram_callback(update, context):
         # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്താൽ Supabase-ലും അപ്ഡേറ്റ് ചെയ്യുക
         # ട്രിപ്പ് വിജയിച്ചോ എന്ന് ചെക്ക് ചെയ്യാൻ (ഏത് തരത്തിലുള്ള റിസൾട്ട് വന്നാലും)
         is_success = False
-        if result == "success" or result is True:
+        if result is True or result == "success":
             is_success = True
-        elif isinstance(result, dict):  # ഡിക്ഷണറി ആണെങ്കിൽ
-            is_success = True
-        elif hasattr(result, 'data'):   # Supabase റെസ്പോൺസ് ആണെങ്കിൽ
-            is_success = True
+        elif isinstance(result, dict):
+            result_status = str(
+                result.get("status", "")
+            ).strip().lower()
 
+            result_chat_id = str(
+                result.get("driver_chat_id", "")
+            ).strip()
+
+            current_chat_id = str(chat_id).strip()
+            
+            # ഇതിനകം ഇതേ ഡ്രൈവർ സ്വീകരിച്ച ട്രിപ്പാണെങ്കിൽ മാത്രം Success
+            if (
+                result_status == "accepted"
+                and result_chat_id == current_chat_id
+            ):
+                is_success = True    
+            else:
+                is_success = False    
+        # Supabase response ആണെങ്കിൽ അതിന്റെ data പരിശോധിക്കുക
+        elif hasattr(result, "data"):  
+            
+            response_data = result.data
+            
+            if response_data:
+                is_success = True
         if is_success:
+            
             # 1. Supabase അപ്ഡേറ്റ് ചെയ്യുക
             try:
-                supabase.table('trips').update({
+                supabase.table("trips").update({
                     "status": "Accepted",
                     "driver_name": driver_name,
                     "driver_phone": driver_phone,
                     "driver_chat_id": str(chat_id),
                     "vehicle_number": vehicle_number
-                }).eq('trip_id', trip_id).execute()
+                }).eq("trip_id", trip_id).execute()
+
                 print(f"✅ Supabase Updated: {trip_id}")
+            
             except Exception as e:
                 print(f"❌ Supabase Update Error: {e}")
-
             # 2. ഡ്രൈവർക്ക് വിജയ സന്ദേശം അയക്കുക
             query.edit_message_text(
-                text=f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
+                text=(
+                    f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
                     f"ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
                     f"ഡ്രൈവർ: {driver_name}\n"
-                    f"വാഹനം: {vehicle_number}",
+                    f"വാഹനം: {vehicle_number}"
+                ),
                 parse_mode="Markdown"
             )
-                
+            
+            
             # 3. ഡ്രൈവർ പാനൽ ലിങ്ക് അയക്കുക
-            driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={trip_id}&driver_chat_id={chat_id}"
+            driver_panel_url = (
+                "https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/"
+                f"?page=driver_trip_panel&trip_id={trip_id}"
+                f"&driver_chat_id={chat_id}"
+            )
+            
             bot.send_message(
                 chat_id,
-                f"📍 *ഡ്രൈവർ പാനൽ തുറക്കാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:*\n\n[ട്രിപ്പ് പാനൽ തുറക്കുക]({driver_panel_url})",
+                (   
+                    "📍 *ഡ്രൈവർ പാനൽ തുറക്കാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:*\n\n"
+                    f"[ട്രിപ്പ് പാനൽ തുറക്കുക]({driver_panel_url})"
+                ),
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
-
         else:
-            # 4. ട്രിപ്പ് ഫെയിൽ ആയാൽ (മറ്റൊരു ഡ്രൈവർ എടുത്തിട്ടുണ്ടെങ്കിൽ)
+            # 4. ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിട്ടുണ്ടെങ്കിൽ
             query.edit_message_text(
-                text=f"❌ ക്ഷമിക്കണം, ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ ഇതിനകം സ്വീകരിച്ചിട്ടുണ്ട്. (Error: {result})",
-                parse_mode="Markdown"
-            )
-                
+                text=(
+                    "❌ ക്ഷമിക്കണം!\n\n"
+                    "ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ ഇതിനകം സ്വീകരിച്ചിട്ടുണ്ട്."
+                )
+            )    
+            
             
         
 
