@@ -4168,195 +4168,120 @@ def accept_trip(
 )
 def handle_accept_trip(call):
 
-    chat_id = str(call.message.chat.id)
-    trip_id = str(call.data).replace("accept_", "", 1).strip()
+            chat_id = str(call.message.chat.id)
+        trip_id = str(call.data).replace("accept_", "", 1).strip()
 
-    try:
-        # 1. ഡ്രൈവറുടെ വിവരങ്ങൾ വായിക്കുക
-        driver_ref = db.reference(f"drivers/{chat_id}")
-        driver_data = driver_ref.get() or {}
-        print("DEBUG DRIVER DATA:", driver_data)
-
-        driver_name = (
-            driver_data.get("driver_name")
-            or driver_data.get("Driver Name")
-            or driver_data.get("name")
-            or "Unknown Driver"
-        )
-
-        driver_phone = (
-            driver_data.get("phone")
-            or driver_data.get("Phone")
-            or driver_data.get("driver_phone")
-            or "N/A"
-        )
-
-        vehicle_number = (
-            driver_data.get("vehicle_number")
-            or driver_data.get("Vehicle Number")
-            or driver_data.get("Vehicle No")
-            or "N/A"
-        )
-        # ============================================================
-        # 🔒 ട്രിപ്പ് ലോക്ക് ചെയ്യാനുള്ള കോഡ് (ഇവിടെ ചേർക്കുക)
-        # ============================================================
         try:
-            # 1. നിലവിലെ ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
-            trip_ref = db.reference(f"trips/{trip_id}")
-            trip_data = trip_ref.get() or {}
-            # 2. ട്രിപ്പ് ഇതിനകം അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ടോ എന്ന് ചെക്ക് ചെയ്യുക
-            if trip_data.get("status") == "Accepted":
-                bot.send_message(
-                    chat_id,
-                    f"❌ *ക്ഷമിക്കണം!*\n\n"
-                    f"ട്രിപ്പ് `{trip_id}` മറ്റൊരു ഡ്രൈവർ ഇതിനകം അക്സെപ്റ്റ് ചെയ്തിട്ടുണ്ട്.\n"
-                    f"ദയവായി മറ്റ് ട്രിപ്പുകൾക്കായി കാത്തിരിക്കുക.",
-                    parse_mode="Markdown"
-                )
-                print(f"⏭️ Trip {trip_id} already accepted by another driver.")
-                return
-            # 3. ട്രിപ്പ് അപ്ഡേറ്റ് ചെയ്ത് ലോക്ക് ചെയ്യുക
-            trip_ref.update({  
-                "status": "Accepted",
-                "is_locked": True,
-                "accepted_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "driver_name": driver_name,
-                "driver_phone": driver_phone,
-                "vehicle_number": vehicle_number,
-                "driver_chat_id": chat_id
-            })
-            print(f"✅ Trip {trip_id} accepted and locked by driver {chat_id}")
-            # 4. ഡ്രൈവർക്ക് സ്ഥിരീകരണ സന്ദേശം അയക്കുക
-            bot.send_message(
-                chat_id,
-                f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
-                f"ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
-                f"ഡ്രൈവർ: {driver_name}\n"
-                f"വാഹനം: {vehicle_number}",
-                parse_mode="Markdown"
-            )
+            # 1. ഡ്രൈവറുടെ വിവരങ്ങൾ Supabase-ൽ നിന്ന് വായിക്കുക
+            driver_name = "Unknown Driver"
+            driver_phone = "N/A"
+            vehicle_number = "N/A"
             
-            # 5. ഡ്രൈവർ പാനൽ ലിങ്ക് അയക്കുക
-            driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={trip_id}&driver_chat_id={chat_id}"
-            bot.send_message(
-                chat_id,
-                f"📍 *ഡ്രൈവർ പാനൽ തുറക്കാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:*\n\n[ട്രിപ്പ് പാനൽ തുറക്കുക]({driver_panel_url})",
-                parse_mode="Markdown",
-                disable_web_page_preview=True
-            )
-        except Exception as e:
-            print(f"❌ Trip lock error: {e}")
-            bot.send_message(chat_id, f"❌ എറർ: ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ({e})")    
-            
-        # 2. സുരക്ഷിതമായി ട്രിപ്പ് സ്വീകരിക്കുക
-        # 🔍 Debug: accept_trip_safely വിളിക്കുന്നു
-            print("🔥 Calling accept_trip_safely with:")
-            print(f"   trip_id = {trip_id}")
-            print(f"   chat_id = {chat_id}")
-            print(f"   driver_name = {driver_name}")
-            print(f"   driver_phone = {driver_phone}")
-            print(f"   vehicle_number = {vehicle_number}")
-            print(f"👉 DEBUG CHECK -> Name: {driver_name} | Phone: {driver_phone} | Vehicle: {vehicle_number}") 
-        result = accept_trip_safely(
-            trip_id=trip_id,   
-            driver_chat_id=chat_id,
-            driver_name=driver_name,
-            driver_phone=driver_phone,
-            vehicle_number=vehicle_number
-        )
-        
-        # 🔍 Debug: ഫലം പരിശോധിക്കുന്നു
-        print(f"🔥 Result from accept_trip_safely: {result}")
-
-        if result == "success":
-            # --- ഡ്രൈവർ വിവരങ്ങൾ Supabase-ൽ അപ്ഡേറ്റ് ചെയ്യാൻ ---
             try:
-                supabase.table('trips').update({
-                    "driver_name": driver_name,
-                    "driver_phone": driver_phone,
-                    "driver_chat_id": str(chat_id),
-                    "vehicle_number": vehicle_number
-                }).eq('trip_id', trip_id).execute()
-                print(f"✅ Supabase Updated: Driver {driver_name} assigned to {trip_id}")
+                # Supabase 'drivers' ടേബിളിൽ നിന്ന് chat_id ഉപയോഗിച്ച് വിവരങ്ങൾ എടുക്കുന്നു
+                response = supabase.table('drivers').select('*').eq('chat_id', str(chat_id)).execute()
+                
+                if response.data and len(response.data) > 0:
+                    driver_data = response.data[0]
+                    driver_name = driver_data.get("driver_name") or driver_data.get("name") or "Unknown Driver"
+                    driver_phone = driver_data.get("phone") or "N/A"
+                    vehicle_number = driver_data.get("vehicle_number") or "N/A"
+                else:
+                    print(f"⚠️ Driver {chat_id} not found in Supabase.")
             except Exception as e:
-                print(f"❌ Supabase Update Error: {e}") 
+                print(f"❌ Supabase Driver Fetch Error: {e}")
 
-            bot.answer_callback_query(
-                call.id,
-                "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
+            # 2. സുരക്ഷിതമായി ട്രിപ്പ് സ്വീകരിക്കുക
+            result = accept_trip_safely(
+                trip_id=trip_id,   
+                driver_chat_id=chat_id,
+                driver_name=driver_name,
+                driver_phone=driver_phone,
+                vehicle_number=vehicle_number
             )
+            
+            print(f"🔥 Result from accept_trip_safely: {result}")
 
-            bot.send_message(
-                chat_id=chat_id,
-                text=(
-                    "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
-                    "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
+            # 3. ട്രിപ്പ് സ്വീകരിച്ചോ എന്ന് പരിശോധിക്കുക
+            if result == "success" or result is True:
+                
+                # --- ട്രിപ്പ് വിവരങ്ങൾ Supabase-ൽ അപ്ഡേറ്റ് ചെയ്യുക (Status: Accepted) ---
+                try:
+                    supabase.table('trips').update({
+                        "status": "Accepted",
+                        "driver_name": driver_name,
+                        "driver_phone": driver_phone,
+                        "driver_chat_id": str(chat_id),
+                        "vehicle_number": vehicle_number
+                    }).eq('trip_id', trip_id).execute()
+                    print(f"✅ Supabase Updated: Driver {driver_name} assigned to {trip_id}")
+                except Exception as e:
+                    print(f"❌ Supabase Update Error: {e}") 
+
+                # ACCEPT ബട്ടൺ നീക്കം ചെയ്യുക
+                try:
+                    bot.edit_message_reply_markup(
+                        chat_id=call.message.chat.id,
+                        message_id=call.message.message_id,
+                        reply_markup=None
+                    )
+                except Exception as edit_error:
+                    print(f"Button update notice: {edit_error}")
+
+                # ഡ്രൈവർ പാനൽ ലിങ്ക് തയ്യാറാക്കുക
+                driver_panel_url = (
+                    "https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/"
+                    f"?page=driver_trip_panel&trip_id={trip_id}"
+                    f"&driver_chat_id={chat_id}"
                 )
-            )
-            return
 
-        # 3. ACCEPT ബട്ടൺ നീക്കം ചെയ്യുക
-        try:
-            bot.edit_message_reply_markup(
-                chat_id=call.message.chat.id,
-                message_id=call.message.message_id,
-                reply_markup=None
-            )
-        except Exception as edit_error:
-            print(f"Button update notice: {edit_error}")
+                markup = types.InlineKeyboardMarkup(row_width=1)
+                markup.add(
+                    types.InlineKeyboardButton(
+                        "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക",
+                        url=driver_panel_url
+                    )
+                )
 
-        # 4. ഡ്രൈവർ ട്രിപ്പ് പാനൽ ലിങ്ക്
-        driver_panel_url = (
-            "https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/"
-            f"?page=driver_trip_panel&trip_id={trip_id}"
-            f"&driver_chat_id={chat_id}"
-        )
+                # വിജയ സന്ദേശം അയക്കുക
+                bot.answer_callback_query(call.id, "✅ ട്രിപ്പ് സ്വീകരിച്ചു!")
+                bot.send_message(
+                    chat_id=chat_id,
+                    text=(
+                        "✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
+                        f"🆔 ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
+                        f"👤 ഡ്രൈവർ: {driver_name}\n"
+                        f"📞 ഫോൺ: {driver_phone}\n"
+                        f"🚘 വാഹനം: {vehicle_number}\n\n"
+                        "നാവിഗേഷൻ, കസ്റ്റമർ വിവരങ്ങൾ, ലൈവ് ലൊക്കേഷൻ "
+                        "എന്നിവയ്ക്കായി താഴെയുള്ള ബട്ടൺ അമർത്തുക."
+                    ),
+                    parse_mode="Markdown",
+                    reply_markup=markup
+                )
+                print(f"TRIP ACCEPTED: {trip_id} | DRIVER: {chat_id} | {driver_name}")
 
-        markup = types.InlineKeyboardMarkup(row_width=1)
+            else:
+                # --- ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ പറ്റിയില്ലെങ്കിൽ (മറ്റൊരാൾ എടുത്തിട്ടുണ്ടെങ്കിൽ) ---
+                bot.answer_callback_query(
+                    call.id,
+                    "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
+                )
+                bot.send_message(
+                    chat_id=chat_id,
+                    text=(
+                        "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
+                        "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
+                    )
+                )
+                return
 
-        markup.add(
-            types.InlineKeyboardButton(
-                "🚖 ട്രിപ്പ് പാനൽ തുറക്കുക",
-                url=driver_panel_url
-            )
-        )
-
-        # 5. വിജയ സന്ദേശം
-        bot.answer_callback_query(
-            call.id,
-            "✅ ട്രിപ്പ് സ്വീകരിച്ചു!"
-        )
-
-        bot.send_message(
-            chat_id=chat_id,
-            text=(
-                "✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
-                f"🆔 ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
-                f"👤 ഡ്രൈവർ: {driver_name}\n"
-                f"📞 ഫോൺ: {driver_phone}\n"
-                f"🚘 വാഹനം: {vehicle_number}\n\n"
-                "നാവിഗേഷൻ, കസ്റ്റമർ വിവരങ്ങൾ, ലൈവ് ലൊക്കേഷൻ "
-                "എന്നിവയ്ക്കായി താഴെയുള്ള ബട്ടൺ അമർത്തുക."
-            ),
-            parse_mode="Markdown",
-            reply_markup=markup
-        )
-
-        print(
-            f"TRIP ACCEPTED: {trip_id} | "
-            f"DRIVER: {chat_id} | {driver_name}"
-        )
-
-    except Exception as e:
-        print(f"❌ handle_accept_trip error: {e}")
-
-        try:
-            bot.answer_callback_query(
-                call.id,
-                "❌ ട്രിപ്പ് സ്വീകരിക്കുന്നതിൽ പിശക്."
-            )
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"❌ handle_accept_trip error: {e}")
+            try:
+                bot.answer_callback_query(call.id, "❌ ട്രിപ്പ് സ്വീകരിക്കുന്നതിൽ പിശക്.")
+            except Exception:
+                pass
 
 
 # ==========================================================
