@@ -1304,6 +1304,19 @@ def handle_telegram_callback(update, context):
             driver_phone=driver_phone,
             vehicle_number=vehicle_number
         )
+        # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്താൽ Supabase-ലും അപ്ഡേറ്റ് ചെയ്യുക
+        if result == "success":
+            try:
+                supabase.table('trips').update({
+                    "status": "Accepted",
+                    "driver_name": driver_name,
+                    "driver_phone": driver_phone,
+                    "driver_chat_id": str(chat_id),
+                     "vehicle_number": vehicle_number
+                }).eq('trip_id', trip_id).execute()
+                print(f"✅ Supabase Updated: {trip_id}")
+            except Exception as e:
+                print(f"❌ Supabase Update Error: {e}")
             
         if result:
             query.edit_message_text(
