@@ -1013,7 +1013,6 @@ def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id, ve
         conn = psycopg2.connect(DB_URI)
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        # 1. ട്രിപ്പ് നിലവിലുണ്ടോ എന്ന് ചെക്ക് ചെയ്യുക
         cursor.execute("SELECT * FROM trips WHERE trip_id = %s", (booking_id,))
         trip_data = cursor.fetchone()
 
@@ -1022,14 +1021,14 @@ def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id, ve
             conn.close()
             return "not_found"
 
-        # 2. സ്റ്റാറ്റസ് ചെക്ക് ചെയ്യുക
-        current_status = str(trip_data.get("status", "Pending")).strip()
-        if current_status not in ["Pending", "Available", "Unassigned"]:
+        # ഇവിടെ .lower() ഉപയോഗിച്ച് എല്ലാം ചെറിയ അക്ഷരമാക്കി മാറ്റുന്നു
+        current_status = str(trip_data.get("status", "pending")).strip().lower()
+        
+        if current_status not in ["pending", "available", "unassigned"]:
             cursor.close()
             conn.close()
             return "already_taken"
 
-        # 3. ട്രിപ്പ് അപ്ഡേറ്റ് ചെയ്യുക (SQL UPDATE)
         cursor.execute("""
             UPDATE trips
             SET status = 'Accepted',
@@ -1046,7 +1045,6 @@ def accept_trip_safely(booking_id, driver_name, driver_phone, driver_chat_id, ve
         conn.close()
 
         return "success"
-
 
     except Exception as e:
         print(f"❌ Error in accept_trip_safely: {e}")
@@ -1300,7 +1298,7 @@ def handle_telegram_callback(update, context):
 
         # ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യുക
         result = accept_trip_safely(
-            trip_id=booking_id,
+            booking_id=trip_id,  # <--- ഇവിടെയാണ് മാറ്റം വരുത്തിയത്
             driver_chat_id=chat_id,
             driver_name=driver_name,
             driver_phone=driver_phone,
@@ -4262,18 +4260,27 @@ def handle_accept_trip(call):
 
         else:
             # --- ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ പറ്റിയില്ലെങ്കിൽ (മറ്റൊരാൾ എടുത്തിട്ടുണ്ടെങ്കിൽ) ---
-            bot.answer_callback_query(
-                call.id,
-                "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
-            )
-            bot.send_message(
-                chat_id=chat_id,
-                text=(
-                    "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
-                    "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
-                )
-            )
-            return
+            if result == "already_taken":
+                    bot.answer_callback_query(
+                        call.id,
+                        "⚠️ ഈ ട്രിപ്പ് ഇതിനകം സ്വീകരിച്ചിരിക്കുന്നു."
+                    )
+                    bot.send_message(
+                        chat_id=chat_id,
+                        text=(
+                            "⚠️ ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ സ്വീകരിച്ചിരിക്കാം. "
+                            "ദയവായി മറ്റൊരു ട്രിപ്പ് തിരഞ്ഞെടുക്കുക."
+                        )
+                    )
+                    return
+                else:
+                    # --- മറ്റെന്തെങ്കിലും ടെക്നിക്കൽ എറർ വന്നാൽ ---
+                    bot.answer_callback_query(call.id, "❌ ടെക്നിക്കൽ എറർ!")
+                    bot.send_message(
+                        chat_id=chat_id, 
+                        text=f"❌ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യാൻ കഴിഞ്ഞില്ല. (Error: {result})"
+                    )
+                    return
 
     except Exception as e:
         print(f"❌ handle_accept_trip error: {e}")
