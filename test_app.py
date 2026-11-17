@@ -1305,9 +1305,16 @@ def handle_telegram_callback(update, context):
             vehicle_number=vehicle_number
         )
         # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്താൽ Supabase-ലും അപ്ഡേറ്റ് ചെയ്യുക
-        # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്താൽ (result "success" അല്ലെങ്കിൽ ഒരു dict ആണെങ്കിൽ)
-        if result == "success" or isinstance(result, dict):
-            
+        # ട്രിപ്പ് വിജയിച്ചോ എന്ന് ചെക്ക് ചെയ്യാൻ (ഏത് തരത്തിലുള്ള റിസൾട്ട് വന്നാലും)
+        is_success = False
+        if result == "success" or result is True:
+            is_success = True
+        elif isinstance(result, dict):  # ഡിക്ഷണറി ആണെങ്കിൽ
+            is_success = True
+        elif hasattr(result, 'data'):   # Supabase റെസ്പോൺസ് ആണെങ്കിൽ
+            is_success = True
+
+        if is_success:
             # 1. Supabase അപ്ഡേറ്റ് ചെയ്യുക
             try:
                 supabase.table('trips').update({
