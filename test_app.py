@@ -1305,38 +1305,44 @@ def handle_telegram_callback(update, context):
             vehicle_number=vehicle_number
         )
         # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്താൽ Supabase-ലും അപ്ഡേറ്റ് ചെയ്യുക
-        if result == "success":
+        # ട്രിപ്പ് വിജയകരമായി അക്സെപ്റ്റ് ചെയ്താൽ (result "success" അല്ലെങ്കിൽ ഒരു dict ആണെങ്കിൽ)
+        if result == "success" or isinstance(result, dict):
+            
+            # 1. Supabase അപ്ഡേറ്റ് ചെയ്യുക
             try:
                 supabase.table('trips').update({
                     "status": "Accepted",
                     "driver_name": driver_name,
                     "driver_phone": driver_phone,
                     "driver_chat_id": str(chat_id),
-                     "vehicle_number": vehicle_number
+                    "vehicle_number": vehicle_number
                 }).eq('trip_id', trip_id).execute()
                 print(f"✅ Supabase Updated: {trip_id}")
             except Exception as e:
                 print(f"❌ Supabase Update Error: {e}")
-            
-        if result:
+
+            # 2. ഡ്രൈവർക്ക് വിജയ സന്ദേശം അയക്കുക
             query.edit_message_text(
                 text=f"✅ *ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തു!*\n\n"
-                    f"ട്രിപ്പ് ഐഡി: `{booking_id}`\n"
+                    f"ട്രിപ്പ് ഐഡി: `{trip_id}`\n"
                     f"ഡ്രൈവർ: {driver_name}\n"
                     f"വാഹനം: {vehicle_number}",
                 parse_mode="Markdown"
             )
                 
-            driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={booking_id}&driver_chat_id={chat_id}"
+            # 3. ഡ്രൈവർ പാനൽ ലിങ്ക് അയക്കുക
+            driver_panel_url = f"https://taxiservisemj-x9meaffucvbt6tjijxrd6d.streamlit.app/?page=driver_trip_panel&trip_id={trip_id}&driver_chat_id={chat_id}"
             bot.send_message(
                 chat_id,
                 f"📍 *ഡ്രൈവർ പാനൽ തുറക്കാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:*\n\n[ട്രിപ്പ് പാനൽ തുറക്കുക]({driver_panel_url})",
                 parse_mode="Markdown",
                 disable_web_page_preview=True
             )
+
         else:
+            # 4. ട്രിപ്പ് ഫെയിൽ ആയാൽ (മറ്റൊരു ഡ്രൈവർ എടുത്തിട്ടുണ്ടെങ്കിൽ)
             query.edit_message_text(
-                text="❌ ക്ഷമിക്കണം, ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ ഇതിനകം സ്വീകരിച്ചിട്ടുണ്ട്.",
+                text=f"❌ ക്ഷമിക്കണം, ഈ ട്രിപ്പ് മറ്റൊരു ഡ്രൈവർ ഇതിനകം സ്വീകരിച്ചിട്ടുണ്ട്. (Error: {result})",
                 parse_mode="Markdown"
             )
                 
