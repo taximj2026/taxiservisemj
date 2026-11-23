@@ -237,7 +237,7 @@ def send_admin_trip_notification(trip_data):
 # ==========================================================
 # 🗺️ LIVE TRACKING MAP (Updated with Notifications)
 # ==========================================================
-@st.fragment(run_every=15)   # 5s → 15s (Firebase quota save)
+   # 5s → 15s (Firebase quota save)
 def render_live_tracking_map(trip_id, customer_lat, customer_lon, vehicle_type):
     # ============================================================
     # 🔔 സൗണ്ട് & നോട്ടിഫിക്കേഷൻ ഒറ്റ ബട്ടണിൽ ഓൺ ചെയ്യുക
@@ -3018,11 +3018,26 @@ def driver_trip_panel_page():
         st.error("❌ ട്രിപ്പ് ഐഡി കണ്ടെത്താനായില്ല.")
         return
     
-    # ഫയർബേസിൽ നിന്ന് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
-    trip_data = get_trip_from_database(trip_id)
-    
+    # ============================================================
+    # ✅ Supabase-ൽ നിന്ന് ട്രിപ്പ് വിവരങ്ങൾ എടുക്കുക
+    # ============================================================
+    try:
+        response = (
+            supabase.table("trips")
+            .select("*")
+            .eq("trip_id", trip_id)
+            .limit(1)
+            .execute()
+        )
+
+        trip_data = response.data[0] if response.data else None
+
+    except Exception as e:
+        st.error(f"❌ Supabase Trip Fetch Error: {e}")
+        return
+
     if not trip_data:
-        st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ലഭ്യമല്ല.")
+        st.error("❌ Supabase-ൽ ഈ ട്രിപ്പ് ഐഡി കണ്ടെത്താനായില്ല.")
         return
     
     # ട്രിപ്പ് വിവരങ്ങൾ
@@ -3038,7 +3053,7 @@ def driver_trip_panel_page():
     # 🆕 Distance & Commission എടുക്കുക
     distance = trip_data.get("calculated_distance", "N/A")
     commission = trip_data.get("commission_amount", "N/A")
-        # ============================================================
+    # ============================================================
     # 💰 ഡ്രൈവർ വാലറ്റ് ബാലൻസ് & UPI പേയ്മെന്റ് വിവരങ്ങൾ
     # ============================================================
     try:
@@ -3461,14 +3476,84 @@ def apply_mobile_ui():
         border: 2px solid #d32f2f !important;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     }}
+    /* 👇 ഡ്രൈവർ അക്സെപ്റ്റ് ചെയ്ത ബോക്സിന് വെള്ള നിറം */
+    div[class*="st-key-driver_accepted_box"] {{
+        background-color: #ffffff !important;
+        padding: 15px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+        margin-bottom: 10px !important;
+    }}
+    
+    /* അതിനുള്ളിലെ എഴുത്തുകൾക്ക് കറുപ്പ് നിറം */
+    div[class*="st-key-driver_accepted_box"] * {{
+        color: #000000 !important;
+        font-weight: bold !important;
+    }}
+
+    /* 👇 മുന്നറിയിപ്പ് മെസ്സേജ് ബോക്സിന് വെള്ള നിറം */
+    div[class*="st-key-warning_message_box"] {{
+        background-color: #ffffff !important;
+        padding: 15px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+        margin-bottom: 10px !important;
+    }}
+    
+    /* അതിനുള്ളിലെ എഴുത്തുകൾക്ക് കറുപ്പ് നിറം */
+    div[class*="st-key-warning_message_box"] * {{
+        color: #000000 !important;
+    }}
     
     /* അതിനുള്ളിലെ എല്ലാ എഴുത്തുകൾക്കും കറുപ്പ് നിറം */
     div[class*="st-key-sos_panel_box"] * {{
         color: #000000 !important;
     }}
+    /* 👇 ലൈവ് ലൊക്കേഷൻ ബോക്സിന് വെള്ള നിറം നൽകാൻ */
+    div[class*="st-key-live_tracking_box"] {{
+        background-color: #ffffff !important;
+        padding: 15px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+        margin-bottom: 15px !important;
+    }}
+    
+    /* അതിനുള്ളിലെ എഴുത്തുകൾക്ക് കറുപ്പ് നിറം */
+    div[class*="st-key-live_tracking_box"] * {{
+        color: #000000 !important;
+    }}
+    /* 👇 ഡ്രൈവർ വിവരങ്ങൾ, മുന്നറിയിപ്പ്, സ്റ്റാറ്റസ്, നിബന്ധനകൾ എന്നിവയ്ക്ക് വെള്ള ബാക്ക്ഗ്രൗണ്ട് */
+    div[class*="st-key-driver_status_box"] {{
+        background-color: #ffffff !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+        border: 1px solid #e5e7eb !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+        margin-bottom: 12px !important;
+    }}
+
+    div[class*="st-key-driver_status_box"] *,
+    div[class*="st-key-driver_status_box"] h3,
+    div[class*="st-key-driver_status_box"] p,
+    div[class*="st-key-driver_status_box"] span,
+    div[class*="st-key-driver_status_box"] li,
+    div[class*="st-key-driver_status_box"] summary {{
+        color: #111827 !important;
+    }}
+
+    div[class*="st-key-driver_status_box"] div[data-testid="stExpander"] details summary {{
+        background-color: #f9fafb !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 8px !important;
+    }}
+    
     </style>
     
     """, unsafe_allow_html=True)
+
+
+
+
 
 def main():
     apply_mobile_ui()  # 👈 ഈ വരി ഇവിടെ ചേർക്കുക
@@ -3553,7 +3638,7 @@ def main():
 </a>
 </div>
 </div>""", unsafe_allow_html=True)
-    # 👇 പുതിയ SOS പാനൽ കോഡ് (ഇവിടെ തുടങ്ങുന്നു)
+        # 👇 പുതിയ SOS പാനൽ കോഡ് (ഇവിടെ തുടങ്ങുന്നു)
     if st.query_params.get("sos") == "true":
         
         # 👇 ഇവിടെയാണ് വെളുത്ത ബാക്ക്ഗ്രൗണ്ട് നൽകുന്നത് (കണ്ടെയ്നറിന് key നൽകി)
@@ -3586,8 +3671,8 @@ def main():
             if st.button("SOS പാനൽ അടയ്ക്കുക", use_container_width=True):
                 st.query_params.clear()
                 st.rerun()
+                
     # 👇 ലൈവ് ട്രാക്കിംഗ് ബോക്സിൽ ക്ലിക്ക് ചെയ്തിട്ടുണ്ടോ എന്ന് ചെക്ക് ചെയ്യുന്നു
-    
     if st.query_params.get("show_live_tracking") == "true":
         
         # 👇 ഇവിടെയാണ് വെളുത്ത ബാക്ക്ഗ്രൗണ്ട് കൃത്യമായി നൽകുന്നത്
@@ -3621,26 +3706,142 @@ def main():
         else:
             # ജിപിഎസ് ഉണ്ടെങ്കിൽ മാത്രം മാപ്പ് വിളിക്കുന്നു
             render_live_tracking_map(current_trip_id, current_customer_lat, current_customer_lon, current_vehicle_type)
+            
     # 👇 GPS ഐക്കൺ
     loc_data = streamlit_geolocation()
     if loc_data and loc_data.get("latitude"):
         st.session_state.lat = loc_data.get("latitude")
         st.session_state.lon = loc_data.get("longitude")
         st.session_state.gps_link = f"https://maps.google.com/?q={st.session_state.lat},{st.session_state.lon}"
-
-   
-    # 👆 ഇവിടെയാണ് കോഡ് അവസാനിക്കുന്നത് (unsafe_allow_html=True ശ്രദ്ധിക്കുക)
-
     
+    # ============================================================
+    # 🚕 ആക്ടീവ് ട്രിപ്പ് ഉണ്ടെങ്കിൽ സ്റ്റാറ്റസും ഡ്രൈവർ വിവരങ്ങളും കാണിക്കുക
+    # ============================================================
+    active_trip_id = st.session_state.get("current_trip_id") or st.session_state.get("saved_trip_id")
+
+    if active_trip_id:
+        try:
+            response = supabase.table("trips").select("*").eq("trip_id", active_trip_id).execute()
+            trip_data = response.data[0] if response.data else None
+        except Exception:
+            trip_data = None
+
+        clean_trip = {k.strip(): v for k, v in trip_data.items()} if isinstance(trip_data, dict) else {}
+        status = str(clean_trip.get("status", "Pending")).strip()
+        vehicle_type_check = clean_trip.get("vehicle_type", "Auto Rickshaw")
+
+        st.markdown(f"""<div style="padding: 15px; border-radius: 12px; background-color: #eef2ff; border-left: 6px solid #2563eb; margin-bottom: 15px;">
+            <span style="font-size: 14px; font-weight: 600; color: #1e3a8a;">നിങ്ങളുടെ ട്രിപ്പ് ഐഡി:</span>
+            <div style="background-color: #fff3cd; border: 2px solid #ffc107; padding: 6px 12px; border-radius: 8px; display: inline-block; font-weight: bold; color: #856404; font-size: 16px; margin-left: 8px;">{active_trip_id}</div>
+        </div>""", unsafe_allow_html=True)
+
+        if status in ["Completed", "Cancelled"]:
+            st.info(f"ട്രിപ്പ് നില: **{status}**")
+            if st.button("➕ പുതിയ യാത്ര ബുക്ക് ചെയ്യുക", use_container_width=True):
+                st.session_state.current_trip_id = None
+                st.session_state.saved_trip_id = None
+                st.session_state.is_booking = False
+                st.session_state.accept_sound_played = False
+                st.rerun()
+            st.stop()
+
+        if status != "Pending":
+            if not st.session_state.get("accept_sound_played", False):
+                st.markdown("""
+                <audio autoplay>
+                    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+                </audio>
+                """, unsafe_allow_html=True)
+                st.session_state.accept_sound_played = True
+
+            # 1. ആദ്യം ഫോൺ നമ്പർ മാസ്ക് ചെയ്യുക
+            raw_driver_phone = clean_trip.get("driver_phone", "")
+            masked_d_phone = mask_phone_number(raw_driver_phone) if "mask_phone_number" in globals() else raw_driver_phone
+
+            # 2. വാഹനത്തിന്റെ പേര് കണ്ടെത്തുക
+            v_type_lower = str(vehicle_type_check).lower()
+            
+            if "taxi" in v_type_lower or "car" in v_type_lower or "കാർ" in v_type_lower:
+                vehicle_msg = "🚖 ടാക്സി കാർ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു..."
+            elif "bike" in v_type_lower or "ബൈക്ക്" in v_type_lower:
+                vehicle_msg = "🏍️ ബൈക്ക് ടാക്സി നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു..."
+            elif "goods" in v_type_lower or "pickup" in v_type_lower or "lorry" in v_type_lower or "truck" in v_type_lower:
+                vehicle_msg = "🚚 വാഹനം നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു..."
+            else:
+                vehicle_msg = "🛺 ഓട്ടോറിക്ഷ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു..."
+
+            # 3. ഫോൺ നമ്പർ മാസ്ക് ചെയ്യുക
+            raw_driver_phone = clean_trip.get("driver_phone", "")
+            masked_d_phone = mask_phone_number(raw_driver_phone) if "mask_phone_number" in globals() else raw_driver_phone
+
+            # 4. HTML കോഡ് തയ്യാറാക്കുക (ഇവിടെ തുടക്കത്തിൽ സ്പേസ് ഇടരുത്)
+            html_box = f"""<div style="background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 15px;">
+<h4 style="color: #28a745; margin-top: 0; margin-bottom: 10px;">🎉 അഭിനന്ദനങ്ങൾ! ഒരു ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിരിക്കുന്നു!</h4>
+<p style="color: #333333; font-weight: bold; margin-bottom: 15px;">{vehicle_msg}</p>
+<hr style="border-top: 1px solid #ddd; margin: 10px 0;">
+<h5 style="color: #000000; margin-top: 0; margin-bottom: 10px;">👨‍✈️ ഡ്രൈവർ വിവരങ്ങൾ</h5>
+<p style="color: #000000; margin: 5px 0;"><b>ഡ്രൈവർ പേര്:</b> {clean_trip.get('driver_name', 'N/A')}</p>
+<p style="color: #000000; margin: 5px 0;"><b>വാഹന നമ്പർ:</b> {clean_trip.get('vehicle_number', 'N/A')} ({vehicle_type_check})</p>
+<p style="color: #000000; margin: 5px 0;"><b>ഫോൺ നമ്പർ:</b> {masked_d_phone}</p>
+</div>"""
+            
+            # 5. Streamlit-ൽ കാണിക്കുക
+            st.markdown(html_box, unsafe_allow_html=True)
+            # 👇 ഇവിടെയാണ് പുതിയ "ശ്രദ്ധിക്കുക" വൈറ്റ്-കാർഡ് കോഡ് ചേർക്കേണ്ടത് (8 spaces ഇൻഡന്റേഷനിൽ)
+            st.markdown("""
+            <div style="background-color: #ffffff; color: #111827; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 12px rgba(0,0,0,0.12); margin-bottom: 10px;">
+                <div style="background-color: #ffffff; border-left: 4px solid #f59e0b; padding: 10px 12px; border-radius: 8px; color: #111827;">
+                    <b>⚠️ ശ്രദ്ധിക്കുക:</b>
+                    <ul style="margin: 6px 0 0 18px; padding: 0; color: #111827;">
+                        <li>ഈ ആപ്പ് ക്ലോസ് ചെയ്യരുത്</li>
+                        <li>ഇന്റർനെറ്റ് ഓഫ് ചെയ്യരുത്</li>
+                        <li>ഫോൺ sleep mode-ൽ വെക്കരുത്</li>
+                        <li>ഡ്രൈവർ വരുന്നത് വരെ കാത്തിരിക്കുക</li>
+                    </ul>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.markdown("### 🗺️ ഡ്രൈവറുടെ ലൈവ് ലൊക്കേഷൻ ട്രാക്കിംഗ്")
+            c_lat = st.session_state.get("lat")
+            c_lon = st.session_state.get("lon")
+            if c_lat and c_lon:
+                render_live_tracking_map(active_trip_id, c_lat, c_lon, vehicle_type_check)
+            else:
+                st.warning("⚠️ മാപ്പ് കാണുന്നതിനായി നിങ്ങളുടെ ജിപിഎസ് ലൊക്കേഷൻ സജീവമാക്കുക.")
+                st.markdown(html_box, unsafe_allow_html=True)
+
+                                 
+
+        else:
+            st_autorefresh(interval=5000, key=f"customer_trip_refresh_{active_trip_id}")
+            distance_val = clean_trip.get("distance", "N/A")
+            st.info(f"📏 **യാത്രയുടെ ദൂരം:** {distance_val} കി.മീ")
+            st.markdown("""<div style="background-color: white; color: #333333; padding: 12px; border-radius: 8px; border-left: 5px solid #ffc107; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><b>⏳ ഡ്രൈവർമാർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യുന്നതിനായി കാത്തിരിക്കുന്നു...</b><span style="font-size: 13px; margin-top: 5px; display: block;">ദയവായി ഈ പേജ് ക്ലോസ് ചെയ്യരുത്.</span></div>""", unsafe_allow_html=True)
+            
+                
+        with st.expander("📝 സേവന നിബന്ധനകളും ഡിസ്ക്ലൈമറും"):
+            st.markdown("""
+            <div style="background-color: #ffffff; color: #111827; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                <p style="margin: 0 0 10px 0; color: #111827;">
+                    ഈ ആപ്ലിക്കേഷൻ ഡ്രൈവർമാരെയും യാത്രക്കാരെയും ബന്ധിപ്പിക്കുന്ന ഒരു <b>ഡിജിറ്റൽ മെസ്സേജിംഗ് പ്ലാറ്റ്ഫോം</b> മാത്രമാണ്.
+                </p>
+                <ul style="margin: 0 0 0 18px; padding: 0; color: #111827;">
+                    <li style="margin-bottom: 6px;">യാത്രയ്ക്കിടയിൽ ഉണ്ടാകുന്ന സാങ്കേതികമോ, വ്യക്തിപരമോ ആയ പ്രശ്നങ്ങൾക്കോ, അപകടങ്ങൾക്കോ ഈ പ്ലാറ്റ്ഫോമോ, അഡ്മിനിസ്ട്രേറ്റർമാരോ ഉത്തരവാദികളായിരിക്കുന്നതല്ല.</li>
+                    <li style="margin-bottom: 6px;">ഡ്രൈവർമാരുമായുള്ള ഇടപാടുകളിൽ യാത്രക്കാർ ജാഗ്രത പാലിക്കേണ്ടതാണ്.</li>
+                    <li>ഈ സേവനം ഉപയോഗിക്കുന്നതിലൂടെ നിങ്ങൾ ഈ നിബന്ധനകൾ അംഗീകരിക്കുന്നു.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)    
+
+        st.stop()
 
     # 👇 ഇവിടെ നിന്ന് തുടർന്ന് നിങ്ങളുടെ പഴയ കോഡ് (യാത്രാ വിവരങ്ങൾ) വരണം
-        # 👇 ചെറിയ വര വരച്ച് യാത്രാ വിവരങ്ങൾ കൊടുക്കാൻ
     st.markdown("<hr style='margin: 5px 0; border: 0.5px solid #ffffff;'>", unsafe_allow_html=True)
     st.markdown("### 📝 യാത്രാ വിവരങ്ങൾ രേഖപ്പെടുത്തുക")
     
-    
-    
-        # 🛑 st.form ഉപയോഗിച്ച് ബുക്കിംഗ് ഫോം സുരക്ഷിതമാക്കിയിരിക്കുന്നു
+    # 🛑 st.form ഉപയോഗിച്ച് ബുക്കിംഗ് ഫോം സുരക്ഷിതമാക്കിയിരിക്കുന്നു
     with st.form("booking_form"):
         st.markdown("### 👤 യാത്രക്കാരന്റെ വിവരങ്ങൾ")
         
@@ -3703,9 +3904,9 @@ def main():
         st.session_state.is_booking = True
 
         # 🆕 1. GPS എനേബിൾ ചെയ്തിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക
-        # lat, lon ഉണ്ടെങ്കിൽ gps_enabled = True ആക്കുക (ഇത് പ്രധാനം)
         if st.session_state.lat and st.session_state.lon:
             st.session_state.gps_enabled = True
+            
         if not st.session_state.gps_enabled:
             st.markdown("""
             <div style="background-color: #ffebee; border-left: 5px solid #d32f2f; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 13px;">
@@ -3720,7 +3921,6 @@ def main():
             st.session_state.is_booking = False
             st.stop()            
 
-        
         # Validation checks
         if not (c_name and c_phone and pickup_place and drop_place):
             st.warning("⚠️ ദയവായി എല്ലാ വിവരങ്ങളും നൽകുക!")
@@ -3764,11 +3964,15 @@ def main():
             # 3. ദൂരം കൃത്യമായി ലഭിച്ചാൽ മാത്രം റൗണ്ട് ചെയ്യുക
             exact_distance = round(exact_distance, 1)
 
-        
         rate_per_km = 15 if vehicle_type == "Auto Rickshaw" else 22
         total_fare = round(exact_distance * rate_per_km, 2)
         commission_amount = calculate_admin_commission(exact_distance) if 'calculate_admin_commission' in globals() else 10.0
-        unique_trip_id = f"TRIP-{random.randint(10000, 99999)}"
+        
+        if 'saved_trip_id' not in st.session_state:
+            st.session_state.saved_trip_id = f"TRIP-{random.randint(10000, 99999)}"
+        unique_trip_id = st.session_state.saved_trip_id 
+        st.session_state.current_trip_id = unique_trip_id
+        
         # 👇 പഴയത് ഡിലീറ്റ് ചെയ്ത് ഇത് നൽകുക
         st.markdown(f"""
         <div style="background-color: white; padding: 10px; border-radius: 8px; border-left: 5px solid #2563eb; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
@@ -3776,8 +3980,7 @@ def main():
             <span style="color: #1a237e;">{pickup_place} to {drop_place}</span>
         </div>
         """, unsafe_allow_html=True)    
-        
-
+            
         # ============================================================
         # 🚗 DRIVER LOGIC & RADIUS ROUTING (FIXED)
         # ============================================================
@@ -3825,12 +4028,12 @@ def main():
                     drop=payload["drop"],
                     distance=payload["calculated_distance"],
                     pickup_link=payload["location"],
-                    total_fare=payload["total_fare"],                   # പുതിയത്
-                    commission_amount=payload["commission_amount"],     # പുതിയത്
-                    pickup_lat=payload["pickup_lat"],                   # പുതിയത്
-                    pickup_lon=payload["pickup_lon"],                   # പുതിയത്
-                    vehicle_type=payload["vehicle_type"],               # പുതിയത്
-                    area=payload["area"]                                # പുതിയത്
+                    total_fare=payload["total_fare"],
+                    commission_amount=payload["commission_amount"],
+                    pickup_lat=payload["pickup_lat"],
+                    pickup_lon=payload["pickup_lon"],
+                    vehicle_type=payload["vehicle_type"],
+                    area=payload["area"]
                 )
 
                 if trip_saved:
@@ -3840,9 +4043,13 @@ def main():
                     # Driver notification — Vera function വഴി
                     if 'process_radius_expansion_routing' in globals():
                         process_radius_expansion_routing(payload, st.session_state.lat, st.session_state.lon)
+                    
+                    st.session_state.current_trip_id = unique_trip_id
+                    st.session_state.saved_trip_id = unique_trip_id
+                    st.session_state.is_booking = False
+                    st.rerun()
 
                     # 👇 ഇവിടെയാണ് പഴയ st.success(...) വരിയുണ്ടായിരുന്നത്. 
-                    # അത് ഡിലീറ്റ് ചെയ്ത് ഈ പുതിയ കോഡ് നൽകുക:
                     st.markdown("""
                     <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 8px; border-left: 5px solid #28a745; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                         <b style="font-size: 15px;">✅ ബുക്കിംഗ് വിജയകരമായി പൂർത്തിയായി!</b>
@@ -3866,12 +4073,13 @@ def main():
                    
 
                     # 👇 റിയൽ ടൈം അപ്ഡേറ്റ് വന്നോ എന്ന് ചെക്ക് ചെയ്യാൻ (ഓരോ 2 സെക്കൻഡിലും)
-                    @st.fragment(run_every=2)
-                    def check_status():
-                        if st.session_state.get('trip_accepted'):
-                            st.rerun()
+                           
+                        
+                   
+                    # ഓരോ 3 സെക്കൻഡിലും പേജ് ഓട്ടോമാറ്റിക് ആയി റീഫ്രെഷ് ആകാൻ    
                             
-                    check_status()
+                            
+                    
                     
 
                     # ----------------------------------------------------
@@ -3882,6 +4090,36 @@ def main():
                     try:
                         response = supabase.table('trips').select('*').eq('trip_id', unique_trip_id).execute()
                         trip_data = response.data[0] if response.data else None
+                        
+                        # 👇 ഈ പ്രിന്റ് ഇവിടെ ചേർക്കുക
+                        # =====================================
+                        # 🔍 CUSTOMER PAGE FULL DIAGNOSTIC
+                        # =====================================
+                        print("\n" + "=" * 60)
+                        print("🚕 CUSTOMER PAGE DIAGNOSTIC START")
+                        print("=" * 60)
+
+                        try:
+                            print("1. TRIP ID:", unique_trip_id)
+                            print("2. SUPABASE RESPONSE:", response.data)
+
+                            if trip_data:
+                                print("3. TRIP FOUND: YES")
+                                print("4. STATUS:", trip_data.get("status"))
+                                print("5. DRIVER NAME:", trip_data.get("driver_name"))
+                                print("6. DRIVER PHONE:", trip_data.get("driver_phone"))
+                                print("7. DRIVER CHAT ID:", trip_data.get("driver_chat_id"))
+                                print("8. IS LOCKED:", trip_data.get("is_locked"))
+                            else:
+                                print("3. TRIP FOUND: NO")
+                            print("9. SESSION STATE:", dict(st.session_state))
+                            print("10. CUSTOMER PAGE REACHED THIS POINT: YES")  
+                        except Exception as diagnostic_error:
+                            print("❌ CUSTOMER DIAGNOSTIC ERROR:", repr(diagnostic_error))
+                        print("=" * 60)
+                        print("🚕 CUSTOMER PAGE DIAGNOSTIC END")
+                        print("=" * 60 + "\n")                            
+                        print(f"🔥 CUSTOMER UI TRIP DATA: {trip_data}")
                     except Exception as e:
                         trip_data = None    
                         
@@ -3890,56 +4128,44 @@ def main():
                     else:
                         status = "Pending" 
                     vehicle_type_check = trip_data.get("vehicle_type", "Auto Rickshaw") if trip_data else "Auto Rickshaw"
+                    
                     # 🆕 ഡ്രൈവർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തതിന് ശേഷം ("Pending" അല്ലാത്ത എല്ലാ അവസ്ഥയിലും) ഈ കോഡ് പ്രവർത്തിക്കും
                     if status != "Pending":
     
 
                     
                     
-                        # 🔔 1. നോട്ടിഫിക്കേഷൻ സൗണ്ട്
-                        if not st.session_state.get('accept_sound_played', False):
-                            notification_sound = """
-                            <audio autoplay>
-                                <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
-                            </audio>
-                            """
-                            st.markdown(notification_sound, unsafe_allow_html=True)
-                            st.session_state.accept_sound_played = True 
+                        #
+                        # Customer Page-ൽ തന്നെ 5 സെക്കൻഡിൽ ഒരിക്കൽ പരിശോധിക്കുക
                         
-
-                        # 2. ഡ്രൈവർ വിവരങ്ങളും മാപ്പും അടങ്ങിയ പോപ്പ്-അപ്പ് കണ്ടെയ്നർ
-                        with st.container():
-                            st.success("🎉 **അഭിനന്ദനങ്ങൾ! ഒരു ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്തിരിക്കുന്നു!**")
-                            if "taxi" in vehicle_type_check.lower() or "car" in vehicle_type_check.lower():
-                                st.markdown("### 🚖 ടാക്സി കാർ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
-                            else:
-                                st.markdown("### 🛺 ഓട്ടോറിക്ഷ നിങ്ങളുടെ അടുത്തേക്ക് വരുന്നു...")
-
-                            st.markdown("### 👤 ഡ്രൈവർ വിവരങ്ങൾ")
-                            st.write(f"**ഡ്രൈവർ പേര്:** {trip_data.get('driver_name', 'N/A')}")
-                            st.write(f"**വാഹന നമ്പർ:** {trip_data.get('vehicle_number', 'N/A')} ({vehicle_type_check})")
-
-                            # മാസ്ക് ചെയ്ത ഫോൺ നമ്പർ
-                            raw_driver_phone = trip_data.get('driver_phone', '')
-                            masked_d_phone = mask_phone_number(raw_driver_phone) if 'mask_phone_number' in globals() else raw_driver_phone
-                            st.write(f"**ഫോൺ നമ്പർ:** `{masked_d_phone}`")
-
-                            st.markdown("---")
-                            st.markdown("### 🗺️ ഡ്രൈവറുടെ ലൈവ് ലൊക്കേഷൻ ട്രാക്കിംഗ്")
-
-                            if lat and lon:
-                                render_live_tracking_map(unique_trip_id, lat, lon, vehicle_type_check)
-                            else:
-                                st.warning("⚠️ മാപ്പ് കാണുന്നതിനായി നിങ്ങളുടെ ജിപിഎസ് ലൊക്കേഷൻ സജീവമാക്കുക.")
-                    else:
+                        
                         # ഡ്രൈവർ അക്സെപ്റ്റ് ചെയ്തിട്ടില്ലാത്തതിനാൽ
         
                         # 1. ഓരോ 5 സെക്കൻഡിലും പേജ് ഓട്ടോമാറ്റിക് ആയി റീഫ്രെഷ് ആകാൻ (ട്രിപ്പ് ഐഡി ഉണ്ടെങ്കിൽ മാത്രം)
                         # ഡ്രൈവർ അക്സെപ്റ്റ് ചെയ്യുന്നത് വരെ
-                        if st.session_state.get('current_trip_id'): 
-                            st_autorefresh(interval=5000, key="waiting_refresh")
+                        #if st.session_state.get('current_trip_id'): 
+                        #    st_autorefresh(interval=5000, key="waiting_refresh")
+                        #    st.rerun()  # 👈 ഇത് പുതിയതായി ചേർക്കുക
+                        # 👇 ഇവിടെയാണ് പുതിയ ജാവാസ്ക്രിപ്റ്റ് കോഡ് ചേർക്കേണ്ടത് 👇
+                        
+                        # 👇 ഇതാ പുതിയതായി ചേർക്കേണ്ട കോഡ് (ഇത് ഇവിടെ ചേർക്കുക) 👇
+                        
+                        
+                            
+                                
+                                
+                                
+                                    
+                                    
+                                    # 👇 ഇതാ പുതിയതായി ചേർക്കുന്നത് (Status Accepted ആയാൽ പേജ് റീഫ്രെഷ് ചെയ്യാൻ)
+                                    
+                                        
+                            
+                                
+                        # 👆 പുതിയ കോഡ് അവസാനിക്കുന്നു 👆 
+                        
                         # 2. യാത്രയുടെ ദൂരം കാണിക്കാൻ
-                        distance_val = trip_data.get('distance', 'N/A')
+                        distance_val = trip_data.get('distance', 'N/A') if trip_data else 'N/A'
                         st.info(f"📏 **യാത്രയുടെ ദൂരം:** {distance_val} കി.മീ")
                         st.markdown("""<div style="background-color: white; color: #333333; padding: 12px; border-radius: 8px; border-left: 5px solid #ffc107; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><b>⏳ ഡ്രൈവർമാർ ട്രിപ്പ് അക്സെപ്റ്റ് ചെയ്യുന്നതിനായി കാത്തിരിക്കുന്നു...</b><span style="font-size: 13px; margin-top: 5px; display: block;">ദയവായി ഈ പേജ് ക്ലോസ് ചെയ്യരുത്.</span></div>""", unsafe_allow_html=True)    
 
@@ -4218,26 +4444,82 @@ def main():
         footer_trip_id = st.text_input("ട്രിപ്പ് ഐഡി നൽകുക:", key="independent_footer_trip_id", label_visibility="collapsed", placeholder="ട്രിപ്പ് ഐഡി (ഉദാ: TRIP-XXXXX)") 
     with col2:
         footer_check_btn = st.button("സ്റ്റാറ്റസ്", key="independent_footer_btn", use_container_width=True)        
-        
+    # ==========================================================
+    # ✅ CUSTOMER BOOKING STATUS - SUPABASE
+    # ==========================================================    
     if footer_check_btn:    
-        if footer_trip_id: 
-            with st.spinner("🔍 പരിശോധിക്കുന്നു..."):
+        if footer_trip_id and footer_trip_id.strip():
+            
+            
+            with st.spinner("🔍 ട്രിപ്പ് വിവരങ്ങൾ പരിശോധിക്കുന്നു..."):
                 try:
-                    trip_ref = db.reference(f"trips/{footer_trip_id.strip()}")
-                    trip_data = trip_ref.get()
+                    response = (
+                        supabase.table("trips")    
+                        .select("*")
+                        .eq("trip_id", footer_trip_id.strip())
+                        .limit(1)
+                        .execute()
+                    )
+
+                    trip_data = response.data[0] if response.data else None
+                    
                     if trip_data:
-                        st.success(f"✅ ട്രിപ്പ് വിവരങ്ങൾ കണ്ടെത്തി!")
-                        st.info(f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}")
-                        st.markdown(f"📊 **നിലവിലെ സ്റ്റാറ്റസ്:** {trip_data.get('status', 'Pending')}")
+                        status = str(
+                            trip_data.get("status") or "Pending"
+                        ).strip()
+
+                        st.success("✅ ട്രിപ്പ് വിവരങ്ങൾ കണ്ടെത്തി!")
+  
+                        st.info(
+                            f"📍 **പിക്കപ്പ്:** {trip_data.get('pickup', 'N/A')}\n\n"
+                            f"🏁 **ഡ്രോപ്പ്:** {trip_data.get('drop', 'N/A')}"
+                        )
+                        st.markdown(f"### 📊 നിലവിലെ സ്റ്റാറ്റസ്: {status}")
+
+                        if status.lower() in ["accepted", "arrived"]:
+                            st.success("🎉 ഡ്രൈവർ നിങ്ങളുടെ ട്രിപ്പ് സ്വീകരിച്ചിട്ടുണ്ട്!")
+
+                            st.markdown("### 👤 ഡ്രൈവർ വിവരങ്ങൾ")
+
+                            st.write(
+                                f"**ഡ്രൈവർ പേര്:** "
+                                f"{trip_data.get('driver_name') or 'ലഭ്യമല്ല'}"
+                            )
+  
+  
+                            st.write(
+                                f"**വാഹന നമ്പർ:** "
+                                f"{trip_data.get('vehicle_number') or 'ലഭ്യമല്ല'}"
+                            )
+
+
+                            raw_phone = trip_data.get("driver_phone") or ""
+
+                            masked_phone = (
+                                mask_phone_number(raw_phone)
+                                if raw_phone and 'mask_phone_number' in globals()
+                                else raw_phone or "ലഭ്യമല്ല"
+                            )
+                            
+                            st.write(f"**ഫോൺ നമ്പർ:** {masked_phone}")
+                        if status.lower() == "arrived":
+                            st.warning(
+                                "🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!"
+                            )
+  
                     else:
-                        st.error("❌ ഈ ട്രിപ്പ് ഐഡിയിൽ വിവരങ്ങൾ ലഭ്യമല്ല.")
-                except Exception as e:
-                    st.error(f"❌ എറർ: {e}")
+                        st.error(
+                            "❌ ഈ ട്രിപ്പ് ഐഡിയിൽ Supabase-ൽ വിവരങ്ങൾ ലഭ്യമല്ല."
+                        )
+                        
+                except Exception as e:    
+                    st.error(f"❌ Supabase Error: {e}")  
+                
+                    
         else:
             st.warning("⚠️ ദയവായി ഒരു ട്രിപ്പ് ഐഡി നൽകുക.")
             
-            if str_lit.session_state.get('status') == "Arrived":
-                st.warning("🚨 ഡ്രൈവർ നിങ്ങളുടെ പിക്കപ്പ് ലൊക്കേഷനിൽ എത്തിയിട്ടുണ്ട്!")    
+            
                 
 if __name__ == "__main__":
     main()
@@ -4359,6 +4641,8 @@ def handle_accept_trip(call):
         try:
             # Supabase 'drivers' ടേബിളിൽ നിന്ന് chat_id ഉപയോഗിച്ച് വിവരങ്ങൾ എടുക്കുന്നു
             response = supabase.table('drivers').select('*').eq('chat_id', str(chat_id)).execute()
+            # ഇത് പുതിയതായി ചേർക്കുന്ന വരി (4362-ാം വരി)
+            print(f"🔥 DEBUG SUPABASE DRIVER DATA: {response.data}")
             
             if response.data and len(response.data) > 0:
                 driver_data = response.data[0]
