@@ -3158,6 +3158,7 @@ def driver_trip_panel_page():
         
         # തെറ്റായ സ്പേസ് ഒഴിവാക്കി ഇവിടെ ശരിയാക്കി
         if st.button("🚕 ഡ്രൈവർ എത്തി (Arrived)", type="primary", use_container_width=True):
+            print(f"DEBUG [1] Arrived clicked -> trip_id={trip_id}, driver_chat_id={driver_chat_id}")
             
             # 1. സ്റ്റാറ്റസ് 'Arrived' ആക്കി അപ്ഡേറ്റ് ചെയ്യുക (Supabase)
             try:   
